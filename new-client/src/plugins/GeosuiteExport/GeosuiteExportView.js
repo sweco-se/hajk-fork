@@ -594,19 +594,26 @@ class GeosuiteExportView extends React.PureComponent {
   }
 
   renderConfirmStep = () => {
-    const { classes } = this.props;
+    const { classes, options } = this.props;
+    const deliveryConfirmationHeader =
+      options.view?.deliveryConfirmationHeader ?? "Tack för din beställning!";
+    const deliveryInformationTextFirst =
+      options.view?.deliveryInformationTextFirst ??
+      "Ett e-postmeddelande med vidare instruktioner kommer att skickas till dig.";
+    const deliveryInformationTextSecond =
+      options.view?.deliveryInformationTextSecond ??
+      "Klicka på VÄLJ MER för att hämta mer data för ditt markerade område eller gå vidare med KLAR.";
     const step = this.state.activeStep;
     return (
       <>
         <Typography className={classes.bold}>
           {" "}
-          Tack för din beställning!
+          {deliveryConfirmationHeader}
         </Typography>
         <br />
-        <Typography variant="body1">
-          Klicka på VÄLJ MER för att hämta mer data för ditt markerade område
-          eller gå vidare med KLAR.
-        </Typography>
+        <Typography variant="body1">{deliveryInformationTextFirst}</Typography>
+        <br />
+        <Typography variant="body1">{deliveryInformationTextSecond}</Typography>
         <br />
         <div>
           <Button
