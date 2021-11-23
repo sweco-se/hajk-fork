@@ -325,7 +325,7 @@ class GeosuiteExportModel {
       return;
     }
 
-    const layerSrs = wfsConfig.srs ?? this.#config.srsName;
+    const layerSrs = wfsConfig.projection ?? this.#config.srsName;
     let filterGeometry = selectionGeometry;
     if (this.#config.srsName !== layerSrs) {
       console.log(
@@ -666,14 +666,14 @@ class GeosuiteExportModel {
     );
   };
 
-  // Returns layer from Search plug-in, given layer id reference.
+  // Returns layer from configured Search layers, given layer id reference.
   // If no reference is found, the given defaults are used as a static layer.
   #getSearchLayerByRefOrDefaults = (id, defaults) => {
     var layer = this.#getSearchLayerById(id);
     console.log("Get layer by %s:", id, layer);
     if (!layer) {
       console.warn(
-        "GeosuiteExport: Search layer not configured, make sure to configure plug-in via admin. Using defaults. Reference=%s.",
+        "GeosuiteExport: Layer not found, please configure search layer via admin and mark as active in search plug-in. Using defaults. Reference id=%s.",
         id
       );
       layer = defaults;
@@ -681,11 +681,10 @@ class GeosuiteExportModel {
     return layer;
   };
 
-  // Returns layer from Search plug-in, given layer id reference.
+  // Returns layer from configured Search layers, given layer id reference.
   #getSearchLayerById = (id) => {
-    // TODO: Consider getting a Vector layer instead? No search layer dep + getting EPSG config?
-    return this.#app.plugins.search.options.sources.find((layer) => {
-      console.log("Checking ref %s against: %s", id, layer.id);
+    return (this.#app.searchModel?.getSources() ?? []).find((layer) => {
+      console.log("Checking ref %s against: %s", id, layer.id, layer);
       return layer.id === id;
     });
   };
