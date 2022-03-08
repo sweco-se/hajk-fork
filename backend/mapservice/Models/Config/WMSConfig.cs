@@ -12,6 +12,7 @@ namespace MapService.Models.Config
         public string id { get; set; }
         public string caption { get; set; }
         public string legend { get; set; }
+        public string legendIcon { get; set; }
         public string infobox { get; set; }
         public string style { get; set; }
         public bool queryable { get; set; }    
@@ -43,6 +44,9 @@ namespace MapService.Models.Config
 
         public string legend { get; set; }
 
+        public string legendIcon { get; set; }
+
+
         public string projection { get; set; }
 
         public string[] layers { get; set; }
@@ -55,9 +59,17 @@ namespace MapService.Models.Config
 
         public bool visibleAtStart { get; set; }
 
+        public bool hideExpandArrow { get; set; }
+
         public bool tiled { get; set; }
 
         public double opacity { get; set; }
+
+        public int minZoom { get; set; }
+
+        public int maxZoom { get; set; }
+
+        public bool minMaxZoomAlertOnToggleOnly { get; set; }
 
         public bool singleTile { get; set; }
 
@@ -68,6 +80,10 @@ namespace MapService.Models.Config
         public string attribution { get; set; }
 
         public string searchUrl { get; set; }
+
+        public double customRatio { get; set; }
+
+        public bool hidpi { get; set; } = true;
 
         public string searchPropertyName { get; set; }
 
@@ -89,9 +105,21 @@ namespace MapService.Models.Config
 
         public string infoOwner { get; set; }
 
+        public string infoClickSortType { get; set; }
+
+        public bool infoClickSortDesc { get; set; }
+
+        public string infoClickSortProperty { get; set; }        
+
         public string version { get; set; }
 
         public string infoFormat { get; set; }
+
+        public bool timeSliderVisible { get; set; }
+
+        public string timeSliderStart { get; set; }
+
+        public string timeSliderEnd { get; set; }
 
         public int? zIndex { get; set; }
     }

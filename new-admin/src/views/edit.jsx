@@ -1,28 +1,33 @@
-// Copyright (C) 2016 Göteborgs Stad
-//
-// Denna programvara är fri mjukvara: den är tillåten att distribuera och modifiera
-// under villkoren för licensen CC-BY-NC-SA 4.0.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the CC-BY-NC-SA 4.0 licence.
-//
-// http://creativecommons.org/licenses/by-nc-sa/4.0/
-//
-// Det är fritt att dela och anpassa programvaran för valfritt syfte
-// med förbehåll att följande villkor följs:
-// * Copyright till upphovsmannen inte modifieras.
-// * Programvaran används i icke-kommersiellt syfte.
-// * Licenstypen inte modifieras.
-//
-// Den här programvaran är öppen i syfte att den skall vara till nytta för andra
-// men UTAN NÅGRA GARANTIER; även utan underförstådd garanti för
-// SÄLJBARHET eller LÄMPLIGHET FÖR ETT VISST SYFTE.
-//
-// https://github.com/hajkmap/Hajk
-
 import React from "react";
 import { Component } from "react";
 import Alert from "../views/alert.jsx";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/SaveSharp";
+import AddIcon from "@material-ui/icons/Add";
+import CancelIcon from "@material-ui/icons/Cancel";
+import { withStyles } from "@material-ui/core/styles";
+import { green, blue } from "@material-ui/core/colors";
+import TextArea from "antd/lib/input/TextArea";
+
+const ColorButtonGreen = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(green[700]),
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonBlue = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: blue[500],
+    "&:hover": {
+      backgroundColor: blue[700],
+    },
+  },
+}))(Button);
 
 const defaultState = {
   load: false,
@@ -37,20 +42,23 @@ const defaultState = {
   uri: "",
   projection: "",
   point: false,
+  multipoint: false,
   linestring: false,
+  multilinestring: false,
   polygon: false,
+  multipolygon: false,
   layerProperties: [],
   alert: false,
   corfirm: false,
   alertMessage: "",
   content: "",
   confirmAction: () => {},
-  denyAction: () => {}
+  denyAction: () => {},
 };
 /**
  *
  */
-class Search extends Component {
+class Edit extends Component {
   /**
    *
    */
@@ -66,7 +74,7 @@ class Search extends Component {
     this.props.model.getConfig(this.props.config.url_layers);
     this.props.model.on("change:layers", () => {
       this.setState({
-        layers: this.props.model.get("layers")
+        layers: this.props.model.get("layers"),
       });
     });
 
@@ -89,12 +97,12 @@ class Search extends Component {
       confirm: true,
       alertMessage: "Lagret kommer att tas bort. Är detta ok?",
       confirmAction: () => {
-        this.props.model.removeLayer(layer, success => {
+        this.props.model.removeLayer(layer, (success) => {
           if (success) {
             this.props.model.getConfig(this.props.config.url_layers);
             this.setState({
               alert: true,
-              alertMessage: `Lagret ${layer.caption} togs bort!`
+              alertMessage: `Lagret ${layer.caption} togs bort!`,
             });
             if (this.state.id === layer.id) {
               this.abort();
@@ -102,11 +110,11 @@ class Search extends Component {
           } else {
             this.setState({
               alert: true,
-              alertMessage: "Lagret kunde inte tas bort. Försök igen senare."
+              alertMessage: "Lagret kunde inte tas bort. Försök igen senare.",
             });
           }
         });
-      }
+      },
     });
     e.stopPropagation();
   }
@@ -124,8 +132,11 @@ class Search extends Component {
       projection: layer.projection || "EPSG:3006",
       addedLayers: [],
       point: layer.editPoint,
+      multipoint: layer.editMultiPoint,
       linestring: layer.editLine,
-      polygon: layer.editPolygon
+      multilinestring: layer.editMultiLine,
+      polygon: layer.editPolygon,
+      multipolygon: layer.editMultiPolygon,
     });
 
     setTimeout(() => {
@@ -133,18 +144,18 @@ class Search extends Component {
       this.validateField("url", true);
       this.loadWMSCapabilities(undefined, () => {
         this.setState({
-          addedLayers: layer.layers
+          addedLayers: layer.layers,
         });
 
         this.validateField("layers");
 
-        Object.keys(this.refs).forEach(element => {
+        Object.keys(this.refs).forEach((element) => {
           if (this.refs[element].dataset.type === "wms-layer") {
             this.refs[element].checked = false;
           }
         });
 
-        layer.layers.forEach(layer => {
+        layer.layers.forEach((layer) => {
           // Sometimes 'layer' has been removed and the ref is non-exiting, so there's no .checked-property to check.
           // Do a check first, so it doesn't render as error if property isn't found.
           if (this.refs.hasOwnProperty(layer)) {
@@ -169,7 +180,7 @@ class Search extends Component {
       addedLayers: [],
       capabilities: false,
       layerProperties: undefined,
-      layerPropertiesName: undefined
+      layerPropertiesName: undefined,
     });
 
     if (this.state.capabilities) {
@@ -178,15 +189,15 @@ class Search extends Component {
       });
     }
 
-    this.props.model.getWMSCapabilities(this.state.url, capabilities => {
+    this.props.model.getWMSCapabilities(this.state.url, (capabilities) => {
       this.setState({
         capabilities: capabilities,
-        load: false
+        load: false,
       });
       if (capabilities === false) {
         this.setState({
           alert: true,
-          alertMessage: "Servern svarar inte. Försök med en annan URL."
+          alertMessage: "Servern svarar inte. Försök med en annan URL.",
         });
       }
       if (callback) {
@@ -200,7 +211,7 @@ class Search extends Component {
   appendLayer(e, checkedLayer) {
     this.setState(
       {
-        addedLayers: [checkedLayer]
+        addedLayers: [checkedLayer],
       },
       () => this.validateField("layers")
     );
@@ -210,14 +221,14 @@ class Search extends Component {
    */
   filterLayers(e) {
     this.setState({
-      filter: e.target.value
+      filter: e.target.value,
     });
   }
   /**
    *
    */
   getLayersWithFilter(filter) {
-    return this.props.model.get("layers").filter(layer => {
+    return this.props.model.get("layers").filter((layer) => {
       return new RegExp(this.state.filter).test(layer.caption.toLowerCase());
     });
   }
@@ -253,13 +264,13 @@ class Search extends Component {
     if (updateState !== false) {
       if (!valid) {
         this.setState({
-          validationErrors: [...this.state.validationErrors, fieldName]
+          validationErrors: [...this.state.validationErrors, fieldName],
         });
       } else {
         this.setState({
           validationErrors: this.state.validationErrors.filter(
-            v => v !== fieldName
-          )
+            (v) => v !== fieldName
+          ),
         });
       }
     }
@@ -271,19 +282,45 @@ class Search extends Component {
    */
   getEditableFields() {
     var filter, mapper;
-    mapper = item => {
+    mapper = (item) => {
       return {
         index: item.index,
         name: item.name,
+        alias: item.alias || item.name,
+        description: item.description || "",
         dataType: item.localType,
         textType: item.textType || null,
         values: item.listValues || null,
         hidden: item.hidden,
-        defaultValue: item.defaultValue
+        defaultValue: item.defaultValue,
       };
     };
 
-    filter = item => item.checked === true;
+    filter = (item) => item.checked === true;
+
+    return this.state.layerProperties.filter(filter).map(mapper);
+  }
+
+  /**
+   *
+   */
+  getNonEditableFields() {
+    var filter, mapper;
+    mapper = (item) => {
+      return {
+        index: item.index,
+        name: item.name,
+        alias: item.alias || item.name,
+        description: item.description || "",
+        dataType: item.localType,
+        textType: item.textType || null,
+        values: item.listValues || null,
+        hidden: item.hidden,
+        defaultValue: item.defaultValue,
+      };
+    };
+
+    filter = (item) => !item.checked || item.checked === false; // checked is missing if the checkbox has not been touched
 
     return this.state.layerProperties.filter(filter).map(mapper);
   }
@@ -293,11 +330,11 @@ class Search extends Component {
    */
   getValue(fieldName) {
     function create_date() {
-      return new Date().getTime();
+      return new Date().getTime().toString();
     }
 
     function format_layers(layers) {
-      return layers.map(layer => layer);
+      return layers.map((layer) => layer);
     }
 
     var input = this.refs["input_" + fieldName],
@@ -309,6 +346,9 @@ class Search extends Component {
     if (fieldName === "point") value = input.checked;
     if (fieldName === "polygon") value = input.checked;
     if (fieldName === "linestring") value = input.checked;
+    if (fieldName === "multipoint") value = input.checked;
+    if (fieldName === "multipolygon") value = input.checked;
+    if (fieldName === "multilinestring") value = input.checked;
 
     return value;
   }
@@ -347,7 +387,7 @@ class Search extends Component {
    *
    */
   getValidationClass(inputName) {
-    return this.state.validationErrors.find(v => v === inputName)
+    return this.state.validationErrors.find((v) => v === inputName)
       ? "validation-error"
       : "";
   }
@@ -358,21 +398,41 @@ class Search extends Component {
     this.props.model.getLayerDescription(
       this.refs.input_url.value,
       layerName,
-      properties => {
-        if (layer && layer.editableFields) {
-          layer.editableFields.forEach(editableField => {
-            properties[editableField.index].listValues = editableField.values;
-            properties[editableField.index].textType = editableField.textType;
-            properties[editableField.index].checked = true;
-            properties[editableField.index].hidden = editableField.hidden;
-            properties[editableField.index].defaultValue =
-              editableField.defaultValue;
+      (properties) => {
+        if (layer) {
+          if (layer?.editableFields)
+            layer.editableFields.forEach((editableField) => {
+              properties[editableField.index].listValues = editableField.values;
+              properties[editableField.index].textType = editableField.textType;
+              properties[editableField.index].alias = editableField.alias;
+              properties[editableField.index].description =
+                editableField.description;
+              properties[editableField.index].checked = true;
+              properties[editableField.index].hidden = editableField.hidden;
+              properties[editableField.index].defaultValue =
+                editableField.defaultValue;
+            });
+        }
+
+        if (layer?.nonEditableFields) {
+          layer.nonEditableFields.forEach((nonEditableField) => {
+            properties[nonEditableField.index].listValues =
+              nonEditableField.values;
+            properties[nonEditableField.index].textType =
+              nonEditableField.textType;
+            properties[nonEditableField.index].alias = nonEditableField.alias;
+            properties[nonEditableField.index].description =
+              nonEditableField.description;
+            properties[nonEditableField.index].checked = false;
+            properties[nonEditableField.index].hidden = nonEditableField.hidden;
+            properties[nonEditableField.index].defaultValue =
+              nonEditableField.defaultValue;
           });
         }
 
         this.setState({
           layerProperties: properties,
-          layerPropertiesName: layerName
+          layerPropertiesName: layerName,
         });
       }
     );
@@ -383,7 +443,7 @@ class Search extends Component {
   closeDetails() {
     this.setState({
       layerProperties: undefined,
-      layerPropertiesName: undefined
+      layerPropertiesName: undefined,
     });
   }
   /**
@@ -398,23 +458,185 @@ class Search extends Component {
       props.listValues.push(e.target.value);
     }
   }
+
+  tooltipText(type) {
+    if (type === "string") {
+      return "Skriv in en text. För lista, skriv in ett värde och tryck på enterknappen för att lägga till som valbart element.";
+    } else if (type === "int") {
+      return "Skriv in ett heltal. Vid ja/nej så ange 1 för ja och 0 för nej";
+    } else if (type === "date") {
+      return "Skriv in ett datum på följande format: YYYY-MM-DD. Exempel 2021-08-09";
+    } else if (type === "date-time") {
+      return "Skriv in ett datum samt tid på följande format: YYYY-MM-DDThh:mm. Exempel 2021-08-09T01:23";
+    } else if (type === "number") {
+      return "Skriv in ett tal";
+    } else if (type === "boolean") {
+      return "Skriv antingen ja eller nej";
+    }
+    return "";
+  }
+
+  validateEditableFields() {
+    let errors = [];
+
+    // Check the entered values
+    this.getEditableFields().forEach((field) => {
+      if (field.dataType === "string") {
+        if (field.value && typeof field.value !== "string") {
+          errors.push(
+            field.name + " is not a string. Was " + typeof field.value
+          );
+        }
+      } else if (field.dataType === "date") {
+        if (field.value) {
+          const d = new Date(field.value);
+          try {
+            d.getDate();
+          } catch (error) {
+            errors.push(
+              field.name + " is not a valid date. Was " + field.value
+            );
+          }
+        }
+      } else if (field.dataType === "date-time") {
+        if (field.value) {
+          const d = new Date(field.value);
+          try {
+            d.getDate();
+          } catch (error) {
+            errors.push(
+              field.name + " is not a valid date time. Was " + field.value
+            );
+          }
+        }
+      } else if (field.dataType === "int") {
+        if (field.value && isNaN(parseInt(field.value))) {
+          errors.push(
+            field.name + " is not a integer. Value was " + field.value
+          );
+        } else if (field.localType === "Positiva heltal") {
+          if (field.value && parseInt(field.value) <= 0) {
+            errors.push(
+              field.name + " is not a positive number. Was " + field.value
+            );
+          }
+        }
+      } else if (field.dataType === "number") {
+        if (field.value && isNaN(parseFloat(field.value))) {
+          errors.push(
+            field.name + " is not a number. Value was " + field.value
+          );
+        }
+      } else if (field.dataType === "boolean") {
+        if (field.value && field.value !== "ja" && field.value !== "nej") {
+          errors.push(
+            field.name + " is not a ja or nej. Value was " + field.value
+          );
+        }
+      }
+    });
+
+    // Check the entered default values
+    this.getEditableFields().forEach((field) => {
+      if (field.dataType === "string") {
+        if (field.defaultValue && typeof field.defaultValue !== "string") {
+          errors.push(
+            field.name +
+              " default value is not a string. Was " +
+              typeof field.defaultValue
+          );
+        }
+      } else if (field.dataType === "date") {
+        if (field.defaultValue) {
+          const d = new Date(field.defaultValue);
+          try {
+            d.getDate();
+          } catch (error) {
+            errors.push(
+              field.name +
+                " default value is not a valid date. Was " +
+                field.defaultValue
+            );
+          }
+        }
+      } else if (field.dataType === "date-time") {
+        if (field.defaultValue) {
+          const d = new Date(field.defaultValue);
+          try {
+            d.getDate();
+          } catch (error) {
+            errors.push(
+              field.name +
+                " default value is not a valid date time. Was " +
+                field.defaultValue
+            );
+          }
+        }
+      } else if (field.dataType === "int") {
+        if (field.defaultValue && isNaN(parseInt(field.defaultValue))) {
+          errors.push(
+            field.name +
+              " default value is not a integer. Value was " +
+              field.defaultValue
+          );
+        } else if (field.localType === "Positiva heltal") {
+          if (field.defaultValue && parseInt(field.defaultValue) <= 0) {
+            errors.push(
+              field.name +
+                " default value is not a positive number. Was " +
+                field.defaultValue
+            );
+          }
+        }
+      } else if (field.dataType === "number") {
+        if (field.defaultValue && isNaN(parseFloat(field.defaultValue))) {
+          errors.push(
+            field.name +
+              " default value is not a number. Value was " +
+              field.defaultValue
+          );
+        }
+      } else if (field.dataType === "boolean") {
+        if (
+          field.defaultValue &&
+          field.defaultValue !== "ja" &&
+          field.defaultValue !== "nej"
+        ) {
+          errors.push(field.name + " default value is not ja or nej.");
+        }
+      }
+    });
+    return errors;
+  }
+
+  modifyBooleans(layer) {
+    layer.editableFields.forEach((field) => {
+      if (field.textType === "boolean") {
+        field.defaultValue = field.defaultValue === "ja";
+      }
+      console.log(field);
+    });
+  }
+
   /**
    *
    */
   submit(e) {
     var validationErrors = [];
     var validations = ["caption", "url", "layers"];
-    validations.forEach(fieldName => {
+    validations.forEach((fieldName) => {
       var valid = this.validateField(fieldName, false);
       if (!valid) {
         validationErrors.push(fieldName);
       }
     });
+    var editableErrors = this.validateEditableFields();
     this.setState({
-      validationErrors: validationErrors
+      validationErrors: validationErrors,
+      editableErrors: editableErrors,
     });
 
-    if (validationErrors.length === 0) {
+    if (validationErrors.length === 0 && editableErrors.length === 0) {
       let layer = {
         id: this.state.id,
         caption: this.getValue("caption"),
@@ -423,51 +645,66 @@ class Search extends Component {
         layers: this.getValue("layers"),
         projection: this.getValue("projection"),
         editableFields: this.getValue("editableFields"),
+        nonEditableFields: this.getNonEditableFields(),
         editPoint: this.getValue("point"),
+        editMultiPoint: this.getValue("multipoint"),
         editPolygon: this.getValue("polygon"),
-        editLine: this.getValue("linestring")
+        editMultiPolygon: this.getValue("multipolygon"),
+        editLine: this.getValue("linestring"),
+        editMultiLine: this.getValue("multilinestring"),
       };
+
+      this.modifyBooleans(layer);
 
       if (this.state.mode === "add") {
         layer.id = this.createGuid(this.props.model.get("layers"));
 
-        this.props.model.addLayer(layer, success => {
+        this.props.model.addLayer(layer, (success) => {
           if (success) {
             this.props.model.getConfig(this.props.config.url_layers);
             this.abort();
             this.setState({
               alert: true,
               alertMessage:
-                "Lagret har lagt till i listan av tillgängliga lager."
+                "Lagret har lagt till i listan av tillgängliga lager.",
             });
           } else {
             this.setState({
               alert: true,
-              alertMessage: "Lagret kunde inte läggas till. Försök igen senare."
+              alertMessage:
+                "Lagret kunde inte läggas till. Försök igen senare.",
             });
           }
         });
       }
 
       if (this.state.mode === "edit") {
-        this.props.model.updateLayer(layer, success => {
+        this.props.model.updateLayer(layer, (success) => {
           if (success) {
             this.props.model.getConfig(this.props.config.url_layers);
             this.setState({
               alert: true,
-              alertMessage: "Uppdateringen lyckades!"
+              alertMessage: "Uppdateringen lyckades!",
             });
             this.setState({
-              date: layer.date
+              date: layer.date,
             });
           } else {
             this.setState({
               alert: true,
-              alertMessage: "Uppdateringen misslyckades."
+              alertMessage: "Uppdateringen misslyckades.",
             });
           }
         });
       }
+    } else {
+      let errorString = "Felaktig indata, se nedan\n";
+      errorString += validationErrors.join("\n");
+      if (editableErrors.length !== 0 && validationErrors.length !== 0) {
+        errorString += "\n";
+      }
+      errorString += editableErrors.join("\n");
+      alert(errorString);
     }
     e.preventDefault();
   }
@@ -483,19 +720,19 @@ class Search extends Component {
     var alphabetically = [];
 
     if (this.state.filter) {
-      layers.forEach(layer => {
+      layers.forEach((layer) => {
         layer.caption.toLowerCase().indexOf(this.state.filter) === 0
           ? startsWith.push(layer)
           : alphabetically.push(layer);
       });
 
-      startsWith.sort(function(a, b) {
+      startsWith.sort(function (a, b) {
         if (a.caption.toLowerCase() < b.caption.toLowerCase()) return -1;
         if (a.caption.toLowerCase() > b.caption.toLowerCase()) return 1;
         return 0;
       });
 
-      alphabetically.sort(function(a, b) {
+      alphabetically.sort(function (a, b) {
         if (a.caption.toLowerCase() < b.caption.toLowerCase()) return -1;
         if (a.caption.toLowerCase() > b.caption.toLowerCase()) return 1;
         return 0;
@@ -504,11 +741,11 @@ class Search extends Component {
       layers = startsWith.concat(alphabetically);
     }
     return layers.map((layer, i) => (
-      <li onClick={e => this.loadLayer(e, layer)} key={Math.random()}>
+      <li onClick={(e) => this.loadLayer(e, layer)} key={Math.random()}>
         <span>{layer.caption}</span>
         <i
           title="Radera lager"
-          onClick={e => this.removeLayer(e, layer)}
+          onClick={(e) => this.removeLayer(e, layer)}
           className="fa fa-trash"
         />
       </li>
@@ -523,7 +760,7 @@ class Search extends Component {
     function uncheck(layer) {
       this.refs[layer].checked = false;
       this.setState({
-        addedLayers: []
+        addedLayers: [],
       });
     }
 
@@ -577,7 +814,7 @@ class Search extends Component {
     }
 
     var rows = this.state.layerProperties.map((property, i) => {
-      var stringDataTypes = type => {
+      var stringDataTypes = (type) => {
         if (type === "string") {
           if (!property.textType) {
             property.textType = "fritext";
@@ -585,7 +822,7 @@ class Search extends Component {
           return (
             <select
               defaultValue={property.textType}
-              onChange={e => {
+              onChange={(e) => {
                 property.textType = e.target.value;
               }}
             >
@@ -596,16 +833,78 @@ class Search extends Component {
               <option value="url">Url</option>
             </select>
           );
+        } else if (type === "date") {
+          return (
+            <select
+              defaultValue={property.textType}
+              onChange={(e) => {
+                property.textType = e.target.value;
+              }}
+            >
+              <option value="datum">Datum</option>
+            </select>
+          );
+        } else if (type === "date-time") {
+          return (
+            <>
+              <select
+                defaultValue={property.textType}
+                onChange={(e) => {
+                  property.textType = e.target.value;
+                }}
+              >
+                <option value="datumtid">Datum & Tid</option>
+                <option value="datum">Datum</option>
+              </select>
+            </>
+          );
+        } else if (type === "int") {
+          return (
+            <select
+              defaultValue={property.textType}
+              onChange={(e) => {
+                property.textType = e.target.value;
+              }}
+            >
+              <option value="heltal">Heltal</option>
+              <option value="positive">Positiva heltal</option>
+              <option value="negative">Negativa heltal</option>
+              <option value="boolean">Ja/nej</option>
+            </select>
+          );
+        } else if (type === "number") {
+          return (
+            <select
+              defaultValue={property.textType}
+              onChange={(e) => {
+                property.textType = e.target.value;
+              }}
+            >
+              <option value="tal">Reella tal</option>
+              <option value="heltal">Heltal</option>
+            </select>
+          );
+        } else if (type === "boolean") {
+          return (
+            <select
+              defaultValue={property.textType}
+              onChange={(e) => {
+                property.textType = e.target.value;
+              }}
+            >
+              <option value="boolean">Ja/nej</option>
+            </select>
+          );
         }
         return null;
       };
 
-      var listEditor = type => {
+      var listEditor = (type) => {
         if (type === "string") {
           return (
             <div>
               <input
-                onKeyDown={e => {
+                onKeyDown={(e) => {
                   if (e.keyCode === 13) {
                     e.preventDefault();
                     this.addListValue(i, e);
@@ -623,13 +922,61 @@ class Search extends Component {
       };
 
       var defaultValueEditor = (type, value) => {
+        if (type === "boolean") {
+          if (value === "true") {
+            value = "ja";
+          } else if (value === "false") {
+            value = "nej";
+          }
+          property.defaultValue = value;
+        }
+        return (
+          <>
+            <div className="grid  edit-fields-table-default">
+              <div className="row">
+                <div className="col-sm">
+                  <input
+                    defaultValue={value}
+                    type="text"
+                    onChange={(e) => {
+                      property.defaultValue = e.target.value;
+                    }}
+                  />
+                  {"  "}
+                  <i
+                    className="fa fa-question-circle"
+                    data-toggle="tooltip"
+                    title={this.tooltipText(property.localType)}
+                  />
+                </div>
+              </div>
+            </div>
+          </>
+        );
+      };
+
+      var aliasEditor = (type, value) => {
         return (
           <div>
             <input
               defaultValue={value}
               type="text"
-              onChange={e => {
-                property.defaultValue = e.target.value;
+              onChange={(e) => {
+                property.alias = e.target.value;
+              }}
+            />
+          </div>
+        );
+      };
+
+      var descriptionEditor = (type, value) => {
+        return (
+          <div>
+            <TextArea
+              defaultValue={value}
+              rows={3}
+              onChange={(e) => {
+                property.description = e.target.value;
               }}
             />
           </div>
@@ -642,7 +989,8 @@ class Search extends Component {
 
       property.index = i;
 
-      if (property.localType === "Geometry") {
+      // Don't render the geometry column as editable field
+      if (property.type.includes("gml:")) {
         return null;
       }
 
@@ -652,7 +1000,7 @@ class Search extends Component {
             <input
               type="checkbox"
               defaultChecked={property.checked}
-              onChange={e => {
+              onChange={(e) => {
                 property.checked = e.target.checked;
               }}
             />
@@ -661,12 +1009,14 @@ class Search extends Component {
             <input
               type="checkbox"
               defaultChecked={property.hidden}
-              onChange={e => {
+              onChange={(e) => {
                 property.hidden = e.target.checked;
               }}
             />
           </td>
           <td>{property.name}</td>
+          <td>{aliasEditor(property.localType, property.alias)}</td>
+          <td>{descriptionEditor(property.localType, property.description)}</td>
           <td>{stringDataTypes(property.localType)}</td>
           <td>{property.localType}</td>
           <td>{listEditor(property.localType)}</td>
@@ -684,6 +1034,8 @@ class Search extends Component {
             <th>Redigerbar</th>
             <th>Dold</th>
             <th>Namn</th>
+            <th>Alias</th>
+            <th>Beskrivning</th>
             <th>Typ</th>
             <th>Datatyp</th>
             <th>Listvärden</th>
@@ -708,7 +1060,7 @@ class Search extends Component {
               type="radio"
               name="featureType"
               data-type="wfs-layer"
-              onChange={e => {
+              onChange={(e) => {
                 this.appendLayer(e, layer.name);
                 this.describeLayer(e, layer.name);
               }}
@@ -738,9 +1090,9 @@ class Search extends Component {
         ref="input_projection"
         value={this.state.projection}
         className="control-fixed-width"
-        onChange={e => {
+        onChange={(e) => {
           this.setState({
-            projection: e.target.value
+            projection: e.target.value,
           });
         }}
       >
@@ -770,7 +1122,7 @@ class Search extends Component {
         this.setState({
           alert: false,
           confirm: false,
-          alertMessage: ""
+          alertMessage: "",
         });
       },
       denyAction: () => {
@@ -778,15 +1130,15 @@ class Search extends Component {
         this.setState({
           alert: false,
           confirm: false,
-          alertMessage: ""
+          alertMessage: "",
         });
       },
       onClick: () => {
         this.setState({
           alert: false,
-          alertMessage: ""
+          alertMessage: "",
         });
-      }
+      },
     };
   }
   /**
@@ -798,9 +1150,14 @@ class Search extends Component {
     ) : null;
     var abort =
       this.state.mode === "edit" ? (
-        <span className="btn btn-danger" onClick={e => this.abort(e)}>
+        <ColorButtonBlue
+          variant="contained"
+          className="btn btn-danger"
+          onClick={(e) => this.abort(e)}
+          startIcon={<CancelIcon />}
+        >
           Avbryt
-        </span>
+        </ColorButtonBlue>
       ) : null;
 
     return (
@@ -810,7 +1167,7 @@ class Search extends Component {
           <input
             placeholder="filtrera"
             type="text"
-            onChange={e => this.filterLayers(e)}
+            onChange={(e) => this.filterLayers(e)}
           />
           <ul className="config-layer-list">{this.renderLayersFromConfig()}</ul>
         </aside>
@@ -818,7 +1175,7 @@ class Search extends Component {
           <form
             method="post"
             action=""
-            onSubmit={e => {
+            onSubmit={(e) => {
               this.submit(e);
             }}
           >
@@ -831,11 +1188,11 @@ class Search extends Component {
                   type="text"
                   ref="input_url"
                   value={this.state.url}
-                  onChange={e => {
+                  onChange={(e) => {
                     var v = e.target.value;
                     this.setState(
                       {
-                        url: v
+                        url: v,
                       },
                       () => this.validateField("url")
                     );
@@ -843,7 +1200,7 @@ class Search extends Component {
                   className={this.getValidationClass("url")}
                 />
                 <span
-                  onClick={e => {
+                  onClick={(e) => {
                     this.loadWMSCapabilities(e);
                   }}
                   className="btn btn-default"
@@ -857,11 +1214,11 @@ class Search extends Component {
                   type="text"
                   ref="input_uri"
                   value={this.state.uri}
-                  onChange={e => {
+                  onChange={(e) => {
                     var v = e.target.value;
                     this.setState(
                       {
-                        uri: v
+                        uri: v,
                       },
                       () => this.validateField("uri")
                     );
@@ -892,11 +1249,11 @@ class Search extends Component {
                   type="text"
                   ref="input_caption"
                   value={this.state.caption}
-                  onChange={e => {
+                  onChange={(e) => {
                     var v = e.target.value;
                     this.setState(
                       {
-                        caption: v
+                        caption: v,
                       },
                       () => this.validateField("caption")
                     );
@@ -913,8 +1270,12 @@ class Search extends Component {
                 <div className="geometry-types">
                   <input
                     checked={this.state.point}
-                    onChange={e => {
-                      this.setState({ point: e.target.checked }, () =>
+                    onChange={(e) => {
+                      const newSt = { point: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["multipoint"] = false;
+                      }
+                      this.setState(newSt, () =>
                         this.validateField("point", true)
                       );
                     }}
@@ -926,9 +1287,31 @@ class Search extends Component {
                   <label htmlFor="point">&nbsp;Punkter</label>
                   <br />
                   <input
+                    checked={this.state.multipoint}
+                    onChange={(e) => {
+                      const newSt = { multipoint: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["point"] = false;
+                      }
+                      this.setState(newSt, () =>
+                        this.validateField("multipoint", true)
+                      );
+                    }}
+                    ref="input_multipoint"
+                    name="multipoint"
+                    id="multipoint"
+                    type="checkbox"
+                  />
+                  <label htmlFor="multipoint">&nbsp;Multipunkter</label>
+                  <br />
+                  <input
                     checked={this.state.linestring}
-                    onChange={e => {
-                      this.setState({ linestring: e.target.checked }, () =>
+                    onChange={(e) => {
+                      const newSt = { linestring: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["multilinestring"] = false;
+                      }
+                      this.setState(newSt, () =>
                         this.validateField("linestring", true)
                       );
                     }}
@@ -940,9 +1323,31 @@ class Search extends Component {
                   <label htmlFor="linestring">&nbsp;Linjer</label>
                   <br />
                   <input
+                    checked={this.state.multilinestring}
+                    onChange={(e) => {
+                      const newSt = { multilinestring: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["linestring"] = false;
+                      }
+                      this.setState(newSt, () =>
+                        this.validateField("multilinestring", true)
+                      );
+                    }}
+                    ref="input_multilinestring"
+                    name="multilinestring"
+                    id="multilinestring"
+                    type="checkbox"
+                  />
+                  <label htmlFor="multilinestring">&nbsp;Multilinjer</label>
+                  <br />
+                  <input
                     checked={this.state.polygon}
-                    onChange={e => {
-                      this.setState({ polygon: e.target.checked }, () =>
+                    onChange={(e) => {
+                      const newSt = { polygon: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["multipolygon"] = false;
+                      }
+                      this.setState(newSt, () =>
                         this.validateField("polygon", true)
                       );
                     }}
@@ -952,6 +1357,24 @@ class Search extends Component {
                     type="checkbox"
                   />
                   <label htmlFor="polygon">&nbsp;Ytor</label>
+                  <br />
+                  <input
+                    checked={this.state.multipolygon}
+                    onChange={(e) => {
+                      const newSt = { multipolygon: e.target.checked };
+                      if (e.target.checked) {
+                        newSt["polygon"] = false;
+                      }
+                      this.setState(newSt, () =>
+                        this.validateField("multipolygon", true)
+                      );
+                    }}
+                    ref="input_multipolygon"
+                    name="multipolygon"
+                    id="multipolygon"
+                    type="checkbox"
+                  />
+                  <label htmlFor="multipolygon">&nbsp;Multiytor</label>
                 </div>
               </div>
               <div>
@@ -959,9 +1382,25 @@ class Search extends Component {
                 {this.renderLayerProperties()}
               </div>
             </fieldset>
-            <button className="btn btn-primary">
-              {this.state.mode === "edit" ? "Spara" : "Lägg till"}
-            </button>
+            {this.state.mode === "edit" ? (
+              <ColorButtonBlue
+                variant="contained"
+                className="btn"
+                type="submit"
+                startIcon={<SaveIcon />}
+              >
+                Spara
+              </ColorButtonBlue>
+            ) : (
+              <ColorButtonGreen
+                variant="contained"
+                className="btn"
+                type="submit"
+                startIcon={<AddIcon />}
+              >
+                Lägg till
+              </ColorButtonGreen>
+            )}
             &nbsp;
             {abort}
           </form>
@@ -971,4 +1410,4 @@ class Search extends Component {
   }
 }
 
-export default Search;
+export default Edit;

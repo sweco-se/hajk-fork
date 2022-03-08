@@ -1,27 +1,41 @@
-// Copyright (C) 2016 Göteborgs Stad
-//
-// Denna programvara är fri mjukvara: den är tillåten att distribuera och modifiera
-// under villkoren för licensen CC-BY-NC-SA 4.0.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the CC-BY-NC-SA 4.0 licence.
-//
-// http://creativecommons.org/licenses/by-nc-sa/4.0/
-//
-// Det är fritt att dela och anpassa programvaran för valfritt syfte
-// med förbehåll att följande villkor följs:
-// * Copyright till upphovsmannen inte modifieras.
-// * Programvaran används i icke-kommersiellt syfte.
-// * Licenstypen inte modifieras.
-//
-// Den här programvaran är öppen i syfte att den skall vara till nytta för andra
-// men UTAN NÅGRA GARANTIER; även utan underförstådd garanti för
-// SÄLJBARHET eller LÄMPLIGHET FÖR ETT VISST SYFTE.
-//
-// https://github.com/hajkmap/Hajk
-
 import React from "react";
 import { Component } from "react";
+import Button from "@material-ui/core/Button";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
+import SaveIcon from "@material-ui/icons/SaveSharp";
+import { withStyles } from "@material-ui/core/styles";
+import { red, green, blue } from "@material-ui/core/colors";
+
+const ColorButtonRed = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(red[500]),
+    backgroundColor: red[500],
+    "&:hover": {
+      backgroundColor: red[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonGreen = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(green[700]),
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonBlue = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: blue[500],
+    "&:hover": {
+      backgroundColor: blue[700],
+    },
+  },
+}))(Button);
 
 var defaultState = {
   validationErrors: [],
@@ -31,7 +45,9 @@ var defaultState = {
   target: 0,
   instruction: "",
   visibleAtStart: false,
-  visibleForGroups: []
+  thousandSeparator: false,
+  showFieldsOnStart: false,
+  visibleForGroups: [],
 };
 
 class ToolOptions extends Component {
@@ -60,22 +76,22 @@ class ToolOptions extends Component {
         instruction: tool.options.instruction,
         transformations: tool.options.transformations || [],
         visibleAtStart: tool.options.visibleAtStart,
+        thousandSeparator: tool.options.thousandSeparator,
+        showFieldsOnStart: tool.options.showFieldsOnStart,
         visibleForGroups: tool.options.visibleForGroups
           ? tool.options.visibleForGroups
-          : []
+          : [],
       });
     } else {
       this.setState({
-        active: false
+        active: false,
       });
     }
   }
 
-  componentWillUnmount() {}
   /**
    *
    */
-  componentWillMount() {}
 
   handleInputChange(event) {
     var target = event.target;
@@ -89,14 +105,14 @@ class ToolOptions extends Component {
       value = btoa(value);
     }
     this.setState({
-      [name]: value
+      [name]: value,
     });
   }
 
   getTool() {
     return this.props.model
       .get("toolConfig")
-      .find(tool => tool.type === this.type);
+      .find((tool) => tool.type === this.type);
   }
 
   add(tool) {
@@ -107,12 +123,12 @@ class ToolOptions extends Component {
     this.props.model.set({
       toolConfig: this.props.model
         .get("toolConfig")
-        .filter(tool => tool.type !== this.type)
+        .filter((tool) => tool.type !== this.type),
     });
   }
 
   replace(tool) {
-    this.props.model.get("toolConfig").forEach(t => {
+    this.props.model.get("toolConfig").forEach((t) => {
       if (t.type === this.type) {
         t.options = tool.options;
         t.index = tool.index;
@@ -133,11 +149,13 @@ class ToolOptions extends Component {
         instruction: this.state.instruction,
         transformations: this.state.transformations,
         visibleAtStart: this.state.visibleAtStart,
+        thousandSeparator: this.state.thousandSeparator,
+        showFieldsOnStart: this.state.showFieldsOnStart,
         visibleForGroups: this.state.visibleForGroups.map(
           Function.prototype.call,
           String.prototype.trim
-        )
-      }
+        ),
+      },
     };
 
     var existing = this.getTool();
@@ -148,7 +166,7 @@ class ToolOptions extends Component {
         () => {
           this.props.parent.props.parent.setState({
             alert: true,
-            alertMessage: "Uppdateringen lyckades"
+            alertMessage: "Uppdateringen lyckades",
           });
         }
       );
@@ -165,9 +183,9 @@ class ToolOptions extends Component {
             this.remove();
             update.call(this);
             this.setState({
-              transformations: []
+              transformations: [],
             });
-          }
+          },
         });
       } else {
         this.remove();
@@ -187,22 +205,25 @@ class ToolOptions extends Component {
     var elements = this.refs.transformationForm.elements,
       transformation = {
         code: elements["code"].value,
+        precision: elements["precision"].value,
         default: elements["default"].checked,
         hint: elements["hint"].value,
         title: elements["title"].value,
         xtitle: elements["xtitle"].value,
         ytitle: elements["ytitle"].value,
-        inverseAxis: elements["inverseAxis"].checked
+        inverseAxis: elements["inverseAxis"].checked,
       };
     this.state.transformations.push(transformation);
     this.setState({
-      transformations: this.state.transformations
+      transformations: this.state.transformations,
     });
   }
 
   removeTransformation(code) {
     this.setState({
-      transformations: this.state.transformations.filter(f => f.code !== code)
+      transformations: this.state.transformations.filter(
+        (f) => f.code !== code
+      ),
     });
   }
 
@@ -210,12 +231,14 @@ class ToolOptions extends Component {
     return this.state.transformations.map((t, i) => (
       <div key={i} className="inset-form">
         <div>
-          <span
+          <ColorButtonRed
+            variant="contained"
+            className="btn"
             onClick={() => this.removeTransformation(t.code)}
-            className="btn btn-danger"
+            startIcon={<RemoveIcon />}
           >
             Ta bort
-          </span>
+          </ColorButtonRed>
         </div>
         <div>
           <span>SRS-kod</span>: <span>{t.code}</span>
@@ -230,10 +253,13 @@ class ToolOptions extends Component {
           <span>Titel</span>: <span>{t.title}</span>
         </div>
         <div>
-          <span>X-ettikett</span>: <span>{t.xtitle}</span>
+          <span>X-etikett</span>: <span>{t.xtitle}</span>
         </div>
         <div>
-          <span>Y-ettikett</span>: <span>{t.ytitle}</span>
+          <span>Y-etikett</span>: <span>{t.ytitle}</span>
+        </div>
+        <div>
+          <span>Precision</span>: <span>{t.precision}</span>
         </div>
         <div>
           <span>Inverterad</span>: <span>{t.inverseAxis ? "Ja" : "Nej"}</span>
@@ -254,7 +280,7 @@ class ToolOptions extends Component {
     }
 
     this.setState({
-      visibleForGroups: value !== "" ? groups : []
+      visibleForGroups: value !== "" ? groups : [],
     });
   }
 
@@ -268,7 +294,7 @@ class ToolOptions extends Component {
             value={this.state.visibleForGroups}
             type="text"
             name="visibleForGroups"
-            onChange={e => {
+            onChange={(e) => {
               this.handleAuthGrpsChange(e);
             }}
           />
@@ -286,22 +312,24 @@ class ToolOptions extends Component {
       <div>
         <form>
           <p>
-            <button
-              className="btn btn-primary"
-              onClick={e => {
+            <ColorButtonBlue
+              variant="contained"
+              className="btn"
+              onClick={(e) => {
                 e.preventDefault();
                 this.save();
               }}
+              startIcon={<SaveIcon />}
             >
               Spara
-            </button>
+            </ColorButtonBlue>
           </p>
           <div>
             <input
               id="active"
               name="active"
               type="checkbox"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               checked={this.state.active}
@@ -318,7 +346,7 @@ class ToolOptions extends Component {
               type="number"
               min="0"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.index}
@@ -330,7 +358,7 @@ class ToolOptions extends Component {
               id="target"
               name="target"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.target}
@@ -338,6 +366,7 @@ class ToolOptions extends Component {
               <option value="toolbar">Drawer</option>
               <option value="left">Widget left</option>
               <option value="right">Widget right</option>
+              <option value="control">Control button</option>
             </select>
           </div>
           <div>
@@ -353,7 +382,7 @@ class ToolOptions extends Component {
               id="position"
               name="position"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.position}
@@ -377,7 +406,7 @@ class ToolOptions extends Component {
               type="number"
               min="0"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.width}
@@ -389,16 +418,15 @@ class ToolOptions extends Component {
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Höjd i pixlar på verktygets fönster. Anges som ett numeriskt värde. Lämna tomt för att använda maximal höjd."
+                title="Höjd i pixlar på verktygets fönster. Anges antingen numeriskt (pixlar), 'dynamic' för att automatiskt anpassa höjden efter innehållet eller 'auto' att använda maximal höjd."
               />
             </label>
             <input
               id="height"
               name="height"
-              type="number"
-              min="0"
+              type="text"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.height}
@@ -410,13 +438,43 @@ class ToolOptions extends Component {
               id="visibleAtStart"
               name="visibleAtStart"
               type="checkbox"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               checked={this.state.visibleAtStart}
             />
             &nbsp;
             <label htmlFor="visibleAtStart">Synlig vid start</label>
+          </div>
+          <div>
+            <input
+              id="thousandSeparator"
+              name="thousandSeparator"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.thousandSeparator}
+            />
+            &nbsp;
+            <label htmlFor="thousandSeparator">
+              Formattera nummer (1000 -> 1 000)
+            </label>
+          </div>
+          <div>
+            <input
+              id="showFieldsOnStart"
+              name="showFieldsOnStart"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.showFieldsOnStart}
+            />
+            &nbsp;
+            <label htmlFor="showFieldsOnStart">
+              Visa projektionsfälten från start
+            </label>
           </div>
           <div>
             <label htmlFor="instruction">
@@ -431,7 +489,7 @@ class ToolOptions extends Component {
               type="text"
               id="instruction"
               name="instruction"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.instruction ? atob(this.state.instruction) : ""}
@@ -445,7 +503,7 @@ class ToolOptions extends Component {
           <div>
             <form
               ref="transformationForm"
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault();
                 this.addTransformation(e);
               }}
@@ -476,11 +534,28 @@ class ToolOptions extends Component {
                 <input name="ytitle" type="text" />
               </div>
               <div>
+                <label>Precision (antal decimaler)</label>
+                <input
+                  name="precision"
+                  type="number"
+                  min="0"
+                  max="7"
+                  step="1"
+                />
+              </div>
+              <div>
                 <input name="inverseAxis" type="checkbox" />
                 &nbsp;
                 <label>Inverterad</label>
               </div>
-              <button className="btn btn-success">Lägg till</button>
+              <ColorButtonGreen
+                variant="contained"
+                className="btn"
+                type="submit"
+                startIcon={<AddIcon />}
+              >
+                Lägg till
+              </ColorButtonGreen>
             </form>
           </div>
         </form>

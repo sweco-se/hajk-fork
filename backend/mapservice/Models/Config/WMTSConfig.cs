@@ -22,6 +22,8 @@ namespace MapService.Models.Config
 
         public string legend { get; set; }
 
+        public string legendIcon { get; set; }
+
         public string projection { get; set; }
 
         public bool visibleAtStart { get; set; }
@@ -52,6 +54,23 @@ namespace MapService.Models.Config
 
         public string infoOwner { get; set; }
 
+        public bool timeSliderVisible { get; set; }
+
+        public string timeSliderStart { get; set; }
+
+        public string timeSliderEnd { get; set; }
+        
+        public string infoClickSortType { get; set; }
+
+        public bool infoClickSortDesc { get; set; }
+
+        public string infoClickSortProperty { get; set; }        
+
         public int? zIndex { get; set; }
+
+        public int minZoom { get; set; }
+
+        public int maxZoom { get; set; }
+
     }
 }

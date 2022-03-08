@@ -4,17 +4,17 @@ import { Button } from "@material-ui/core";
 import { useSnackbar } from "notistack";
 import { makeStyles } from "@material-ui/styles";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   textButton: {
     color: theme.palette.primary.contrastText,
-    marginRight: theme.spacing(1)
-  }
+    marginRight: theme.spacing(1),
+  },
 }));
 
 CookieNotice.propTypes = {
   defaultCookieNoticeMessage: string,
   defaultCookieNoticeUrl: string,
-  globalObserver: object.isRequired
+  globalObserver: object.isRequired,
 };
 
 /**
@@ -26,12 +26,12 @@ CookieNotice.propTypes = {
 function CookieNotice({
   defaultCookieNoticeMessage = "Vi använder cookies för att följa upp användandet och ge en bra upplevelse av kartan. Du kan blockera cookies i webbläsaren men då visas detta meddelande igen.",
   defaultCookieNoticeUrl = "https://pts.se/sv/bransch/regler/lagar/lag-om-elektronisk-kommunikation/kakor-cookies/",
-  globalObserver
+  globalObserver,
 }) {
   const classes = useStyles();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
-  const action = key => (
+  const action = (key) => (
     <>
       <Button
         onClick={() => {
@@ -58,14 +58,14 @@ function CookieNotice({
 
   // Display only if "cookie" hasn't been set yet
   parseInt(window.localStorage.getItem("cookieNoticeShown")) !== 1 &&
-    globalObserver.subscribe("appLoaded", () => {
+    globalObserver.subscribe("core.appLoaded", () => {
       enqueueSnackbar(defaultCookieNoticeMessage, {
         persist: true,
         anchorOrigin: {
           vertical: "bottom",
-          horizontal: "center"
+          horizontal: "center",
         },
-        action: action
+        action: action,
       });
     });
   return null;

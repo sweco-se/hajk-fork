@@ -1,28 +1,10 @@
-// Copyright (C) 2016 Göteborgs Stad
-//
-// Denna programvara är fri mjukvara: den är tillåten att distribuera och modifiera
-// under villkoren för licensen CC-BY-NC-SA 4.0.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the CC-BY-NC-SA 4.0 licence.
-//
-// http://creativecommons.org/licenses/by-nc-sa/4.0/
-//
-// Det är fritt att dela och anpassa programvaran för valfritt syfte
-// med förbehåll att följande villkor följs:
-// * Copyright till upphovsmannen inte modifieras.
-// * Programvaran används i icke-kommersiellt syfte.
-// * Licenstypen inte modifieras.
-//
-// Den här programvaran är öppen i syfte att den skall vara till nytta för andra
-// men UTAN NÅGRA GARANTIER; även utan underförstådd garanti för
-// SÄLJBARHET eller LÄMPLIGHET FÖR ETT VISST SYFTE.
-//
-// https://github.com/hajkmap/Hajk
-
 import React from "react";
 import { Component } from "react";
 import FieldEditor from "../components/FieldEditor.jsx";
+import Button from "@material-ui/core/Button";
+import { withStyles } from "@material-ui/core/styles";
+import { blue } from "@material-ui/core/colors";
+import SaveIcon from "@material-ui/icons/Save";
 
 class LayerDescription extends Component {
   render() {
@@ -56,13 +38,24 @@ var defaultState = {
   featureNS: "",
   serviceId: "-1",
   showThankYou: true,
+  wkt: false,
   visibleAtStart: false,
   thankYou: "",
   form: [],
   visibleForGroups: [],
   editServices: [],
-  layerDescription: undefined
+  layerDescription: undefined,
 };
+
+const ColorButtonBlue = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: blue[500],
+    "&:hover": {
+      backgroundColor: blue[700],
+    },
+  },
+}))(Button);
 
 class ToolOptions extends Component {
   /**
@@ -90,30 +83,32 @@ class ToolOptions extends Component {
         featureNS: tool.options.featureNS,
         showThankYou: tool.options.showThankYou,
         thankYou: tool.options.thankYou,
+        collectAgain: tool.options.collectAgain,
+        wkt: tool.options.wkt,
         form: tool.options.form || [],
         visibleAtStart: tool.options.visibleAtStart || false,
         visibleForGroups: tool.options.visibleForGroups || [],
         serviceId: tool.options.serviceId,
-        editServices: []
+        editServices: [],
       };
     } else {
       this.state = {
         ...defaultState,
-        active: false
+        active: false,
       };
     }
   }
 
   componentDidMount() {
     const { model } = this.props;
-    model.getEditServices(services => {
+    model.getEditServices((services) => {
       this.setState(
         {
-          editServices: services
+          editServices: services,
         },
         () => {
           const selectedService = services.find(
-            s => s.id === this.state.serviceId
+            (s) => s.id === this.state.serviceId
           );
           if (selectedService) {
             this.describeLayer(selectedService);
@@ -123,11 +118,9 @@ class ToolOptions extends Component {
     });
   }
 
-  componentWillUnmount() {}
   /**
    *
    */
-  componentWillMount() {}
 
   handleInputChange(event) {
     const target = event.target;
@@ -137,14 +130,14 @@ class ToolOptions extends Component {
       value = !isNaN(Number(value)) ? Number(value) : value;
     }
     this.setState({
-      [name]: value
+      [name]: value,
     });
   }
 
   getTool() {
     return this.props.model
       .get("toolConfig")
-      .find(tool => tool.type === this.type);
+      .find((tool) => tool.type === this.type);
   }
 
   add(tool) {
@@ -155,12 +148,12 @@ class ToolOptions extends Component {
     this.props.model.set({
       toolConfig: this.props.model
         .get("toolConfig")
-        .filter(tool => tool.type !== this.type)
+        .filter((tool) => tool.type !== this.type),
     });
   }
 
   replace(tool) {
-    this.props.model.get("toolConfig").forEach(t => {
+    this.props.model.get("toolConfig").forEach((t) => {
       if (t.type === this.type) {
         t.options = tool.options;
         t.index = tool.index;
@@ -183,6 +176,8 @@ class ToolOptions extends Component {
         abstract: this.state.abstract,
         featureNS: this.state.featureNS,
         showThankYou: this.state.showThankYou,
+        collectAgain: this.state.collectAgain,
+        wkt: this.state.wkt,
         visibleAtStart: this.state.visibleAtStart,
         thankYou: this.state.thankYou,
         visibleForGroups: this.state.visibleForGroups.map(
@@ -190,8 +185,8 @@ class ToolOptions extends Component {
           String.prototype.trim
         ),
         form: this.state.form,
-        serviceId: this.state.serviceId
-      }
+        serviceId: this.state.serviceId,
+      },
     };
 
     var existing = this.getTool();
@@ -202,7 +197,7 @@ class ToolOptions extends Component {
         () => {
           this.props.parent.props.parent.setState({
             alert: true,
-            alertMessage: "Uppdateringen lyckades"
+            alertMessage: "Uppdateringen lyckades",
           });
         }
       );
@@ -219,7 +214,7 @@ class ToolOptions extends Component {
             this.remove();
             update.call(this);
             this.setState(defaultState);
-          }
+          },
         });
       } else {
         this.remove();
@@ -247,13 +242,13 @@ class ToolOptions extends Component {
     }
 
     this.setState({
-      visibleForGroups: value !== "" ? groups : []
+      visibleForGroups: value !== "" ? groups : [],
     });
   }
 
   describeLayer(layer) {
     this.setState({
-      layerDescription: layer.editableFields
+      layerDescription: layer.editableFields,
     });
   }
 
@@ -267,7 +262,7 @@ class ToolOptions extends Component {
             value={this.state.visibleForGroups}
             type="text"
             name="visibleForGroups"
-            onChange={e => {
+            onChange={(e) => {
               this.handleAuthGrpsChange(e);
             }}
           />
@@ -286,22 +281,24 @@ class ToolOptions extends Component {
       <div>
         <form>
           <p>
-            <button
-              className="btn btn-primary"
-              onClick={e => {
+            <ColorButtonBlue
+              variant="contained"
+              className="btn"
+              onClick={(e) => {
                 e.preventDefault();
                 this.save();
               }}
+              startIcon={<SaveIcon />}
             >
               Spara
-            </button>
+            </ColorButtonBlue>
           </p>
           <div>
             <input
               id="active"
               name="active"
               type="checkbox"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               checked={this.state.active}
@@ -318,7 +315,7 @@ class ToolOptions extends Component {
               type="number"
               min="0"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.index}
@@ -330,7 +327,7 @@ class ToolOptions extends Component {
               id="target"
               name="target"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.target}
@@ -338,6 +335,7 @@ class ToolOptions extends Component {
               <option value="toolbar">Drawer</option>
               <option value="left">Widget left</option>
               <option value="right">Widget right</option>
+              <option value="control">Control button</option>
             </select>
           </div>
           <div>
@@ -353,7 +351,7 @@ class ToolOptions extends Component {
               id="position"
               name="position"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.position}
@@ -377,7 +375,7 @@ class ToolOptions extends Component {
               type="number"
               min="0"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.width}
@@ -389,16 +387,15 @@ class ToolOptions extends Component {
               <i
                 className="fa fa-question-circle"
                 data-toggle="tooltip"
-                title="Höjd i pixlar på verktygets fönster. Anges som ett numeriskt värde. Lämna tomt för att använda maximal höjd."
+                title="Höjd i pixlar på verktygets fönster. Anges antingen numeriskt (pixlar), 'dynamic' för att automatiskt anpassa höjden efter innehållet eller 'auto' att använda maximal höjd."
               />
             </label>
             <input
               id="height"
               name="height"
-              type="number"
-              min="0"
+              type="text"
               className="control-fixed-width"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.height}
@@ -412,7 +409,7 @@ class ToolOptions extends Component {
               id="url"
               name="url"
               type="text"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               value={this.state.url}
@@ -431,7 +428,7 @@ class ToolOptions extends Component {
               value={this.state.abstract}
               type="text"
               name="abstract"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
             />
@@ -442,7 +439,7 @@ class ToolOptions extends Component {
               value={this.state.headerText}
               type="text"
               name="headerText"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
             />
@@ -452,7 +449,7 @@ class ToolOptions extends Component {
               id="visibleAtStart"
               name="visibleAtStart"
               type="checkbox"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               checked={this.state.visibleAtStart}
@@ -465,7 +462,7 @@ class ToolOptions extends Component {
               id="showThankYou"
               name="showThankYou"
               type="checkbox"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
               checked={this.state.showThankYou}
@@ -478,10 +475,50 @@ class ToolOptions extends Component {
             <textarea
               value={this.state.thankYou}
               name="thankYou"
-              onChange={e => {
+              onChange={(e) => {
                 this.handleInputChange(e);
               }}
             />
+          </div>
+          <div>
+            <input
+              id="collectAgain"
+              name="collectAgain"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.collectAgain}
+            />
+            &nbsp;
+            <label htmlFor="collectAgain">
+              Visa "Tyck Till Igen"{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="'Stäng' och 'Tyck till igen' knappar visas på thank you sidan. 'Stäng' knapp stänger tyck till fönstret och 'tyck till igen' knapp börjar en ny tyck till."
+              />
+            </label>
+          </div>
+          <div>
+            <input
+              id="wkt"
+              name="wkt"
+              type="checkbox"
+              onChange={(e) => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.wkt}
+            />
+            &nbsp;
+            <label htmlFor="wkt">
+              Aktivera WKT{" "}
+              <i
+                className="fa fa-question-circle"
+                data-toggle="tooltip"
+                title="Aktiverar WKT-läget så att användarna kan fylla i flera olika geometrier för varje fråga samt på flera frågor."
+              />
+            </label>
           </div>
           <div>
             <label htmlFor="featureNS">Redigeringstjänst</label>
@@ -503,7 +540,7 @@ class ToolOptions extends Component {
                           {
                             featureType: serviceFeatureType,
                             featureNs: serviceFeatureNs,
-                            serviceId: service.id
+                            serviceId: service.id,
                           },
                           () => {
                             this.describeLayer(service);
@@ -523,23 +560,25 @@ class ToolOptions extends Component {
           <FieldEditor
             form={this.state.form}
             parent={this}
-            onUpdate={form => {
+            onUpdate={(form) => {
               console.log("Update");
               this.setState({
-                form: form
+                form: form,
               });
             }}
           />
           <p>
-            <button
-              className="btn btn-primary"
-              onClick={e => {
+            <ColorButtonBlue
+              variant="contained"
+              className="btn"
+              onClick={(e) => {
                 e.preventDefault();
                 this.save();
               }}
+              startIcon={<SaveIcon />}
             >
               Spara
-            </button>
+            </ColorButtonBlue>
           </p>
         </form>
       </div>

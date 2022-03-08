@@ -5,7 +5,7 @@ export default class Tree extends Component {
     super(props);
     this.state = {
       searchableLayers: [],
-      checked: false
+      checked: false,
     };
   }
 
@@ -29,20 +29,17 @@ export default class Tree extends Component {
   buildList() {
     return (
       <div>
-        <label>
-          Aktiva söktjänster (för allt utom "Sök inom radie", som konfigureras
-          separat):
-        </label>
+        <label>Aktiva WFS-söktjänster</label>
         <div className="layer-list">
           <ul>
-            {this.props.layers.map(layer => {
+            {this.props.layers.map((layer) => {
               return (
                 <li key={layer.id}>
                   <input
                     type="checkbox"
                     ref={"cb_" + layer.id}
                     className={"checkbox_" + layer.id}
-                    onChange={e => {
+                    onChange={(e) => {
                       this.props.handleAddSearchable(e, layer);
                       this.props.authActive && this.toggleHide(layer.id);
                     }}
@@ -54,7 +51,7 @@ export default class Tree extends Component {
                     type="text"
                     hidden={true}
                     placeholder="Tillträde"
-                    onChange={e => {
+                    onChange={(e) => {
                       this.props.handleAddSearchable(e, layer);
                     }}
                   />

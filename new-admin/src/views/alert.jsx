@@ -1,27 +1,31 @@
-// Copyright (C) 2016 Göteborgs Stad
-//
-// Denna programvara är fri mjukvara: den är tillåten att distribuera och modifiera
-// under villkoren för licensen CC-BY-NC-SA 4.0.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the CC-BY-NC-SA 4.0 licence.
-//
-// http://creativecommons.org/licenses/by-nc-sa/4.0/
-//
-// Det är fritt att dela och anpassa programvaran för valfritt syfte
-// med förbehåll att följande villkor följs:
-// * Copyright till upphovsmannen inte modifieras.
-// * Programvaran används i icke-kommersiellt syfte.
-// * Licenstypen inte modifieras.
-//
-// Den här programvaran är öppen i syfte att den skall vara till nytta för andra
-// men UTAN NÅGRA GARANTIER; även utan underförstådd garanti för
-// SÄLJBARHET eller LÄMPLIGHET FÖR ETT VISST SYFTE.
-//
-// https://github.com/hajkmap/Hajk
-
 import React from "react";
 import { Component } from "react";
+import Button from "@material-ui/core/Button";
+import SaveIcon from "@material-ui/icons/SaveSharp";
+import CancelIcon from "@material-ui/icons/Cancel";
+import DoneIcon from "@material-ui/icons/Done";
+import { withStyles } from "@material-ui/core/styles";
+import { green, blue } from "@material-ui/core/colors";
+
+const ColorButtonGreen = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(green[700]),
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonBlue = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: blue[500],
+    "&:hover": {
+      backgroundColor: blue[700],
+    },
+  },
+}))(Button);
 
 class LayerAlert extends Component {
   constructor(props) {
@@ -30,7 +34,7 @@ class LayerAlert extends Component {
       queryable: props.options.queryable || false,
       style:
         props.options.style ||
-        (props.options.styles.length > 0 ? props.options.styles[0].Name : "")
+        (props.options.styles.length > 0 ? props.options.styles[0].Name : ""),
     };
   }
 
@@ -58,7 +62,7 @@ class LayerAlert extends Component {
                       type="checkbox"
                       ref="input_queryable"
                       checked={this.state.queryable}
-                      onChange={e => this._onQueryableChange(e)}
+                      onChange={(e) => this._onQueryableChange(e)}
                     />
                   </div>
                 </div>
@@ -70,7 +74,7 @@ class LayerAlert extends Component {
                     <select
                       className="form-control"
                       defaultValue={this.state.style}
-                      onChange={e => this._onStyleChange(e)}
+                      onChange={(e) => this._onStyleChange(e)}
                     >
                       {styles}
                     </select>
@@ -79,21 +83,22 @@ class LayerAlert extends Component {
               </div>
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                onClick={e => this._onCancelClick(e)}
-                className="btn btn-default"
+              <ColorButtonBlue
+                variant="contained"
+                className="btn"
+                onClick={(e) => this._onCancelClick(e)}
+                startIcon={<CancelIcon />}
               >
                 Avbryt
-              </button>
-              &nbsp;
-              <button
-                type="button"
-                onClick={e => this._onSaveClick(e)}
-                className="btn btn-primary"
+              </ColorButtonBlue>
+              <ColorButtonBlue
+                variant="contained"
+                className="btn"
+                onClick={(e) => this._onSaveClick(e)}
+                startIcon={<SaveIcon />}
               >
                 Spara
-              </button>
+              </ColorButtonBlue>
             </div>
           </div>
         </div>
@@ -103,13 +108,13 @@ class LayerAlert extends Component {
 
   _onStyleChange(e) {
     this.setState({
-      style: e.target.value
+      style: e.target.value,
     });
   }
 
   _onQueryableChange(e) {
     this.setState({
-      queryable: e.target.checked
+      queryable: e.target.checked,
     });
   }
 
@@ -141,21 +146,22 @@ class Alert extends Component {
                 <p>{options.message}</p>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  onClick={options.denyAction}
-                  className="btn btn-default"
-                >
-                  Avbryt
-                </button>
-                &nbsp;
-                <button
-                  type="button"
+                <ColorButtonGreen
+                  variant="contained"
+                  className="btn"
                   onClick={options.confirmAction}
-                  className="btn btn-primary"
+                  startIcon={<DoneIcon />}
                 >
                   OK
-                </button>
+                </ColorButtonGreen>
+                <ColorButtonBlue
+                  variant="contained"
+                  className="btn"
+                  onClick={options.denyAction}
+                  startIcon={<CancelIcon />}
+                >
+                  Avbryt
+                </ColorButtonBlue>
               </div>
             </div>
           </div>
@@ -178,13 +184,20 @@ class Alert extends Component {
                 <h4 className="modal-title">
                   {options.caption || "Meddelande"}
                 </h4>
+                <ColorButtonGreen
+                  variant="contained"
+                  className="btn"
+                  onClick={options.onClick}
+                >
+                  OK
+                </ColorButtonGreen>
               </div>
               <div className="modal-body">
                 {options.contentType === "react" ? (
                   options.message
                 ) : (
                   <p>
-                    {options.message.split("\n").map(function(text, i) {
+                    {options.message.split("\n").map(function (text, i) {
                       return (
                         <span key={i}>
                           <span>{text}</span>
@@ -196,13 +209,13 @@ class Alert extends Component {
                 )}
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
+                <ColorButtonGreen
+                  variant="contained"
+                  className="btn"
                   onClick={options.onClick}
-                  className="btn btn-default"
                 >
                   OK
-                </button>
+                </ColorButtonGreen>
               </div>
             </div>
           </div>

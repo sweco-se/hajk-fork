@@ -1,12 +1,25 @@
 import React from "react";
 import { Component } from "react";
+import Button from "@material-ui/core/Button";
+import { withStyles } from "@material-ui/core/styles";
+import { red } from "@material-ui/core/colors";
+import RemoveIcon from "@material-ui/icons/Remove";
 
+const ColorButtonRed = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(red[500]),
+    backgroundColor: red[500],
+    "&:hover": {
+      backgroundColor: red[700],
+    },
+  },
+}))(Button);
 class Page extends Component {
   constructor(props) {
     super(props);
     this.state = {
       header: props.page.header || "",
-      text: props.page.text || ""
+      text: props.page.text || "",
     };
   }
 
@@ -19,10 +32,10 @@ class Page extends Component {
             type="text"
             placeholder="ange rubrik"
             value={this.state.header}
-            onChange={e => {
+            onChange={(e) => {
               this.setState(
                 {
-                  header: e.target.value
+                  header: e.target.value,
                 },
                 () => {
                   this.props.onUpdate();
@@ -31,24 +44,26 @@ class Page extends Component {
             }}
           />
           <div>
-            <span
-              className="btn btn-danger"
+            <ColorButtonRed
+              variant="contained"
+              className="btn"
               onClick={() => {
                 this.props.onRemove(this.props.page.id);
               }}
+              startIcon={<RemoveIcon />}
             >
               Ta bort sida
-            </span>
+            </ColorButtonRed>
           </div>
         </div>
         <div className="page-body">
           <textarea
             className="nodrag"
             value={this.state.text}
-            onChange={e => {
+            onChange={(e) => {
               this.setState(
                 {
-                  text: e.target.value
+                  text: e.target.value,
                 },
                 () => {
                   this.props.onUpdate();

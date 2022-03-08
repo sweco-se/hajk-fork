@@ -1,31 +1,54 @@
-// Copyright (C) 2016 Göteborgs Stad
-//
-// Denna programvara är fri mjukvara: den är tillåten att distribuera och modifiera
-// under villkoren för licensen CC-BY-NC-SA 4.0.
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the CC-BY-NC-SA 4.0 licence.
-//
-// http://creativecommons.org/licenses/by-nc-sa/4.0/
-//
-// Det är fritt att dela och anpassa programvaran för valfritt syfte
-// med förbehåll att följande villkor följs:
-// * Copyright till upphovsmannen inte modifieras.
-// * Programvaran används i icke-kommersiellt syfte.
-// * Licenstypen inte modifieras.
-//
-// Den här programvaran är öppen i syfte att den skall vara till nytta för andra
-// men UTAN NÅGRA GARANTIER; även utan underförstådd garanti för
-// SÄLJBARHET eller LÄMPLIGHET FÖR ETT VISST SYFTE.
-//
-// https://github.com/hajkmap/Hajk
-
 import React from "react";
 import { Component } from "react";
 import ReactModal from "react-modal";
 import RichEditor from "./components/RichEditor.jsx";
 import ChapterAdder from "./components/ChapterAdder.jsx";
 import Map from "./components/Map.jsx";
+import Button from "@material-ui/core/Button";
+import DoneIcon from "@material-ui/icons/Done";
+import RemoveIcon from "@material-ui/icons/Remove";
+import SaveIcon from "@material-ui/icons/SaveSharp";
+import CancelIcon from "@material-ui/icons/Cancel";
+import NoteAddIcon from "@material-ui/icons/NoteAdd";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
+import ArrowDownwardIcon from "@material-ui/icons/ArrowDownward";
+import { withStyles } from "@material-ui/core/styles";
+import { red, green, blue } from "@material-ui/core/colors";
+import MuiAlert from "@material-ui/lab/Alert";
+
+const ColorButtonRed = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(red[500]),
+    backgroundColor: red[500],
+    "&:hover": {
+      backgroundColor: red[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonGreen = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(green[700]),
+    backgroundColor: green[500],
+    "&:hover": {
+      backgroundColor: green[700],
+    },
+  },
+}))(Button);
+
+const ColorButtonBlue = withStyles((theme) => ({
+  root: {
+    color: theme.palette.getContrastText(blue[500]),
+    backgroundColor: blue[500],
+    "&:hover": {
+      backgroundColor: blue[700],
+    },
+  },
+}))(Button);
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 class Chapter {
   constructor(settings) {
@@ -46,33 +69,33 @@ class InformativeEditor extends Component {
       newChapterName: "",
       newDocumentName: "",
       newDocumentMap: "",
-      documents: []
+      documents: [],
     };
     this.editors = [];
   }
 
   load(document) {
-    this.props.model.loadDocuments(documents => {
+    this.props.model.loadDocuments((documents) => {
       if (documents.length > 0) {
-        this.props.model.load(document || documents[0], data => {
+        this.props.model.load(document || documents[0], (data) => {
           this.setState(
             {
               data: data,
               documents: documents,
-              selectedDocument: document || documents[0]
+              selectedDocument: document || documents[0],
             },
             () => {
-              this.props.model.loadMaps(maps => {
+              this.props.model.loadMaps((maps) => {
                 this.setState(
                   {
                     maps: maps,
                     map: data.map,
-                    newDocumentMap: maps[0]
+                    newDocumentMap: maps[0],
                   },
                   () => {
-                    this.props.model.loadMapSettings(data.map, settings => {
+                    this.props.model.loadMapSettings(data.map, (settings) => {
                       this.setState({
-                        mapSettings: settings
+                        mapSettings: settings,
                       });
                     });
                   }
@@ -82,10 +105,10 @@ class InformativeEditor extends Component {
           );
         });
       } else {
-        this.props.model.loadMaps(maps => {
+        this.props.model.loadMaps((maps) => {
           this.setState({
             maps: maps,
-            newDocumentMap: maps[0]
+            newDocumentMap: maps[0],
           });
         });
       }
@@ -101,7 +124,7 @@ class InformativeEditor extends Component {
     this.props.model.save(
       this.state.selectedDocument,
       this.state.data,
-      result => {
+      (result) => {
         if (result === "File saved") {
           result = "Filen sparades utan problem.";
         }
@@ -109,7 +132,7 @@ class InformativeEditor extends Component {
           showModal: true,
           modalContent: result,
           showAbortButton: false,
-          modalConfirmCallback: () => {}
+          modalConfirmCallback: () => {},
         });
       }
     );
@@ -126,10 +149,10 @@ class InformativeEditor extends Component {
       ),
       showAbortButton: true,
       modalConfirmCallback: () => {
-        this.props.model.delete(this.state.selectedDocument, result => {
+        this.props.model.delete(this.state.selectedDocument, (result) => {
           this.load();
         });
-      }
+      },
     });
   }
 
@@ -137,11 +160,11 @@ class InformativeEditor extends Component {
     this.state.data.chapters.push(
       new Chapter({
         header: title,
-        mapSettings: this.state.mapSettings
+        mapSettings: this.state.mapSettings,
       })
     );
     this.setState({
-      data: this.state.data
+      data: this.state.data,
     });
   }
 
@@ -154,7 +177,7 @@ class InformativeEditor extends Component {
       modalConfirmCallback: () => {
         parentChapters.splice(index, 1);
         this.forceUpdate();
-      }
+      },
     });
   }
 
@@ -163,17 +186,17 @@ class InformativeEditor extends Component {
       showModal: false,
       modalStyle: {},
       okButtonText: "OK",
-      modalConfirmCallback: () => {}
+      modalConfirmCallback: () => {},
     });
   }
 
   renderMapDialog(chapter) {
     var mapState = {},
       checkedLayers = [],
-      updateMapSettings = state => {
+      updateMapSettings = (state) => {
         mapState = state;
       },
-      updateLayersSettings = state => {
+      updateLayersSettings = (state) => {
         checkedLayers = state;
       };
 
@@ -186,8 +209,8 @@ class InformativeEditor extends Component {
           map={this.state.map}
           chapter={chapter}
           mapSettings={this.state.mapSettings}
-          onMapUpdate={state => updateMapSettings(state)}
-          onLayersUpdate={state => updateLayersSettings(state)}
+          onMapUpdate={(state) => updateMapSettings(state)}
+          onLayersUpdate={(state) => updateLayersSettings(state)}
         />
       ),
       modalConfirmCallback: () => {
@@ -195,7 +218,7 @@ class InformativeEditor extends Component {
         chapter.mapSettings = {
           center: mapState.center,
           zoom: mapState.zoom,
-          extent: mapState.extent
+          extent: mapState.extent,
         };
         chapter.layers = checkedLayers;
       },
@@ -207,14 +230,14 @@ class InformativeEditor extends Component {
           right: "30px",
           bottom: "30px",
           width: "auto",
-          margin: 0
-        }
-      }
+          margin: 0,
+        },
+      },
     });
   }
 
   renderToc(currentChapter, chapters, parentChapters, index) {
-    var renderChapters = subchapters => {
+    var renderChapters = (subchapters) => {
       var renderableChapters = subchapters ? subchapters : chapters;
       return renderableChapters.map((chapter, i) => {
         if (chapter !== currentChapter) {
@@ -288,9 +311,9 @@ class InformativeEditor extends Component {
           right: "30px",
           bottom: "30px",
           width: "auto",
-          margin: 0
-        }
-      }
+          margin: 0,
+        },
+      },
     });
   }
 
@@ -303,7 +326,7 @@ class InformativeEditor extends Component {
     }, 50);
     return (
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
           this.state.modalConfirmCallback();
           e.preventDefault();
         }}
@@ -312,9 +335,9 @@ class InformativeEditor extends Component {
         <input
           defaultValue={this.state.newChapterName}
           type="text"
-          onChange={e => {
+          onChange={(e) => {
             this.setState({
-              newChapterName: e.target.value
+              newChapterName: e.target.value,
             });
           }}
         />
@@ -325,7 +348,7 @@ class InformativeEditor extends Component {
   renderChangeNameDialog(chapter) {
     this.setState(
       {
-        newChapterName: chapter.header
+        newChapterName: chapter.header,
       },
       () => {
         this.setState({
@@ -335,7 +358,7 @@ class InformativeEditor extends Component {
           modalConfirmCallback: () => {
             chapter.header = this.state.newChapterName;
             this.hideModal();
-          }
+          },
         });
       }
     );
@@ -379,74 +402,83 @@ class InformativeEditor extends Component {
           {chapter.header}
         </h1>
         <ChapterAdder
-          onAddChapter={title => {
+          onAddChapter={(title) => {
             chapter.chapters.push(
               new Chapter({
                 header: title,
-                mapSettings: this.state.mapSettings
+                mapSettings: this.state.mapSettings,
               })
             );
             this.forceUpdate();
           }}
         />
         &nbsp;
-        <span
+        <Button
+          variant="contained"
           className="btn btn-default"
           onClick={() => {
             this.renderMapDialog(chapter);
           }}
         >
           Kartinställningar
-        </span>
+        </Button>
         &nbsp;
-        <span
+        <Button
+          variant="contained"
           className="btn btn-default"
           onClick={() => {
             this.renderTocDialog(chapter, parentChapters, index);
           }}
         >
           Flytta
-        </span>
+        </Button>
         &nbsp;
-        <span
+        <Button
+          variant="contained"
           className="btn btn-default"
           onClick={() => {
             this.moveChapter("up", parentChapters, index);
           }}
+          startIcon={<ArrowUpwardIcon />}
         >
-          ⇧
-        </span>
+          Upp
+        </Button>
         &nbsp;
-        <span
+        <Button
+          variant="contained"
           className="btn btn-default"
           onClick={() => {
             this.moveChapter("down", parentChapters, index);
           }}
+          startIcon={<ArrowDownwardIcon />}
         >
-          ⇩
-        </span>
+          Ner
+        </Button>
         &nbsp;
-        <span
+        <Button
+          variant="contained"
           className="btn btn-default"
           onClick={() => {
             this.renderChangeNameDialog(chapter);
           }}
         >
           Byt namn
-        </span>
+        </Button>
         &nbsp;
-        <span
-          className="btn btn-danger"
+        <ColorButtonRed
+          variant="contained"
+          className="btn btn-default"
           onClick={() => {
             this.removeChapter(parentChapters, index);
           }}
+          startIcon={<RemoveIcon />}
         >
           Ta bort
-        </span>
+        </ColorButtonRed>
         <RichEditor
           display={chapter.expanded}
           html={chapter.html}
-          onUpdate={html => {
+          onUpdate={(html) => {
             chapter.html = html;
           }}
         />
@@ -482,9 +514,14 @@ class InformativeEditor extends Component {
 
   renderModal() {
     var abortButton = this.state.showAbortButton ? (
-      <button className="btn btn-danger" onClick={e => this.hideModal()}>
+      <ColorButtonRed
+        variant="contained"
+        className="btn"
+        onClick={(e) => this.hideModal()}
+        startIcon={<CancelIcon />}
+      >
         Avbryt
-      </button>
+      </ColorButtonRed>
     ) : (
       ""
     );
@@ -503,22 +540,24 @@ class InformativeEditor extends Component {
             style={{
               height: "100%",
               paddingBottom: "45px",
-              marginBottom: "-35px"
+              marginBottom: "-35px",
             }}
           >
             {this.state.modalContent}
           </div>
-          <button
-            className="btn btn-success"
-            onClick={e => {
+          <ColorButtonGreen
+            variant="contained"
+            className="btn"
+            onClick={(e) => {
               if (this.state.modalConfirmCallback) {
                 this.state.modalConfirmCallback();
               }
               this.hideModal();
             }}
+            startIcon={<DoneIcon />}
           >
             {this.state.okButtonText || "OK"}
-          </button>
+          </ColorButtonGreen>
           &nbsp;
           {abortButton}
         </div>
@@ -556,7 +595,7 @@ class InformativeEditor extends Component {
     }, 50);
     return (
       <form
-        onSubmit={e => {
+        onSubmit={(e) => {
           this.state.modalConfirmCallback();
           e.preventDefault();
         }}
@@ -567,15 +606,15 @@ class InformativeEditor extends Component {
             type="text"
             id="new-document-name"
             value={this.state.newDocumentName}
-            onChange={e => {
+            onChange={(e) => {
               if (this.validateNewDocumentName(e.target.value)) {
                 this.setState(
                   {
-                    newDocumentName: e.target.value
+                    newDocumentName: e.target.value,
                   },
                   () => {
                     this.setState({
-                      modalContent: this.renderCreateForm()
+                      modalContent: this.renderCreateForm(),
                     });
                   }
                 );
@@ -586,9 +625,9 @@ class InformativeEditor extends Component {
         <div className="inset-form">
           <label>Välj karta:&nbsp;</label>
           <select
-            onChange={e => {
+            onChange={(e) => {
               this.setState({
-                newDocumentMap: e.target.value
+                newDocumentMap: e.target.value,
               });
             }}
           >
@@ -608,35 +647,49 @@ class InformativeEditor extends Component {
       modalConfirmCallback: () => {
         var data = {
           documentName: this.state.newDocumentName,
-          mapName: this.state.newDocumentMap
+          mapName: this.state.newDocumentMap,
         };
         if (data.documentName !== "") {
-          this.props.model.createDocument(data, response => {
+          this.props.model.createDocument(data, (response) => {
             this.load(data.documentName);
           });
           this.hideModal();
         }
-      }
+      },
     });
   }
 
   render() {
     return (
       <div>
+        <div
+          style={{
+            marginTop: "15px",
+            marginBottom: "15px",
+          }}
+        >
+          <Alert severity="error">
+            Denna version av dokumenthanteraren kommer inte stödjas framöver.
+            Vänligen använd den nya version under fliken "Dokumenthanteraren
+            2.0"
+          </Alert>
+        </div>
         {this.renderModal()}
-        <div>
-          <span
-            className="btn btn-default"
+        <div className="margined">
+          <ColorButtonGreen
+            variant="contained"
+            className="btn"
             onClick={() => this.renderCreateDialog()}
+            startIcon={<NoteAddIcon />}
           >
             Skapa nytt dokument
-          </span>
+          </ColorButtonGreen>
         </div>
         <div className="inset-form">
           <label>Välj dokument:&nbsp;</label>
           <select
             className="control-fixed-width"
-            onChange={e => {
+            onChange={(e) => {
               this.load(e.target.value);
             }}
             value={this.state.selectedDocument}
@@ -645,15 +698,25 @@ class InformativeEditor extends Component {
           </select>
         </div>
         <div className="padded">
-          <span className="btn btn-success" onClick={() => this.save()}>
+          <ColorButtonBlue
+            variant="contained"
+            className="btn"
+            onClick={() => this.save()}
+            startIcon={<SaveIcon />}
+          >
             Spara
-          </span>
+          </ColorButtonBlue>
           &nbsp;
-          <ChapterAdder onAddChapter={title => this.addChapter(title)} />
+          <ChapterAdder onAddChapter={(title) => this.addChapter(title)} />
           &nbsp;
-          <span className="btn btn-danger" onClick={() => this.delete()}>
+          <ColorButtonRed
+            variant="contained"
+            className="btn btn-danger"
+            onClick={() => this.delete()}
+            startIcon={<RemoveIcon />}
+          >
             Ta bort
-          </span>
+          </ColorButtonRed>
         </div>
         <div className="chapters">{this.renderData()}</div>
       </div>

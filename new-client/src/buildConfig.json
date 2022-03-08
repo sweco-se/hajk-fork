@@ -1,5 +1,6 @@
 {
   "activeTools": [
+<<<<<<< HEAD
     "anchor",
     "buffer",
     "collector",
@@ -35,5 +36,54 @@
     "streetview",
     "suggest",
     "parking"
+=======
+    "Anchor",
+    "Bookmarks",
+    "Buffer",
+    "Collector",
+    "Coordinates",
+    "DocumentHandler",
+    "Draw",
+    "Dummy",
+    "Edit",
+    "Export",
+    "FmeServer",
+    "GeosuiteExport",
+    "Informative",
+    "LayerSwitcher",
+    "Location",
+    "Measure",
+    "Print",
+    "Routing",
+    "Search",
+    "StreetView",
+    "Suggest",
+    "TimeSlider"
+  ],
+  "allTools": [
+    "Anchor",
+    "Bookmarks",
+    "Buffer",
+    "Collector",
+    "Coordinates",
+    "DocumentHandler",
+    "Draw",
+    "Dummy",
+    "Edit",
+    "Export",
+    "FmeServer",
+    "GeosuiteExport",
+    "Informative",
+    "LayerSwitcher",
+    "Location",
+    "Measure",
+    "Print",
+    "Routing",
+    "Search",
+    "StreetView",
+    "Suggest",
+    "TimeSlider",
+    "vtsearch"
+>>>>>>> develop
   ]
 }
