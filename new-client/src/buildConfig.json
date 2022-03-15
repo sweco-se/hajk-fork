@@ -21,7 +21,8 @@
     "Search",
     "StreetView",
     "Suggest",
-    "TimeSlider"
+    "TimeSlider",
+    "parking"
   ],
   "allTools": [
     "Anchor",
@@ -46,6 +47,7 @@
     "StreetView",
     "Suggest",
     "TimeSlider",
-    "vtsearch"
+    "vtsearch",
+    "parking"
   ]
 }
