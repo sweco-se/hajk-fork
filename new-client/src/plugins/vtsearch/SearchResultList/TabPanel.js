@@ -33,7 +33,7 @@ class TabPanel extends React.PureComponent {
     } = this.props;
 
     var renderSummary = searchResult.type === "journeys" ? true : false;
-
+    //debugger;
     return (
       <Grid
         style={{ display: activeTabId !== tabId ? "none" : "block" }}

@@ -26,13 +26,15 @@ class AttributeTable extends React.Component {
       index: null,
       olFeatureId: null,
     },
-    sortBy:
-      this.props.toolConfig.geoServer[
-        this.props.searchResult.type
-      ]?.defaultSortOrder.slice(-1)[0],
-    sortOrder:
-      this.props.toolConfig.geoServer[this.props.searchResult.type]
-        ?.defaultSortOrder,
+    sortBy: this.props.toolConfig.geoServer
+      ? this.props.toolConfig.geoServer[
+          this.props.searchResult.type
+        ]?.defaultSortOrder.slice(-1)[0]
+      : null,
+    sortOrder: this.props.toolConfig.geoServer
+      ? this.props.toolConfig.geoServer[this.props.searchResult.type]
+          ?.defaultSortOrder
+      : null,
     focusedRow: 0,
     rows: this.getRows(),
     exportCsvFile: false,
@@ -46,10 +48,10 @@ class AttributeTable extends React.Component {
         this.setState({
           sortOrder:
             MockdataSearchModel()[this.props.searchResult.type]
-              .defaultSortOrder,
+              ?.defaultSortOrder,
         });
       }
-      this.state.sortOrder.map((sortAttribute) => {
+      this.state.sortOrder?.map((sortAttribute) => {
         this.#sort({
           sortBy: sortAttribute,
           sortDirection: SortDirection.ASC,
@@ -131,9 +133,9 @@ class AttributeTable extends React.Component {
 
   #getDisplayName = (key, resultList) => {
     const { toolConfig } = this.props;
-    var attributesMappingArray =
-      //toolConfig.geoServer[searchResult.type]?.attributesToDisplay;
-      toolConfig.geoServer[resultList.type]?.attributesToDisplay;
+    var attributesMappingArray = toolConfig.geoServer
+      ? toolConfig.geoServer[resultList.type]?.attributesToDisplay
+      : null;
 
     var displayName = attributesMappingArray?.find((entry) => {
       return entry.key === key;
@@ -164,8 +166,9 @@ class AttributeTable extends React.Component {
     const { toolConfig, searchResult } = this.props;
 
     let propertyKeys = this.getFeaturePropertiesKeys(searchResult);
-    let attributeDisplayOrder =
-      toolConfig.geoServer[searchResult.type]?.attributesToDisplay;
+    let attributeDisplayOrder = toolConfig.geoServer
+      ? toolConfig.geoServer[searchResult.type]?.attributesToDisplay
+      : null;
     propertyKeys = this.#reorderPropertyKeys(
       attributeDisplayOrder,
       propertyKeys
@@ -367,6 +370,7 @@ class AttributeTable extends React.Component {
   // Lägg in en label från toolconfig i searchresult
   render() {
     const { height, searchResult, rowHeight } = this.props;
+    //debugger;
     const features = this.getFeaturesFromSearchResult(searchResult);
     return (
       <Paper style={{ height: height }}>
@@ -392,6 +396,7 @@ class AttributeTable extends React.Component {
       </Paper>
     );
   }
+  debugger;
 }
 
 export default withStyles(styles)(AttributeTable);

@@ -1,103 +1,26 @@
 ﻿{
-  "wmtslayers": [
-    {
-      "id": "4",
-      "caption": "Nedtonad",
-      "url": "https://api.lantmateriet.se/open/topowebb-ccby/v1/wmts/token/b84e03e0-c917-313e-9f7d-fb5303034148/",
-      "owner": null,
-      "date": "1529572108770",
-      "content": "Topowebbkartan i WMTS-format",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "visibleAtStart": false,
-      "layer": "topowebb_nedtonad",
-      "style": "default",
-      "matrixSet": "3006",
-      "origin": ["-1200000", "8500000"],
-      "resolutions": [
-        "4096",
-        "2048",
-        "1024",
-        "512",
-        "256",
-        "128",
-        "64",
-        "32",
-        "16",
-        "8"
-      ],
-      "matrixIds": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-      "attribution": "Lantmäteriet",
-      "infoVisible": true,
-      "infoTitle": "Hej",
-      "infoText": "Hej",
-      "infoUrl": "http://google.se",
-      "infoUrlText": "Google",
-      "infoOwner": "Erik",
-      "zIndex": null
-    }
-  ],
+  "wmtslayers": [],
   "wmslayers": [
     {
-      "id": "36",
-      "caption": "Västtrafik WMS",
-      "url": "http://vt.wms.kartena.se/mp/service",
+      "id": "116",
+      "caption": "Uppställningsplatser",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1576076273455",
+      "date": "1615900158877",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["vt"],
-      "layersInfo": [
-        {
-          "id": "vt",
-          "caption": "",
-          "legend": "",
-          "infobox": "",
-          "style": "",
-          "queryable": false
-        }
+      "layers": [
+        "georg_dev:showParkingPoint"
       ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": true,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.1.1",
-      "infoFormat": "",
-      "zIndex": null
-    },
-    {
-      "id": "37",
-      "caption": "Pendelparkeringar",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
-      "owner": "",
-      "date": "1602052261978",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["CarPark"],
       "layersInfo": [
         {
-          "id": "CarPark",
+          "id": "georg_dev:showParkingPoint",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Namn:</b> {Name}  \n<b>Antal platser:</b> {TotalCapac}  \n<b>Närliggande hållplatser:</b> {StopAreaName}",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name} <br><b>Nummer:</b> {Number} <br><b>Kommun:</b> {Municipality} <br><b>Giltighet:</b> {AppliesFromDate} - {AppliesUptoDate}",
           "style": "",
           "queryable": true
         }
@@ -105,7 +28,7 @@
       "searchFields": null,
       "displayFields": null,
       "visibleAtStart": false,
-      "tiled": true,
+      "tiled": false,
       "opacity": 1.0,
       "singleTile": false,
       "imageFormat": "image/png",
@@ -122,25 +45,29 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "38",
-      "caption": "Närtrafik - Vita ytor 2020",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "caption": "Närtrafikens vita ytor 2020",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1600695901280",
+      "date": "1615983765457",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Vita_ytor_Nartrafik_2020"],
+      "layers": [
+        "shape:Vita_ytor_Nartrafik_2020"
+      ],
       "layersInfo": [
         {
-          "id": "Vita_ytor_Nartrafik_2020",
+          "id": "shape:Vita_ytor_Nartrafik_2020",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "",
           "style": "",
           "queryable": false
@@ -173,18 +100,22 @@
     {
       "id": "39",
       "caption": "Kommuner",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1605088651628",
+      "date": "1615897548940",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["MunicipalityZone"],
+      "layers": [
+        "georg_dev:showMunicipalityZone"
+      ],
       "layersInfo": [
         {
-          "id": "MunicipalityZone",
+          "id": "georg_dev:showMunicipalityZone",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "<b>Kommunnamn:</b> {Name}  \n<b>Nr:</b> {Number}",
           "style": "",
           "queryable": true
@@ -217,18 +148,22 @@
     {
       "id": "40",
       "caption": "Flextrafik",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1599551818468",
+      "date": "1615983628591",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Flextrafik"],
+      "layers": [
+        "shape:Flextrafik"
+      ],
       "layersInfo": [
         {
-          "id": "Flextrafik",
+          "id": "shape:Flextrafik",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "",
           "style": "",
           "queryable": false
@@ -261,19 +196,23 @@
     {
       "id": "41",
       "caption": "Planetområden",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
       "date": "1605088719325",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Planetomraden"],
+      "layers": [
+        "shape:Planetomraden"
+      ],
       "layersInfo": [
         {
           "id": "Planetomraden",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Namn:</b>\n{NAMN}\n<p>\n<b>Beskrivning:</b>\n{BESKRIVNIN}\n<p>\n<a href=\"{OBJEKTLANK}\" target=\"_blank\">Länk till mer information</a>",
+          "legendIcon": "",
+          "infobox": "",
           "style": "",
           "queryable": true
         }
@@ -292,11 +231,11 @@
       "searchDisplayName": "",
       "searchOutputFormat": "",
       "searchGeometryField": "",
-      "infoVisible": true,
-      "infoTitle": "Information",
-      "infoText": "Text om Kulturmiljövård kan finnas här.",
-      "infoUrl": "https://ext-geodatakatalog.lansstyrelsen.se/GeodataKatalogen/GetMetaDataById?id=378391e2-f11e-495c-930d-2ddbcbfebb23",
-      "infoUrlText": "Länk till metadata",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
       "infoOwner": "",
       "version": "1.3.0",
       "infoFormat": "application/json",
@@ -304,20 +243,24 @@
     },
     {
       "id": "42",
-      "caption": "Linjer",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "caption": "Linjeriktningar",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602053315823",
+      "date": "1615896989107",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["extDirectionOfLine"],
+      "layers": [
+        "georg_dev:showDirectionOfLine"
+      ],
       "layersInfo": [
         {
-          "id": "extDirectionOfLine",
+          "id": "georg_dev:showDirectionOfLine",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Publikt linjenummer:</b> {PublicLineNumber}  \n<b>Tekniskt linjenummer:</b> {DirectionOfLineNumber}  \n<b>Beskrivning:</b> {Description}  \n<b>Riktning:</b> {Direction}  \n<b>Trafikslag:</b> {Direction}  \n<b>Trafikföretag:</b> {TransportCompany}   ",
+          "legendIcon": "",
+          "infobox": "<b>Publikt linjenummer:</b> {Designation}  \n<b>Tekniskt linjenummer:</b> {LineNumber}  \n<b>Beskrivning:</b> {Description}  \n<b>Riktning:</b> {Direction}  \n<b>Trafikslag:</b> {TransportModeType}  \n<b>Trafikföretag:</b> {TransportCompany} ",
           "style": "",
           "queryable": true
         }
@@ -338,7 +281,7 @@
       "searchGeometryField": "",
       "infoVisible": false,
       "infoTitle": "",
-      "infoText": "",
+      "infoText": "Visar en linjes alla möjliga körvägsvarianter i riktning 1 eller 2 som är giltiga. De kan trafikeras idag eller de kan vara planerade att trafikeras eller de kan ha trafikerats tidigare.",
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
@@ -349,19 +292,23 @@
     {
       "id": "43",
       "caption": "Linjer med KRS",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602056447327",
+      "date": "1615983691686",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Linjer_med_KRS"],
+      "layers": [
+        "shape:Linjer_med_KRS"
+      ],
       "layersInfo": [
         {
-          "id": "Linjer_med_KRS",
+          "id": "shape:Linjer_med_KRS",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Tekniskt linjenummer:</b> {Linje}  \n<b>Beskrivning:</b> {Beskrivnin}  \n<b>Riktning:</b> {Riktning}  \n<b>Trafikföretag:</b> {Trafikfore}  \n<b>Trafikslag:</b> {Trafikslag}",
+          "legendIcon": "",
+          "infobox": "<b>Tekniskt linjenummer:</b> {Linje}  \n<b>Beskrivning:</b> {Beskrivnin}  \n<b>Riktning:</b> {Riktning}  \n<b>Trafikföretag:</b> {Trafikfore}  \n<b>Trafikslag:</b> {Trafikslag}\n",
           "style": "",
           "queryable": true
         }
@@ -392,19 +339,23 @@
     },
     {
       "id": "44",
-      "caption": "Linjer etiketter",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "caption": "Linjer - Etiketter",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1605088527284",
+      "date": "1615964698652",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["extDirectionOfLineLabel"],
+      "layers": [
+        "georg_dev:showDirectionOfLineLabel"
+      ],
       "layersInfo": [
         {
-          "id": "extDirectionOfLineLabel",
+          "id": "georg_dev:showDirectionOfLineLabel",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "",
           "style": "",
           "queryable": false
@@ -424,31 +375,35 @@
       "searchDisplayName": "",
       "searchOutputFormat": "",
       "searchGeometryField": "",
-      "infoVisible": true,
-      "infoTitle": "Information",
-      "infoText": "Text om Kulturmiljövård kan finnas här.",
-      "infoUrl": "https://ext-geodatakatalog.lansstyrelsen.se/GeodataKatalogen/GetMetaDataById?id=5f5fa2f8-1d43-4f98-9e4f-d5be4fdf83a7",
-      "infoUrlText": "Länk till metadata",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "45",
-      "caption": "Points Of Interest",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "caption": "Platser",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602052850634",
+      "date": "1615900431545",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["gwsPointOfInterest"],
+      "layers": [
+        "georg_dev:showPointOfInterest"
+      ],
       "layersInfo": [
         {
-          "id": "gwsPointOfInterest",
+          "id": "georg_dev:showPointOfInterest",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "<b>Namn:</b> {Name}  \n<b>Ort:</b> {City}",
           "style": "",
           "queryable": true
@@ -468,124 +423,38 @@
       "searchDisplayName": "",
       "searchOutputFormat": "",
       "searchGeometryField": "",
-      "infoVisible": true,
+      "infoVisible": false,
       "infoTitle": "",
       "infoText": "",
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
-    }
-  ],
-  "wfslayers": [
+    },
     {
       "id": "46",
       "caption": "Adresser",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602052722183",
+      "date": "1615899338073",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["gwsAddress"],
+      "layers": [
+        "georg_dev:showAddress"
+      ],
       "layersInfo": [
         {
-          "id": "gwsAddress",
+          "id": "georg_dev:showAddress",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Gatunamn:</b> {StreetName}  \n<b>Hållplatsnamn:</b> {StreetNumberFrom}  \n<b>Ort:</b> {PlaceName}  \n<b>Kommun:</b> {Municipality}",
+          "legendIcon": "",
+          "infobox": "<b>Gatunamn:</b> {StreetName}  \n<b>Nummer:</b> {StreetNumber}  \n<b>Ort:</b> {PlaceName}  \n<b>Kommun:</b> {Municipality}",
           "style": "",
           "queryable": true
-        }
-      ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": false,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.3.0",
-      "infoFormat": "application/json",
-      "zIndex": null
-    },
-    {
-      "id": "47",
-      "caption": "Hållplatslägen",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
-      "owner": "",
-      "date": "1602051910551",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["gwsStopPoint"],
-      "layersInfo": [
-        {
-          "id": "gwsStopPoint",
-          "caption": "",
-          "legend": "",
-          "infobox": "<b>Hållplatsnamn:</b> {Name}  \n<b>Läge:</b> {Designation}  \n<b>Hållplatsnummer:</b> {StopAreaNumber}  \n<b>Linjetrafik:</b> {RegularTrafficYesNo}  \n<b>Flexlinje:</b> {FlexibleBusService}  \n<b>Närtrafik:</b> {FlexibleTaxiServiceYesNo}",
-          "style": "",
-          "queryable": true
-        }
-      ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": false,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.3.0",
-      "infoFormat": "application/json",
-      "zIndex": null
-    },
-    {
-      "id": "48",
-      "caption": "Hållplatslägen etiketter",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
-      "owner": "",
-      "date": "1600163367398",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["gwsStopPointLabel"],
-      "layersInfo": [
-        {
-          "id": "gwsStopPointLabel",
-          "caption": "",
-          "legend": "",
-          "infobox": "",
-          "style": "",
-          "queryable": false
         }
       ],
       "searchFields": null,
@@ -615,18 +484,22 @@
     {
       "id": "49",
       "caption": "Ortofoto färg 0,25 m",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
       "date": "1600349581849",
       "content": "",
       "legend": "",
+      "legendIcon": null,
       "projection": "EPSG:3006",
-      "layers": ["externaWMS:Ortofoto_0.25"],
+      "layers": [
+        "externaWMS:Ortofoto_0.25"
+      ],
       "layersInfo": [
         {
           "id": "externaWMS:Ortofoto_0.25",
           "caption": "",
           "legend": "",
+          "legendIcon": null,
           "infobox": "",
           "style": "",
           "queryable": false
@@ -659,18 +532,22 @@
     {
       "id": "50",
       "caption": "Ortofoto färg 0,16 m",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
       "date": "1600349606662",
       "content": "",
       "legend": "",
+      "legendIcon": null,
       "projection": "EPSG:3006",
-      "layers": ["externaWMS:Ortofoto_0.16"],
+      "layers": [
+        "externaWMS:Ortofoto_0.16"
+      ],
       "layersInfo": [
         {
           "id": "externaWMS:Ortofoto_0.16",
           "caption": "",
           "legend": "",
+          "legendIcon": null,
           "infobox": "",
           "style": "",
           "queryable": false
@@ -703,18 +580,22 @@
     {
       "id": "51",
       "caption": "LM Topowebb",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://kartsidan-gs.vasttrafik.se/geoserver/externaWMS/wms",
       "owner": "",
-      "date": "1600350556346",
+      "date": "1613987747069",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["externaWMS:LM_topo_skikt_grupp"],
+      "layers": [
+        "LM_topo_skikt_grupp"
+      ],
       "layersInfo": [
         {
-          "id": "externaWMS:LM_topo_skikt_grupp",
+          "id": "LM_topo_skikt_grupp",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "",
           "style": "",
           "queryable": false
@@ -740,114 +621,30 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
-      "infoFormat": "application/json",
-      "zIndex": null
-    },
-    {
-      "id": "52",
-      "caption": "Hållplatser",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
-      "owner": "",
-      "date": "1602051466817",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["gwsStopArea"],
-      "layersInfo": [
-        {
-          "id": "gwsStopArea",
-          "caption": "",
-          "legend": "",
-          "infobox": "<b>Hållplatsnamn:</b> {Name}  \n<b>Hållplatsnummer:</b> {StopAreaNumber}  \n<b>Taxezon 1:</b> {TaxZone}  \n<b>Taxezon 2:</b> {TaxZone2}",
-          "style": "",
-          "queryable": true
-        }
-      ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": false,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.3.0",
-      "infoFormat": "application/json",
-      "zIndex": null
-    },
-    {
-      "id": "53",
-      "caption": "Hållplatsområden etiketter",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
-      "owner": "",
-      "date": "1600695641468",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["gwsStopAreaLabel"],
-      "layersInfo": [
-        {
-          "id": "gwsStopAreaLabel",
-          "caption": "",
-          "legend": "",
-          "infobox": "",
-          "style": "",
-          "queryable": false
-        }
-      ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": false,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.1",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "54",
-      "caption": "Ansvariga trafikföretag",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "caption": "Ansvariga trafikföretag på hpl",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602056809577",
+      "date": "1615983491792",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Ansvarigt_TF_Hpl"],
+      "layers": [
+        "shape:Ansvarigt_TF_Hpl"
+      ],
       "layersInfo": [
         {
-          "id": "Ansvarigt_TF_Hpl",
+          "id": "shape:Ansvarigt_TF_Hpl",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Hållplatsnamn:</b> {Hpl}  \n<b>Ansvarig:</b> {Ansvarigt}  \n<b>Hållplatsområdesnummer:</b> {StopArea}  \n<b>Adressnummer:</b> {Adress}  \n<b>Kommun:</b> {Kommun}",
+          "legendIcon": "",
+          "infobox": "\n<b>Hållplatsnamn:</b> {Hpl}  \n<b>Ansvarig:</b> {Ansvarigt}  \n<b>Hållplatsområdesnummer:</b> {StopArea}  \n<b>Indexnr:</b> {Index}  \n<b>Kommun:</b> {Kommun}\n",
           "style": "",
           "queryable": true
         }
@@ -879,18 +676,22 @@
     {
       "id": "55",
       "caption": "Försäljningsställen",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602057158802",
+      "date": "1615899759233",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Shop"],
+      "layers": [
+        "georg_dev:showShop"
+      ],
       "layersInfo": [
         {
-          "id": "Shop",
+          "id": "georg_dev:showShop",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "<b>Namn:</b> {Name}  \n<b>Adress:</b> {Address}",
           "style": "",
           "queryable": true
@@ -916,28 +717,32 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "56",
       "caption": "Närtrafikens hållplatser 2020",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1600696076130",
+      "date": "1615983886495",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Nartrafikens_hpl_2020"],
+      "layers": [
+        "shape:Nartrafikens_hpl_2020"
+      ],
       "layersInfo": [
         {
-          "id": "Nartrafikens_hpl_2020",
+          "id": "shape:Nartrafikens_hpl_2020",
           "caption": "",
           "legend": "",
-          "infobox": "",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name} <br><b>Nummer:</b> {Number}",
           "style": "",
-          "queryable": false
+          "queryable": true
         }
       ],
       "searchFields": null,
@@ -945,7 +750,7 @@
       "visibleAtStart": false,
       "tiled": false,
       "opacity": 1.0,
-      "singleTile": false,
+      "singleTile": true,
       "imageFormat": "image/png",
       "serverType": "geoserver",
       "attribution": "",
@@ -960,26 +765,30 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "57",
       "caption": "Närtrafikens resor 2019",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602516582871",
+      "date": "1615983973529",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Nartrafikens_resor_2019"],
+      "layers": [
+        "shape:Nartrafikens_resor_2019"
+      ],
       "layersInfo": [
         {
-          "id": "Nartrafikens_resor_2019",
+          "id": "shape:Nartrafikens_resor_2019",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Adress:</b> {Adress}  \n<b>Kommun:</b> {Kommun}  \n<b>Antal resor från adress:</b> {Fran_Antal}  \n<b>Antal resor till adress:</b> {Till_Antal}",
+          "legendIcon": "",
+          "infobox": "<b>Adress:</b> {Adress}  \n<b>Kommun:</b> {Kommun}  \n<b>Antal resor från adress:</b> {Fran_Antal}  \n<b>Antal resor till adress:</b> {Till_Antal}\n",
           "style": "",
           "queryable": true
         }
@@ -1004,70 +813,30 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
-      "infoFormat": "application/json",
-      "zIndex": null
-    },
-    {
-      "id": "58",
-      "caption": "Signalljusprio",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
-      "owner": "",
-      "date": "1602515236683",
-      "content": "",
-      "legend": "",
-      "projection": "EPSG:3006",
-      "layers": ["gwsTrafficSignalPriority"],
-      "layersInfo": [
-        {
-          "id": "gwsTrafficSignalPriority",
-          "caption": "",
-          "legend": "",
-          "infobox": "",
-          "style": "",
-          "queryable": false
-        }
-      ],
-      "searchFields": null,
-      "displayFields": null,
-      "visibleAtStart": false,
-      "tiled": false,
-      "opacity": 1.0,
-      "singleTile": false,
-      "imageFormat": "image/png",
-      "serverType": "geoserver",
-      "attribution": "",
-      "searchUrl": "",
-      "searchPropertyName": "",
-      "searchDisplayName": "",
-      "searchOutputFormat": "",
-      "searchGeometryField": "",
-      "infoVisible": false,
-      "infoTitle": "",
-      "infoText": "Layer-Group type layer: gwsTrafficSignalPriority",
-      "infoUrl": "",
-      "infoUrlText": "",
-      "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "59",
       "caption": "Närtrafikens resor 2020",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602516519654",
+      "date": "1615984004132",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["vt:Nartrafikens_resor_2020"],
+      "layers": [
+        "shape:Nartrafikens_resor_2020_delad"
+      ],
       "layersInfo": [
         {
-          "id": "vt:Nartrafikens_resor_2020",
+          "id": "shape:Nartrafikens_resor_2020_delad",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Adress:</b> {Adress}  \n<b>Kommun:</b> {Kommun}  \n<b>Antal resor från adress:</b> {Fran_Antal}  \n<b>Antal resor till adress:</b> {Till_Antal}",
+          "legendIcon": "",
+          "infobox": "<b>Adress:</b> {Resa}  \n<b>Kommun:</b> {Kommun}  \n<b>Antal resor från adress:</b> {Fran_Antal}  \n<b>Antal resor till adress:</b> {Till_Antal}\n",
           "style": "",
           "queryable": true
         }
@@ -1092,25 +861,29 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "60",
-      "caption": "Närtrafik - vita ytor 2021",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "caption": "Närtrafikens vita ytor 2021",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602224994585",
+      "date": "1615983837247",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["vt:Vita_ytor_Nartrafik_2021"],
+      "layers": [
+        "georg:showFlexibleTaxiServiceArea_2021"
+      ],
       "layersInfo": [
         {
-          "id": "vt:Vita_ytor_Nartrafik_2021",
+          "id": "georg:showFlexibleTaxiServiceArea_2021",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "",
           "style": "",
           "queryable": false
@@ -1143,21 +916,25 @@
     {
       "id": "61",
       "caption": "Närtrafikens hållplatser 2021",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1602225418760",
+      "date": "1615983911463",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["vt:Nartrafikens_hpl_2021"],
+      "layers": [
+        "shape:Nartrafikens_hpl_2021"
+      ],
       "layersInfo": [
         {
-          "id": "vt:Nartrafikens_hpl_2021",
+          "id": "shape:Nartrafikens_hpl_2021",
           "caption": "",
           "legend": "",
-          "infobox": "",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name} <br><b>Nummer:</b> {Number}  \n<b>Läge: </b> {Designatio}",
           "style": "",
-          "queryable": false
+          "queryable": true
         }
       ],
       "searchFields": null,
@@ -1165,7 +942,7 @@
       "visibleAtStart": false,
       "tiled": false,
       "opacity": 1.0,
-      "singleTile": false,
+      "singleTile": true,
       "imageFormat": "image/png",
       "serverType": "geoserver",
       "attribution": "",
@@ -1180,25 +957,29 @@
       "infoUrl": "",
       "infoUrlText": "",
       "infoOwner": "",
-      "version": "1.3.0",
+      "version": "1.1.0",
       "infoFormat": "application/json",
       "zIndex": null
     },
     {
       "id": "62",
       "caption": "Taxezoner A-B-C",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1605275329463",
+      "date": "1615898076624",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["vt:TariffZone"],
+      "layers": [
+        "georg_dev:showTariffZone"
+      ],
       "layersInfo": [
         {
-          "id": "vt:TariffZone",
+          "id": "georg_dev:showTariffZone",
           "caption": "",
           "legend": "",
+          "legendIcon": "",
           "infobox": "<b>Taxezonsnamn:</b> {Name}  \n<b>Taxezonsnummer:</b> {Nr} ",
           "style": "",
           "queryable": true
@@ -1231,18 +1012,22 @@
     {
       "id": "63",
       "caption": "Taxezoner ABC etiketter",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
       "date": "1605088200580",
       "content": "",
       "legend": "",
+      "legendIcon": null,
       "projection": "EPSG:3006",
-      "layers": ["TariffZone_label"],
+      "layers": [
+        "georg_dev:TariffZone_label"
+      ],
       "layersInfo": [
         {
-          "id": "TariffZone_label",
+          "id": "georg_dev:TariffZone_label",
           "caption": "",
           "legend": "",
+          "legendIcon": null,
           "infobox": "",
           "style": "",
           "queryable": false
@@ -1275,19 +1060,23 @@
     {
       "id": "64",
       "caption": "Taxezoner FÖRE 201104",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/wms?",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
       "owner": "",
-      "date": "1605275457865",
+      "date": "1615898897388",
       "content": "",
       "legend": "",
+      "legendIcon": "",
       "projection": "EPSG:3006",
-      "layers": ["Taxezoner_FORE_201104"],
+      "layers": [
+        "georg_dev:showTariffZoneBefore20201104"
+      ],
       "layersInfo": [
         {
-          "id": "Taxezoner_FORE_201104",
+          "id": "georg_dev:showTariffZoneBefore20201104",
           "caption": "",
           "legend": "",
-          "infobox": "<b>Taxezonsnamn:</b> {ZonName} ",
+          "legendIcon": "",
+          "infobox": "<b>Taxezonsnamn:</b> {Name} ",
           "style": "",
           "queryable": true
         }
@@ -1315,6 +1104,736 @@
       "version": "1.3.0",
       "infoFormat": "application/json",
       "zIndex": null
+    },
+    {
+      "id": "103",
+      "caption": "Hållplatsområden",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615896625884",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showStopArea"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showStopArea",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Hållplatsnamn:</b> {Name}  \n<b>Hållplatsnummer:</b> {Number}  \n<b>Taxezon 1:</b> {IsPartOfTariffAreaZoneName}  \n<b>Taxezon 2:</b> {IsAlsoPartOfTariffAreaZoneName}  \n<b>Postnr:</b> {POSTALCODE} {LOCALITY}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "104",
+      "caption": "Hållplatslägen",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615962271850",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showStopPoint"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showStopPoint",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Hållplatsnamn:</b> {Name}  \n<b>Läge:</b> {Designation}  \n<b>Hållplatsnummer:</b> {Number}  \n<b>Linjetrafik:</b> {RegularTrafficYesNo}  \n<b>Flexlinje:</b> {FlexibleBusServiceYesNo}  \n<b>Närtrafik:</b> {FlexibleTaxiServiceYesNo}  \n<b>Postnr:</b> {POSTALCODE} {LOCALITY}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "114",
+      "caption": "Hållplatslägen för flexlinjetrafik",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615962271850",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showStopPoint_FlexibleBusServiceYes"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showStopPoint_FlexibleBusServiceYes",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Hållplatsnamn:</b> {Name}  \n<b>Läge:</b> {Designation}  \n<b>Hållplatsnummer:</b> {Number}  \n<b>Linjetrafik:</b> {RegularTrafficYesNo}  \n<b>Flexlinje:</b> {FlexibleBusServiceYesNo}  \n<b>Närtrafik:</b> {FlexibleTaxiServiceYesNo}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "105",
+      "caption": "LM Topowebb - Nedtonad",
+      "url": "http://geoserver-qa.vt.net/geoserver/externaWMS/wms",
+      "owner": "",
+      "date": "1613987157676",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "topowebbkartan_nedtonad"
+      ],
+      "layersInfo": [
+        {
+          "id": "topowebbkartan_nedtonad",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "Lantmäteriets Topografiska Webbkarta Nedtonad",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "106",
+      "caption": "Hållplatsområden - Etiketter ",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615962827354",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showStopAreaLabel"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showStopAreaLabel",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": true,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "107",
+      "caption": "Hållplatslägen - Etiketter",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615963274208",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showStopPointLabel"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showStopPointLabel",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": true,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "109",
+      "caption": "Signalljusprio",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1615900928040",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showTrafficSignalPriority"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showTrafficSignalPriority",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.3.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "110",
+      "caption": "Väghållare (synligt från 1:50 000)",
+      "url": "http://kartsidan-gs.vasttrafik.se/geoserver/wms",
+      "owner": "",
+      "date": "1624342286743",
+      "content": "Data kommer från Trafikverkets databaser",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "externaWMS:trv_Vaghallare"
+      ],
+      "layersInfo": [
+        {
+          "id": "externaWMS:trv_Vaghallare",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "Trafikverket",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "111",
+      "caption": "Hastighetsgräns (synligt från 1:150 000)",
+      "url": "http://kartsidan-gs.vasttrafik.se/geoserver/wms",
+      "owner": "",
+      "date": "1624342273911",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "externaWMS:trv_Hastighetsgrans"
+      ],
+      "layersInfo": [
+        {
+          "id": "externaWMS:trv_Hastighetsgrans",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "113",
+      "caption": "Postnummer",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1624861916807",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:showPostnrYta"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:showPostnrYta",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Postnummer: </b> {POSTALCODE}  \n<b>Postort: </b> {LOCALITY}  \n<b>Kommun(-er): </b> {MUNICIPALI}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "122",
+      "caption": "Närtrafikens hållplatser 2022",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1631600632368",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "shape:Nartrafikens_hpl_2022"
+      ],
+      "layersInfo": [
+        {
+          "id": "shape:Nartrafikens_hpl_2022",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name} <br><b>Nummer:</b> {Number}  \n<b>Läge: </b> {Designatio}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "123",
+      "caption": "900-linjerna",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1631681153103",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:vy_showDirectionOfLine_900"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:vy_showDirectionOfLine_900",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Publikt linjenummer:</b> {Designation}  \n<b>Tekniskt linjenummer:</b> {LineNumber}  \n<b>Beskrivning:</b> {Description}  \n<b>Riktning:</b> {Direction}  \n<b>Trafikslag:</b> {TransportModeType}  \n<b>Trafikföretag:</b> {TransportCompany}   ",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": true,
+      "infoTitle": "",
+      "infoText": "Här visas 900-linjerna (kallade skollinjerna). Det är de nu aktuella linjeriktningarna som visas, även om det inte körs trafik på linjen. ",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "126",
+      "caption": "Närtrafikens resor 2021",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1632809072244",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "shape:Nartrafikens_resor_2021_delad"
+      ],
+      "layersInfo": [
+        {
+          "id": "shape:Nartrafikens_resor_2021_delad",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Adress:</b> {Resa}  \n<b>Till/från plats:</b> {Typ}    \n<b>Kommun:</b> {Kommun}  \n<b>Antal resor från adress:</b> {Fran_Antal}  \n<b>Antal resor till adress:</b> {Till_Antal}",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "127",
+      "caption": "Närtrafikens vita ytor 2022",
+      "url": "http://geoserver-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1632820643474",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg:showFlexibleTaxiServiceArea_2022"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg:showFlexibleTaxiServiceArea_2022",
+          "caption": "",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "",
+          "style": "",
+          "queryable": false
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": false,
+      "infoTitle": "",
+      "infoText": "",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.3.0",
+      "infoFormat": "application/json",
+      "zIndex": null
+    },
+    {
+      "id": "129",
+      "caption": "Pendelparkeringar (gruppering)",
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "owner": "",
+      "date": "1636696584854",
+      "content": "",
+      "legend": "",
+      "legendIcon": "",
+      "projection": "EPSG:3006",
+      "layers": [
+        "georg_dev:vy_showCommuterParkingLot",
+        "georg_dev:showCommuterParkingArea"
+      ],
+      "layersInfo": [
+        {
+          "id": "georg_dev:vy_showCommuterParkingLot",
+          "caption": "Pendelparkeringsläge",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name}  \n<b>Lägesnummer:</b> {Designation}  \n<b>Områdesnummer:</b> {CommuterParkingAreaNumber}    \n<b>Kommun:</b> {MunicipalityName}  \n<b>Antal bilplatser:</b> {CarParkCapacityCount}  \n<b>Platser rörelsehindrad:</b> {DisabledParkingSpaceCapacityCount}  \n<b>Platser mc:</b> {MotorcycleParkingSpaceCapacityCount}  \n<b>Cykelparkering:</b> {IsBicycleParkingPossible}  \n<b>Smart pendelpakering:</b> {IsSmart}  \n<b>Väghållare:</b> {RoadOperator}  \n<b>Betalparkering:</b> {PaidParking}  \n",
+          "style": "",
+          "queryable": true
+        },
+        {
+          "id": "georg_dev:showCommuterParkingArea",
+          "caption": "Pendelparkeringsområde",
+          "legend": "",
+          "legendIcon": "",
+          "infobox": "<b>Namn:</b> {Name}  \n<b>Nummer:</b> {Number}  \n<b>Kommun:</b> {MunicipalityName}  \n\n",
+          "style": "",
+          "queryable": true
+        }
+      ],
+      "searchFields": null,
+      "displayFields": null,
+      "visibleAtStart": false,
+      "tiled": false,
+      "opacity": 1.0,
+      "singleTile": false,
+      "imageFormat": "image/png",
+      "serverType": "geoserver",
+      "attribution": "",
+      "searchUrl": "",
+      "searchPropertyName": "",
+      "searchDisplayName": "",
+      "searchOutputFormat": "",
+      "searchGeometryField": "",
+      "infoVisible": true,
+      "infoTitle": "",
+      "infoText": "Visar pendelparkeringarnas områdeskoordinat samt infartskoordinat. ",
+      "infoUrl": "",
+      "infoUrlText": "",
+      "infoOwner": "",
+      "version": "1.1.1",
+      "infoFormat": "application/json",
+      "zIndex": null
     }
   ],
   "wfslayers": [
@@ -1322,12 +1841,22 @@
       "id": "101",
       "caption": "Adresser",
       "onClickName": "Addresses",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/ows",
-      "layers": ["vt:Address"],
-      "searchFields": ["StreetName", "StreetNumber", "Municipality"],
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/wms",
+      "layers": [
+        "georg_dev:showAddress"
+      ],
+      "searchFields": [
+        "StreetName",
+        "StreetNumber",
+        "Municipality"
+      ],
       "infobox": "**Adress:** {adress}  ",
       "aliasDict": "",
-      "displayFields": ["StreetName", "StreetNumber", "Municipality"],
+      "displayFields": [
+        "StreetName",
+        "StreetNumber",
+        "Municipality"
+      ],
       "geometryField": "geom",
       "outputFormat": "GML2",
       "infoVisible": false,
@@ -1342,26 +1871,118 @@
       "id": "102",
       "caption": "Platser",
       "onClickName": "POIs",
-      "url": "http://kartsidan-gs-qa.vt.net/geoserver/vt/ows",
-      "layers": ["vt:PointOfInterest"],
+      "url": "http://kartsidan-gs-qa.vt.net/geoserver/ows",
+      "layers": [
+        "georg_dev:showPointOfInterest"
+      ],
       "searchFields": [
         "Name",
-        "SwedishCategory1",
-        "SwedishCategory2",
-        "SwedishCategory3",
+        "Category1",
+        "Category2",
+        "Category3",
         "Municipality"
       ],
       "infobox": "**Plats:** {plats}  ",
       "aliasDict": "",
       "displayFields": [
         "Name",
-        "SwedishCategory1",
-        "SwedishCategory2",
-        "SwedishCategory3",
+        "Category1",
+        "Category2",
+        "Category3",
         "Municipality"
       ],
       "geometryField": "geom",
       "outputFormat": "GML2",
+      "infoVisible": false,
+      "infoTitle": null,
+      "infoText": null,
+      "infoUrl": null,
+      "infoUrlText": null,
+      "infoOwner": null,
+      "zIndex": null
+    },
+    {
+      "id": "108",
+      "caption": "Ansvarigt Trafikföretag på hpl",
+      "onClickName": "AnsvarigtTF",
+      "url": "http://geoserver-qa.vt.net/geoserver/ows",
+      "layers": [
+        "shape:Ansvarigt_TF_Hpl"
+      ],
+      "searchFields": [
+        "Ansvarigt",
+        "Kommun",
+        "Index"
+      ],
+      "infobox": "",
+      "aliasDict": "",
+      "displayFields": [
+        "Ansvarigt",
+        "Kommun",
+        "Index"
+      ],
+      "geometryField": "the_geom",
+      "outputFormat": "GML2",
+      "infoVisible": false,
+      "infoTitle": null,
+      "infoText": null,
+      "infoUrl": null,
+      "infoUrlText": null,
+      "infoOwner": null,
+      "zIndex": null
+    },
+    {
+      "id": "131",
+      "caption": "Gatunamn",
+      "onClickName": "Gatunamn",
+      "url": "http://geoserver-qa.vt.net/geoserver/ows",
+      "layers": [
+        "geopackage:Gatunamn_sok"
+      ],
+      "searchFields": [
+        "soknamn",
+        "soknr",
+        "tatort"
+      ],
+      "infobox": "",
+      "aliasDict": "",
+      "displayFields": [
+        "soknamn",
+        "soknr",
+        "tatort",
+        "kommun"
+      ],
+      "geometryField": "the_geom",
+      "outputFormat": "GML3",
+      "infoVisible": false,
+      "infoTitle": null,
+      "infoText": null,
+      "infoUrl": null,
+      "infoUrlText": null,
+      "infoOwner": null,
+      "zIndex": null
+    },
+    {
+      "id": "132",
+      "caption": "Korsningar",
+      "onClickName": "Korsningar",
+      "url": "http://geoserver-qa.vt.net/geoserver/ows",
+      "layers": [
+        "geopackage:Korsningar"
+      ],
+      "searchFields": [
+        "namn"
+      ],
+      "infobox": "",
+      "aliasDict": "",
+      "displayFields": [
+        "namn",
+        "nr",
+        "tatort",
+        "kommun"
+      ],
+      "geometryField": "the_geom",
+      "outputFormat": "GML3",
       "infoVisible": false,
       "infoTitle": null,
       "infoText": null,
@@ -1379,7 +2000,9 @@
       "url": "https://giscloud.se/geoserver/wsp/wfs",
       "uri": "https://giscloud.se/wsp",
       "projection": "EPSG:3006",
-      "layers": ["wsp:hpl"],
+      "layers": [
+        "wsp:hpl"
+      ],
       "editableFields": [
         {
           "index": 0,
@@ -1395,7 +2018,13 @@
           "name": "name",
           "dataType": "string",
           "textType": "lista",
-          "values": ["10-20", "20-30", "30-40", "40-65", "65+"],
+          "values": [
+            "10-20",
+            "20-30",
+            "30-40",
+            "40-65",
+            "65+"
+          ],
           "hidden": false,
           "defaultValue": "65+"
         },
@@ -1413,7 +2042,11 @@
           "name": "typ",
           "dataType": "string",
           "textType": "flerval",
-          "values": ["brun", "grå", "vit"],
+          "values": [
+            "brun",
+            "grå",
+            "vit"
+          ],
           "hidden": false,
           "defaultValue": null
         },
@@ -1422,7 +2055,10 @@
           "name": "trafikslag",
           "dataType": "string",
           "textType": "lista",
-          "values": ["buss", "taxi"],
+          "values": [
+            "buss",
+            "taxi"
+          ],
           "hidden": false,
           "defaultValue": null
         },
@@ -1480,7 +2116,9 @@
       "url": "https://giscloud.se/geoserver/wfs",
       "uri": "https://giscloud.se/wsp",
       "projection": "EPSG:3007",
-      "layers": ["wsp:parking_lot"],
+      "layers": [
+        "wsp:parking_lot"
+      ],
       "editableFields": [
         {
           "index": 1,

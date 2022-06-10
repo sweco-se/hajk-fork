@@ -525,6 +525,374 @@
           },
           "highlightStrokePointWidth": 4,
           "highlightStrokeLineWidth": 4
+        },
+        "geoServer": {
+          "lineNumberAndPublicLineNumbers": {
+            "searchLabel": "Linjenummer",
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchLine&outputFormat=application/json"
+          },
+          "stopAreaNameAndNumbers": {
+            "searchLabel": "Hållplats",
+            "defaultSortOrder": ["StopAreaNumber"],
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchStopArea&outputFormat=application/json"
+          },
+          "municipalityZoneNames": {
+            "searchLabel": "Kommunnamn",
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchMunicipalityZoneName&outputFormat=application/json"
+          },
+          "transportModeTypeNames": {
+            "searchLabel": "Trafikslag",
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchTransportModeTypeName&outputFormat=application/json"
+          },
+          "journeys": {
+            "searchLabel": "Turer",
+            "defaultSortOrder": [
+              "TransportCompany",
+              "InternalLineNumber",
+              "FromStopPointName",
+              "FromStopPointDesignation",
+              "ToStopPointName",
+              "ToStopPointDesignation",
+              "EarliestDepartureTimeAtToStopPoint"
+            ],
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchJourneys&outputFormat=application/json",
+            "attributesToDisplay": [
+              {
+                "displayName": "PUBLIK LINJE",
+                "key": "PublicLineName"
+              },
+              {
+                "displayName": "TEKNISK LINJE",
+                "key": "InternalLineNumber"
+              },
+              {
+                "displayName": "TRAFIKFÖRETAG",
+                "key": "TransportCompany"
+              },
+              {
+                "displayName": "FRÅN HÅLLPLATSOMR",
+                "key": "FromStopPointName"
+              },
+              {
+                "displayName": "FRÅN HÅLLPLATSLÄGE",
+                "key": "FromStopPointDesignation"
+              },
+              {
+                "displayName": "TILL HÅLLPLATSOMR",
+                "key": "ToStopPointName"
+              },
+              {
+                "displayName": "TILL HÅLLPLATSLÄGE",
+                "key": "ToStopPointDesignation"
+              },
+              {
+                "displayName": "AVGÅNG",
+                "key": "EarliestDepartureTimeAtToStopPoint",
+                "displayFormat": "YYYY-MM-DD hh:mm"
+              }
+            ]
+          },
+          "routes": {
+            "searchLabel": "Linje",
+            "defaultSortOrder": [
+              "TransportModeType",
+              "Direction",
+              "InternalLineNumber"
+            ],
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.1.0&request=GetFeature&typeName=vt_searchDirectionOfLine&outputFormat=application/json",
+            "attributesToDisplay": [
+              {
+                "displayName": "TEKNISK LINJE",
+                "key": "InternalLineNumber"
+              },
+              {
+                "displayName": "PUBLIK LINJE",
+                "key": "PublicLineName"
+              },
+              {
+                "displayName": "BESKRIVNING",
+                "key": "Description"
+              },
+              {
+                "displayName": "RIKTNING",
+                "key": "Direction"
+              },
+              {
+                "displayName": "TRAFIKSLAG",
+                "key": "TransportModeType"
+              },
+              {
+                "displayName": "TRAFIKFÖRETAG",
+                "key": "TransportCompany"
+              }
+            ]
+          },
+          "stopAreas": {
+            "searchLabel": "Hållplatsomr",
+            "defaultSortOrder": ["StopAreaNumber"],
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchStopAreas&outputFormat=application/json",
+            "attributesToDisplay": [
+              {
+                "displayName": "HÅLLPLATSNUMMER",
+                "key": "Number"
+              },
+              {
+                "displayName": "NAMN",
+                "key": "Name"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "MunicipalityName"
+              },
+              {
+                "displayName": "BYTESPRIO",
+                "key": "InterchangePriorityMessage"
+              },
+              {
+                "displayName": "TAXEZON 1",
+                "key": "IsPartOfTariffZoneName"
+              },
+              {
+                "displayName": "TAXEZON 2",
+                "key": "IsAlsoPartOfTariffZoneName"
+              },
+              {
+                "displayName": "KOD",
+                "key": "Abbreviation"
+              },
+              {
+                "displayName": "Pnr",
+                "key": "POSTALCODE"
+              },
+              {
+                "displayName": "Ort",
+                "key": "LOCALITY"
+              }
+            ]
+          },
+          "stopPoints": {
+            "searchLabel": "Hållplatslägen",
+            "defaultSortOrder": ["Designation", "StopAreaNumber"],
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchStopPoints&outputFormat=application/json",
+            "attributesToDisplay": [
+              {
+                "displayName": "HÅLLPLATSNUMMER",
+                "key": "StopAreaNumber"
+              },
+              {
+                "displayName": "NAMN",
+                "key": "Name"
+              },
+              {
+                "displayName": "BETECKNING",
+                "key": "Designation"
+              },
+              {
+                "displayName": "PÅSTIGNING",
+                "key": "IsForBoarding"
+              },
+              {
+                "displayName": "AVSTIGNING",
+                "key": "IsForAlighting"
+              },
+              {
+                "displayName": "VIRTUELLT",
+                "key": "IsFictitious"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "MunicipalityName"
+              },
+              {
+                "displayName": "LINJETRAFIK",
+                "key": "IsRegularTraffic"
+              },
+              {
+                "displayName": "FLEXLINJE",
+                "key": "IsFlexibleBusService"
+              },
+              {
+                "displayName": "NÄRTRAFIK",
+                "key": "IsFlexibleTaxiService"
+              },
+              {
+                "displayName": "Postnr",
+                "key": "POSTALCODE"
+              },
+              {
+                "displayName": "Ort",
+                "key": "LOCALITY"
+              }
+            ]
+          },
+          "Addresses": {
+            "searchLabel": "Adresser",
+            "defaultSortOrder": [
+              "StreetNumber",
+              "PostCode",
+              "PlaceName",
+              "Municipality",
+              "StreetName"
+            ],
+            "attributesToDisplay": [
+              {
+                "displayName": "GATUNAMN",
+                "key": "StreetName"
+              },
+              {
+                "displayName": "GATUNUMMER",
+                "key": "StreetNumber"
+              },
+              {
+                "displayName": "POSTNUMMER",
+                "key": "PostCode"
+              },
+              {
+                "displayName": "ORT",
+                "key": "PlaceName"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "Municipality"
+              }
+            ]
+          },
+          "POIs": {
+            "searchLabel": "Platser",
+            "defaultSortOrder": ["Municipality", "Name"],
+            "attributesToDisplay": [
+              {
+                "displayName": "NAMN",
+                "key": "Name"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "Municipality"
+              },
+              {
+                "displayName": "KATEGORI 1",
+                "key": "Category1"
+              },
+              {
+                "displayName": "KATEGORI 2",
+                "key": "Category2"
+              },
+              {
+                "displayName": "KATEGORI 3",
+                "key": "Category3"
+              }
+            ]
+          },
+          "AnsvarigtTF": {
+            "searchLabel": "Ansvarigt TF",
+            "defaultSortOrder": ["Ansvarigt"],
+            "attributesToDisplay": [
+              {
+                "displayName": "ANSVARIGT TF",
+                "key": "Ansvarigt"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "Kommun"
+              },
+              {
+                "displayName": "INDEX NR",
+                "key": "Index"
+              },
+              {
+                "displayName": "HPL NAMN",
+                "key": "Hpl"
+              },
+              {
+                "displayName": "HPL NR",
+                "key": "StopArea"
+              }
+            ]
+          },
+          "Gatunamn": {
+            "searchLabel": "Gatunamn",
+            "defaultSortOrder": ["tatort"],
+            "attributesToDisplay": [
+              {
+                "displayName": "GATUNAMN",
+                "key": "soknamn"
+              },
+              {
+                "displayName": "VÄGNR",
+                "key": "soknr"
+              },
+              {
+                "displayName": "TÄTORT",
+                "key": "tatort"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "kommun"
+              }
+            ]
+          },
+          "Korsningar": {
+            "searchLabel": "Korsningar",
+            "defaultSortOrder": ["namn"],
+            "attributesToDisplay": [
+              {
+                "displayName": "NAMN",
+                "key": "namn"
+              },
+              {
+                "displayName": "TPLNR",
+                "key": "nr"
+              },
+              {
+                "displayName": "TYP",
+                "key": "typ"
+              },
+              {
+                "displayName": "TÄTORT",
+                "key": "tatort"
+              },
+              {
+                "displayName": "KOMMUN",
+                "key": "kommun"
+              }
+            ]
+          },
+          "ShowStopPoints": {
+            "visibleStopPointsThresholdResolution": 30,
+            "fillColor": {
+              "r": 220,
+              "g": 10,
+              "b": 90,
+              "a": 0.7
+            },
+            "strokeColor": {
+              "r": 220,
+              "g": 10,
+              "b": 90,
+              "a": 0.7
+            },
+            "radius": 5,
+            "textFont": "8pt sans-serif",
+            "textHorizontalAlign": "left",
+            "textVerticalAlign": "center",
+            "textOffsetX": 12,
+            "textOffsetY": 0,
+            "textRotation": 0,
+            "textFillColor": {
+              "r": 255,
+              "g": 255,
+              "b": 255,
+              "a": 1
+            },
+            "textStrokeColor": {
+              "r": 0,
+              "g": 0,
+              "b": 0,
+              "a": 1
+            },
+            "textStrokeWidth": 3,
+            "url": "http://kartsidan-gs-qa.vt.net/geoserver/georg_dev/wfs?version=1.0.0&request=GetFeature&typeName=vt_searchStopPointsByLine&outputFormat=application/json"
+          }
         }
       },
       "index": 2

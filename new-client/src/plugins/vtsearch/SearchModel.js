@@ -275,7 +275,7 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   getColumsToChangeDisplayFormatFor(attributesToDisplay) {
-    let columnsToChangeDisplayFormat = attributesToDisplay.filter(
+    let columnsToChangeDisplayFormat = attributesToDisplay?.filter(
       (attribute) => {
         let attributeProperties = Object.keys(attribute);
         if (attributeProperties.includes("displayFormat")) return true;
@@ -302,7 +302,7 @@ export default class SearchModel {
     );
 
     featureCollection.features.forEach((feature) => {
-      formatChangeNames.forEach((formatChangeName) => {
+      formatChangeNames?.forEach((formatChangeName) => {
         feature.properties[formatChangeName.key] = this.formatDate(
           feature.properties[formatChangeName.key],
           formatChangeName.displayFormat
@@ -326,7 +326,7 @@ export default class SearchModel {
       ? firstFeature.properties
       : firstFeature.getProperties();
     let featurePropertyNames = Object.keys(properties);
-    let formatChangeNames = columnsDisplayFormat.filter(
+    let formatChangeNames = columnsDisplayFormat?.filter(
       (attributesToDisplayFormat) => {
         for (
           let indexPropertyName = 0;

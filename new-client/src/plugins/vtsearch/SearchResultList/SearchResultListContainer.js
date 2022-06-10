@@ -127,6 +127,7 @@ class SearchResultListContainer extends React.Component {
   #onSearchDone = (result) => {
     const { localObserver } = this.props;
     this.#applyFilterFunction(result);
+    //debugger;
     var searchResultId = this.#addResultToSearchResultList(result);
 
     localObserver.publish("vt-add-search-result-to-map", {
@@ -219,6 +220,7 @@ class SearchResultListContainer extends React.Component {
         windowWidth: getWindowContainerWidth(),
         windowHeight: getWindowContainerHeight(),
       });
+      //debugger;
       this.#onSearchDone(result);
     });
 
@@ -325,7 +327,7 @@ class SearchResultListContainer extends React.Component {
       ...result,
       ...{ id: newId },
     });
-
+    //debugger;
     var searchResultIds = this.state.searchResultIds.concat(newId);
     this.setState({ searchResultIds: searchResultIds });
     return newId;
@@ -365,12 +367,13 @@ class SearchResultListContainer extends React.Component {
     const { classes, toolConfig } = this.props;
     var searchResultId = searchResult.id;
 
-    if (
+    if (!toolConfig.geoServer) searchResult.label = "Mockdata";
+    else if (
       !searchResult?.label &&
-      toolConfig.geoServer[searchResult.type]?.searchLabel
+      toolConfig?.geoServer[searchResult.type]?.searchLabel
     )
       searchResult.label = toolConfig.geoServer[searchResult.type].searchLabel;
-
+    //debugger;
     return (
       <Tab
         classes={{ root: classes.tabRoot }}
@@ -399,6 +402,7 @@ class SearchResultListContainer extends React.Component {
 
   #renderTabsController = (searchResults) => {
     const { classes } = this.props;
+    //debugger;
     console.log(this.state.activeTabId, "activeTabId");
     return (
       <Tabs
@@ -418,6 +422,7 @@ class SearchResultListContainer extends React.Component {
 
   #renderTabsHeader = (searchResults) => {
     const { classes, localObserver } = this.props;
+    //debugger;
     return (
       <AppBar
         ref={(appbar) => {
@@ -445,6 +450,7 @@ class SearchResultListContainer extends React.Component {
 
   #renderSearchResultAsTabContent = (searchResult) => {
     const { toolConfig, localObserver } = this.props;
+    //debugger;
     return (
       <TabPanel
         key={searchResult.id}
@@ -480,6 +486,7 @@ class SearchResultListContainer extends React.Component {
 
   #renderSearchResultContainer = () => {
     const { classes, windowContainerId } = this.props;
+    //debugger;
     let searchResults = this.#getSearchResults();
     this.#handleMapResizeWhenRendering();
     return (

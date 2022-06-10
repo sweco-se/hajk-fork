@@ -7,6 +7,7 @@ import { SortIndicator } from "react-virtualized";
 
 import "react-virtualized/styles.css";
 import { Typography, Tooltip } from "@material-ui/core";
+import { de } from "date-fns/locale";
 
 const styles = (theme) => ({
   flexContainer: {
@@ -140,7 +141,7 @@ class VirtualizedTable extends React.PureComponent {
 
   headerRenderer = ({ label, columnIndex, sortDirection }) => {
     const { columns, classes, sortable } = this.props;
-
+    //debugger;
     return (
       <TableCell
         component="div"
@@ -164,6 +165,7 @@ class VirtualizedTable extends React.PureComponent {
       headerHeight,
       ...tableProps
     } = this.props;
+    debugger;
     return (
       <AutoSizer>
         {({ height, width }) => (
