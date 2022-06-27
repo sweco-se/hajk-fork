@@ -152,6 +152,7 @@ class VTSearch extends React.PureComponent {
       app: props.app,
       map: props.map,
       localObserver: this.localObserver,
+      globalObserver: this.globalObserver,
       model: this.searchModel,
     });
     this.bindSubscriptions();
@@ -159,23 +160,23 @@ class VTSearch extends React.PureComponent {
 
   bindSubscriptions = () => {
     // Subscribes for an event when the vt-search has begun.
-    this.localObserver.subscribe("vtsearch-result-begin", (label) => {
+    this.localObserver.subscribe("vt-result-begin", (label) => {
       this.setState({ loading: true });
     });
 
-    this.localObserver.subscribe("vtsearch-result-done", (ans) => {
+    this.localObserver.subscribe("vt-result-done", (ans) => {
       this.setState({ loading: false });
     });
 
-    this.localObserver.subscribe("vtsearch-chosen", (typeOfSearch) => {
-      this.localObserver.publish("deactivate-search");
+    this.localObserver.subscribe("vt-chosen", (typeOfSearch) => {
+      this.localObserver.publish("vt-deactivate-search");
       this.setState({
         activeSearchTool: typeOfSearch,
         expanded: typeOfSearch === searchTypes.DEFAULT ? false : true,
       });
     });
 
-    this.localObserver.subscribe("vtsearch-dragging-enabled", (enabled) => {
+    this.localObserver.subscribe("vt-dragging-enabled", (enabled) => {
       this.setState({ draggingEnabled: enabled });
     });
 
@@ -185,37 +186,23 @@ class VTSearch extends React.PureComponent {
         searchResult.type = searchResult?.source?.onClickName;
 
         const featureCollection = searchResult?.value;
-        const attributesToDisplay = this.searchModel.geoServer[
-          searchResult.type
-        ]?.attributesToDisplay;
+        const attributesToDisplay =
+          this.searchModel.geoServer[searchResult.type]?.attributesToDisplay;
         this.searchModel.updateDisplayFormat(
           featureCollection,
           attributesToDisplay
         );
 
-        this.localObserver.publish("vtsearch-result-done", searchResult);
+        this.localObserver.publish("vt-result-done", searchResult);
       }
     );
 
-    this.globalObserver.subscribe("window-minimize", (title) => {
+    this.globalObserver.subscribe("core.minimizeWindow", (title) => {
       if (title === this.props.options.title)
         this.globalObserver.publish("clear-autocomplete");
     });
 
-    this.globalObserver.subscribe("window-close", (title) => {
-      if (title === this.props.options.title)
-        this.globalObserver.publish("clear-autocomplete");
-    });
-
-    this.globalObserver.subscribe("core.drawerContentChanged", () => {
-      this.globalObserver.publish("clear-autocomplete");
-    });
-
-    this.globalObserver.subscribe("core.hideDrawer", () => {
-      this.globalObserver.publish("clear-autocomplete");
-    });
-
-    this.globalObserver.subscribe("windows.onDragStart", (title) => {
+    this.globalObserver.subscribe("core.closeWindow", (title) => {
       if (title === this.props.options.title)
         this.globalObserver.publish("clear-autocomplete");
     });
@@ -229,7 +216,7 @@ class VTSearch extends React.PureComponent {
 
   handleChange = (e) => {
     var typeOfSearch = searchTypes[e.target.value];
-    this.localObserver.publish("deactivate-search");
+    this.localObserver.publish("vt-deactivate-search");
     this.setState({
       activeSearchTool: typeOfSearch,
       expanded: typeOfSearch === searchTypes.DEFAULT ? false : true,

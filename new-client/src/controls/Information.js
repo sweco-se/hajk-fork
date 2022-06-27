@@ -6,23 +6,25 @@ import propTypes from "prop-types";
 import { Button, Paper, Tooltip } from "@material-ui/core";
 import InfoIcon from "@material-ui/icons/Info";
 
-import Dialog from "../components/Dialog.js";
+import Dialog from "../components/Dialog/Dialog";
 
-const styles = theme => {
+import { functionalOk as functionalCookieOk } from "models/Cookie";
+
+const styles = (theme) => {
   return {
     paper: {
-      marginBottom: theme.spacing(1)
+      marginBottom: theme.spacing(1),
     },
     button: {
-      minWidth: "unset"
-    }
+      minWidth: "unset",
+    },
   };
 };
 
 class Information extends React.PureComponent {
   static propTypes = {
     classes: propTypes.object.isRequired,
-    options: propTypes.object.isRequired
+    options: propTypes.object.isRequired,
   };
 
   constructor(props) {
@@ -31,7 +33,7 @@ class Information extends React.PureComponent {
     this.options = props.options;
     this.title = this.options.title || "Om kartan";
     this.state = {
-      dialogOpen: false
+      dialogOpen: false,
     };
   }
 
@@ -47,7 +49,7 @@ class Information extends React.PureComponent {
       ) {
         dialogOpen = false;
       } else {
-        if (this.options.showInfoOnce === true) {
+        if (this.options.showInfoOnce === true && functionalCookieOk()) {
           window.localStorage.setItem("pluginInformationMessageShown", 1);
         }
         dialogOpen = true;
@@ -57,19 +59,19 @@ class Information extends React.PureComponent {
     }
 
     this.setState({
-      dialogOpen
+      dialogOpen,
     });
   }
 
   onClose = () => {
     this.setState({
-      dialogOpen: false
+      dialogOpen: false,
     });
   };
 
   handleOnClick = () => {
     this.setState({
-      dialogOpen: true
+      dialogOpen: true,
     });
   };
 
@@ -78,7 +80,12 @@ class Information extends React.PureComponent {
 
     return createPortal(
       <Dialog
-        options={{ headerText, text, buttonText }}
+        options={{
+          headerText,
+          text,
+          buttonText,
+          useLegacyNonMarkdownRenderer: true, // Preserve backward compatibility with how Dialog used to work prior ReactMarkdown
+        }}
         open={this.state.dialogOpen}
         onClose={this.onClose}
       />,

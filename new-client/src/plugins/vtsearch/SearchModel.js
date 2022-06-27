@@ -1,3 +1,5 @@
+import { MockdataSearchModel } from "./Mockdata/MockdataSearchModel";
+
 /**
  * @summary SearchModel used for VT specific searches.
  * @description NEED TO ADD A DESCRIPTION
@@ -256,9 +258,8 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   updateDisplayFormat(featureCollection, attributesToDisplay) {
-    let columnsToChangeDisplayFormat = this.getColumsToChangeDisplayFormatFor(
-      attributesToDisplay
-    );
+    let columnsToChangeDisplayFormat =
+      this.getColumsToChangeDisplayFormatFor(attributesToDisplay);
 
     let adjustedFeatureCollection = this.changeDisplayFormat(
       featureCollection,
@@ -321,7 +322,10 @@ export default class SearchModel {
    */
   filterColumnsDisplayFormat(featureCollection, columnsDisplayFormat) {
     let firstFeature = featureCollection.features[0];
-    let featurePropertyNames = Object.keys(firstFeature.properties);
+    const properties = firstFeature.properties
+      ? firstFeature.properties
+      : firstFeature.getProperties();
+    let featurePropertyNames = Object.keys(properties);
     let formatChangeNames = columnsDisplayFormat.filter(
       (attributesToDisplayFormat) => {
         for (
@@ -538,9 +542,8 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   swapWktCoordinatesForSqlServer = (polygonAsWkt) => {
-    let { updatedWkt, remainingWkt } = this.removePolygonStartOfWkt(
-      polygonAsWkt
-    );
+    let { updatedWkt, remainingWkt } =
+      this.removePolygonStartOfWkt(polygonAsWkt);
     updatedWkt = this.swapCoordinates(updatedWkt, remainingWkt).updatedWkt;
     updatedWkt = this.addEndOfPolygonWkt(updatedWkt);
 
@@ -783,6 +786,9 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleMunicipalityZoneNames(addEmptyMunicipality = true) {
+    if (!this?.geoServer?.municipalityZoneNames?.url)
+      return this.#returnMockDataMunicipalityZoneNames();
+
     const url = this.geoServer.municipalityZoneNames.url;
     return fetch(url)
       .then((res) => {
@@ -809,6 +815,11 @@ export default class SearchModel {
       });
   }
 
+  #returnMockDataMunicipalityZoneNames = () => {
+    return new Promise((resolve) => {
+      resolve(MockdataSearchModel().municipalities);
+    });
+  };
   /**
    * Function that fetch all transport mode type names and numbers.
    * @param {boolean} addEmptyMunicipality <option value="true">Adds an empty transport mode at the beginning of the array. </option>
@@ -817,7 +828,10 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleTransportModeTypeNames(addEmptyTransportMode = true) {
-    this.localObserver.publish("transportModeTypeNames-result-begin", {
+    if (!this?.geoServer?.transportModeTypeNames?.url)
+      return this.#returnMockDataTransportModeTypeNames();
+
+    this.localObserver.publish("vt-transportModeTypeNames-result-begin", {
       label: this.geoServer.transportModeTypeNames.searchLabel,
     });
 
@@ -835,6 +849,12 @@ export default class SearchModel {
     });
   }
 
+  #returnMockDataTransportModeTypeNames = () => {
+    return new Promise((resolve) => {
+      resolve(MockdataSearchModel().modeTypeNames);
+    });
+  };
+
   /**
    * Gets requested journeys. Sends an event when the function is called and another one when it's promise is done.
    * @param {string} fromTime Start time, pass null if no start time is given.
@@ -844,7 +864,7 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   getJourneys(filterOnFromDate, filterOnToDate, filterOnWkt) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.journeys.searchLabel,
     });
 
@@ -881,13 +901,19 @@ export default class SearchModel {
           journeys.featureCollection = this.removeDuplicates(
             journeys.featureCollection
           );
-          /*journeys.featureCollection = */
+
+          journeys.searchParams = {
+            filterOnFromDate: filterOnFromDate,
+            filterOnToDate: filterOnToDate,
+            filterOnWkt: filterOnWkt,
+          };
+
           this.updateDisplayFormat(
             journeys.featureCollection,
             this.geoServer.journeys.attributesToDisplay
           );
 
-          this.localObserver.publish("vtsearch-result-done", journeys);
+          this.localObserver.publish("vt-result-done", journeys);
         });
       })
       .catch((err) => {
@@ -914,7 +940,7 @@ export default class SearchModel {
     stopAreaNameOrNumber,
     polygonAsWkt
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.routes.searchLabel,
     });
 
@@ -994,7 +1020,16 @@ export default class SearchModel {
             routes.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", routes);
+          routes.searchParams = {
+            publicLineName: publicLineName,
+            internalLineNumber: internalLineNumber,
+            isInMunicipalityZoneGid: isInMunicipalityZoneGid,
+            transportModeType: transportModeType,
+            stopAreaNameOrNumber: stopAreaNameOrNumber,
+            polygonAsWkt: polygonAsWkt,
+          };
+
+          this.localObserver.publish("vt-result-done", routes);
         });
       })
       .catch((err) => {
@@ -1017,7 +1052,7 @@ export default class SearchModel {
     filterOnMunicipalGid,
     filterOnWkt
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.stopAreas.searchLabel,
     });
 
@@ -1067,7 +1102,14 @@ export default class SearchModel {
             stopAreas.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", stopAreas);
+          stopAreas.searchParams = {
+            filterOnNameOrNumber: filterOnNameOrNumber,
+            filterOnPublicLine: filterOnPublicLine,
+            filterOnMunicipalGid: filterOnMunicipalGid,
+            filterOnWkt: filterOnWkt,
+          };
+
+          this.localObserver.publish("vt-result-done", stopAreas);
         })
         .catch((err) => {
           console.log(err);
@@ -1090,7 +1132,7 @@ export default class SearchModel {
     filterOnMunicipalGid,
     filterOnWkt
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.stopPoints.searchLabel,
     });
 
@@ -1140,7 +1182,57 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", stopPoints);
+          stopPoints.searchParams = {
+            filterOnNameOrNumber: filterOnNameOrNumber,
+            filterOnPublicLine: filterOnPublicLine,
+            filterOnMunicipalGid: filterOnMunicipalGid,
+            filterOnWkt: filterOnWkt,
+          };
+
+          this.localObserver.publish("vt-result-done", stopPoints);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }
+
+  /**
+   * Get all stop points. Sends an event when the function is called and another one when it's promise is done.
+   * @param {int} filterOnInternalLineNumber The internal number of the stop point, pass null of no number is given.
+   * @param {int} filterOnDirection The direction of line, pass null of no direction is given.
+   *
+   * @memberof SearchModel
+   */
+  getStopPointsByLine(filterOnInternalLineNumber, filterOnDirection) {
+    // Build up the url with viewparams.
+    let url = this.geoServer.ShowStopPoints.url;
+    let viewParams = "&viewparams=";
+    if (filterOnInternalLineNumber) {
+      viewParams =
+        viewParams + `filterOnLineNumber:${filterOnInternalLineNumber};`;
+    }
+    if (filterOnDirection) {
+      viewParams = viewParams + `filterOnDirection:${filterOnDirection};`;
+    }
+
+    if (filterOnInternalLineNumber || filterOnDirection) url = url + viewParams;
+    url = this.encodeUrlForGeoServer(url);
+
+    fetch(url).then((res) => {
+      res
+        .json()
+        .then((jsonResult) => {
+          let stopPoints = {
+            featureCollection: jsonResult,
+          };
+
+          stopPoints.searchParams = {
+            filterOnInternalLineNumber: filterOnInternalLineNumber,
+            filterOnDirection: filterOnDirection,
+          };
+
+          this.localObserver.publish("vt-stop-point-showed", stopPoints);
         })
         .catch((err) => {
           console.log(err);

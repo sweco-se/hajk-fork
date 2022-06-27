@@ -1,9 +1,10 @@
+import { Tooltip } from "@material-ui/core";
 import React from "react";
 
 class StyleButton extends React.Component {
   constructor() {
     super();
-    this.onToggle = e => {
+    this.onToggle = (e) => {
       e.preventDefault();
       this.props.onToggle(this.props.style);
     };
@@ -16,9 +17,11 @@ class StyleButton extends React.Component {
     }
 
     return (
-      <span style={btnStyle} onMouseDown={this.onToggle}>
-        {this.props.label}
-      </span>
+      <Tooltip title={this.props.tooltip || ""}>
+        <span style={btnStyle} onMouseDown={this.onToggle}>
+          {this.props.label}
+        </span>
+      </Tooltip>
     );
   }
 }
@@ -31,7 +34,7 @@ const styles = {
     cursor: "pointer",
     display: "inline-block",
     padding: 8,
-    borderLeft: "1px solid #f0f0f0"
+    borderLeft: "1px solid #f0f0f0",
   },
   activeButton: {
     width: "40px",
@@ -42,8 +45,8 @@ const styles = {
     padding: 8,
     borderLeft: "1px solid #ccc",
     background: "#C7CBCF",
-    boxShadow: "1px 1px 3px #f0f0f0"
-  }
+    boxShadow: "1px 1px 3px #f0f0f0",
+  },
 };
 
 export default StyleButton;

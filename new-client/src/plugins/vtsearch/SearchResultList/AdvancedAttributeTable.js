@@ -3,9 +3,10 @@ import { withStyles } from "@material-ui/core/styles";
 
 import AttributeTable from "./AttributeTable";
 import SummaryTable from "./SummaryTable";
+import { CSVDownload } from "react-csv";
 
-const styles = theme => ({
-  paper: { height: 240, marginBottom: 10, boxShadow: "none" }
+const styles = (theme) => ({
+  paper: { height: 240, marginBottom: 10, boxShadow: "none" },
 });
 
 /**
@@ -18,7 +19,44 @@ const styles = theme => ({
 class AdvancedAttributeTable extends React.Component {
   state = {
     rows: this.getRows(),
-    summaryHeight: this.getSummarizationHeight()
+    summaryHeight: this.getSummarizationHeight(),
+    exportCsvFile: false,
+  };
+
+  constructor(props) {
+    super(props);
+    this.#bindSubscriptions();
+  }
+
+  #bindSubscriptions = () => {
+    const { localObserver } = this.props;
+    localObserver.subscribe(
+      "vt-export-search-result-for-active-tab",
+      (activeTabId) => {
+        const { searchResult } = this.props;
+        if (
+          searchResult.id === activeTabId &&
+          searchResult.type === "journeys"
+        ) {
+          this.#exportSearchResult();
+        }
+      }
+    );
+  };
+
+  #exportSearchResult = () => {
+    //The download csv component will download only when rendered, so it needs to
+    //be removed and then readded to trigger the download. Otherwise download will
+    //only be possible the first time the download button is clicked
+    this.setState({ exportCsvFile: false });
+    this.setState({ exportCsvFile: true });
+  };
+
+  #getExportHeaders = () => {
+    let columns = this.getColumns();
+    return columns.map((value) => {
+      return { label: value.label, key: value.dataKey };
+    });
   };
 
   getSummarizationHeight() {
@@ -32,9 +70,9 @@ class AdvancedAttributeTable extends React.Component {
       {
         width: 300,
         label: "TRAFIKFÖRETAG",
-        dataKey: "operator"
+        dataKey: "operator",
       },
-      { width: windowWidth - 300, label: "LINJER", dataKey: "lines" }
+      { width: windowWidth - 300, label: "LINJER", dataKey: "lines" },
     ];
   }
 
@@ -45,10 +83,10 @@ class AdvancedAttributeTable extends React.Component {
   }
 
   getRows() {
-    return this.getSummarization().map(transportCompany => {
+    return this.getSummarization().map((transportCompany) => {
       return {
         operator: transportCompany.transportCompany,
-        lines: this.getConcatenatedLinesString(transportCompany)
+        lines: this.getConcatenatedLinesString(transportCompany),
       };
     });
   }
@@ -57,7 +95,7 @@ class AdvancedAttributeTable extends React.Component {
     const { searchResult } = this.props;
     return Array.from(
       new Set(
-        searchResult.featureCollection.features.map(feature => {
+        searchResult.featureCollection.features.map((feature) => {
           return feature.properties.TransportCompany;
         })
       )
@@ -70,9 +108,9 @@ class AdvancedAttributeTable extends React.Component {
     var transportCompaniesAndTheirLines = {
       publicLineNames: [],
       internalLineNumbers: [],
-      transportCompany: transportCompany
+      transportCompany: transportCompany,
     };
-    searchResult.featureCollection.features.forEach(feature => {
+    searchResult.featureCollection.features.forEach((feature) => {
       const { PublicLineName, InternalLineNumber } = feature.properties;
       if (feature.properties.TransportCompany === transportCompany) {
         if (
@@ -97,22 +135,34 @@ class AdvancedAttributeTable extends React.Component {
 
   getSummarization() {
     var summary = [];
-    this.getDistinctTransportCompanies().forEach(transportCompany => {
+    this.getDistinctTransportCompanies().forEach((transportCompany) => {
       summary.push(this.getTransportCompaniesWithLinesAdded(transportCompany));
     });
     return summary;
   }
+
+  #renderCSVDownloadComponent = () => {
+    return (
+      <CSVDownload
+        data={this.getRows()}
+        headers={this.#getExportHeaders()}
+        filename="kartsidanExport_summaryTable.csv"
+        target="_self"
+      />
+    );
+  };
 
   render = () => {
     const {
       toolConfig,
       attributeTableContainerHeight,
       localObserver,
-      searchResult
+      searchResult,
     } = this.props;
 
     return (
       <>
+        {this.state.exportCsvFile && this.#renderCSVDownloadComponent()}
         <SummaryTable
           localObserver={localObserver}
           height={this.state.summaryHeight}

@@ -30,6 +30,7 @@ const styles = (theme) => ({
   },
   firstMenuItem: { minHeight: 36 },
   searchButtonText: { color: theme.palette.primary.main },
+  showLinesCheckbox: { marginLeft: 8, marginTop: 6 },
 });
 
 //TODO - Only mockup //Tobias
@@ -44,6 +45,7 @@ class Lines extends React.PureComponent {
     trafficTransports: [],
     trafficTransport: "",
     throughStopArea: "",
+    showStopPoints: true,
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -91,7 +93,7 @@ class Lines extends React.PureComponent {
   };
   bindSubscriptions() {
     const { localObserver } = this.props;
-    localObserver.subscribe("vtsearch-result-done", () => {
+    localObserver.subscribe("vt-result-done", () => {
       this.clearSearchInputAndButtons();
     });
   }
@@ -111,6 +113,7 @@ class Lines extends React.PureComponent {
       municipality: "",
       trafficTransport: "",
       throughStopArea: "",
+      showStopPoints: true,
     });
   };
 
@@ -122,7 +125,7 @@ class Lines extends React.PureComponent {
       trafficTransport,
       throughStopArea,
     } = this.state;
-    this.localObserver.publish("routes-search", {
+    this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
       internalLineNumber: internalLineNumber,
       municipality: municipality.gid,
@@ -142,14 +145,14 @@ class Lines extends React.PureComponent {
       throughStopArea,
     } = this.state;
     if (!this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
-      this.localObserver.publish("routes-search", {
+      this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
@@ -170,14 +173,14 @@ class Lines extends React.PureComponent {
       throughStopArea,
     } = this.state;
     if (!this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isRectangleActive || this.state.isPolygonActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
-      this.localObserver.publish("routes-search", {
+      this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
@@ -219,13 +222,13 @@ class Lines extends React.PureComponent {
     });
   };
 
-  handleKeyPress = (event) => {
+  #handleKeyPress = (event) => {
     if (event.key === "Enter") {
       this.doSearch();
     }
   };
 
-  renderPublicAndTechnicalNrSection = () => {
+  #renderPublicAndTechnicalNrSection = () => {
     return (
       <>
         <Grid item xs={6}>
@@ -248,7 +251,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderInputValueSection = () => {
+  #renderInputValueSection = () => {
     return (
       <Grid item xs={12}>
         <Typography variant="caption">VIA HÅLLPLATS</Typography>
@@ -262,7 +265,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderTrafficTypeSection = () => {
+  #renderTrafficTypeSection = () => {
     const { trafficTransports } = this.state;
     const { classes } = this.props;
     return (
@@ -297,7 +300,7 @@ class Lines extends React.PureComponent {
       </Grid>
     );
   };
-  renderMunicipalitySection = () => {
+  #renderMunicipalitySection = () => {
     const { classes } = this.props;
     const { municipalities } = this.state;
     return (
@@ -333,7 +336,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderSearchButtonSection = () => {
+  #renderSearchButtonSection = () => {
     const { classes } = this.props;
     return (
       <Grid item xs={12}>
@@ -348,7 +351,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderSpatialSearchSection = () => {
+  #renderSpatialSearchSection = () => {
     const { classes } = this.props;
     return (
       <>
@@ -402,14 +405,14 @@ class Lines extends React.PureComponent {
           container
           justify="center"
           spacing={2}
-          onKeyPress={this.handleKeyPress}
+          onKeyPress={this.#handleKeyPress}
         >
-          {this.renderPublicAndTechnicalNrSection()}
-          {this.renderInputValueSection()}
-          {this.renderTrafficTypeSection()}
-          {this.renderMunicipalitySection()}
-          {this.renderSearchButtonSection()}
-          {this.renderSpatialSearchSection()}
+          {this.#renderPublicAndTechnicalNrSection()}
+          {this.#renderInputValueSection()}
+          {this.#renderTrafficTypeSection()}
+          {this.#renderMunicipalitySection()}
+          {this.#renderSearchButtonSection()}
+          {this.#renderSpatialSearchSection()}
         </Grid>
       </div>
     );
