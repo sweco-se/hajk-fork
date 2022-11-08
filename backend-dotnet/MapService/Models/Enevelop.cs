@@ -2,7 +2,7 @@
 {
     public class Enevelop
     {
-        public string? code { get; set }
+        public string? code { get; set; }
 
         public double? x1 { get; set; }
 
