@@ -2,6 +2,6 @@
 {
     public class ListVideo
     {
-        public string[]? listVideo { get; set; }
+        public List<string>? listVideo { get; set; }
     }
 }

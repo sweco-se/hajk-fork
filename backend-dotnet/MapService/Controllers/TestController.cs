@@ -1,4 +1,5 @@
 ﻿using MapService.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MapService.Controllers
@@ -46,7 +47,12 @@ namespace MapService.Controllers
         [HttpGet]
         public ListVideo GetListVideo()
         {
-            string[] list = { "file_example_OGG_480_1_7mg.ogg", "file_example_OGG_480_1_8mg.ogg", "file_example_OGG_480_1_9mg.ogg", "file_example_OGG_480_1_0mg.ogg" };
+            List<string> list = new List<string>();
+            list.Add("file_example_OGG_480_1_7mg.ogg");
+            list.Add("file_example_OGG_480_1_8mg.ogg");
+            list.Add("file_example_OGG_480_1_9mg.ogg");
+            list.Add("file_example_OGG_480_1_0mg.ogg");
+
             ListVideo listVideo = new ListVideo
             {
                 listVideo = list
