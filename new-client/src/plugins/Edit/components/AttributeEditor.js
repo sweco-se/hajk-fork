@@ -659,11 +659,17 @@ class AttributeEditor extends React.Component {
       case "lista":
         let options = null;
         if (Array.isArray(field.values)) {
-          options = field.values.map((val, i) => (
-            <option key={i} value={val}>
-              {val}
-            </option>
-          ));
+          options = field.values.map((val, i) => {
+            // We allow setting aliases for list values by separating the value and alias by %%% in the values list of the field being edited.
+            // If there is no %%% the value will be displayed as normal.
+            const value = val.split("%%%")[0];
+            const valueAlias = val.split("%%%")[1];
+            return (
+              <option key={i} value={value}>
+                {valueAlias ?? value}
+              </option>
+            );
+          });
         }
         return (
           <>
