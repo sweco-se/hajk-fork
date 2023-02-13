@@ -354,7 +354,7 @@ class AttributeEditor extends React.Component {
       formValues[name] = value;
       delete this.formErrors[name];
     } else {
-      formValues[name] = "";
+      formValues[name] = value;
       this.formErrors[name] = message;
     }
 
