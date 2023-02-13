@@ -96,7 +96,7 @@ export const EXAMPLE_FLOOR_CONFIG = [
     floorDisplayName: "Plan -3",
     floorValue: "Plan-3",
     floorLevel: -4,
-    floorId: 166,
+    floorId: 181,
     default: false,
   },
 ];
