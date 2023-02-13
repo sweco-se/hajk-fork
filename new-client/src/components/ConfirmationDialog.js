@@ -18,7 +18,26 @@ const ConfirmationDialog = ({
   contentDescription,
   cancel,
   confirm,
+  defaultChoice = "cancel",
 }) => {
+  const renderDialogActions = () => {
+    return defaultChoice === "confirm" ? (
+      <DialogActions>
+        <Button onClick={handleAbort}>{cancel}</Button>
+        <Button onClick={handleConfirm} variant="contained">
+          {confirm}
+        </Button>
+      </DialogActions>
+    ) : (
+      <DialogActions>
+        <Button onClick={handleConfirm}>{confirm}</Button>
+        <Button onClick={handleAbort} variant="contained">
+          {cancel}
+        </Button>
+      </DialogActions>
+    );
+  };
+
   return createPortal(
     <Dialog
       open={open}
@@ -31,12 +50,7 @@ const ConfirmationDialog = ({
       <DialogContent>
         <Typography>{contentDescription}</Typography>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleConfirm}>{confirm}</Button>
-        <Button onClick={handleAbort} variant="contained">
-          {cancel}
-        </Button>
-      </DialogActions>
+      {renderDialogActions()}
     </Dialog>,
     document.getElementById("map")
   );
