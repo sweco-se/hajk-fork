@@ -1122,8 +1122,8 @@ class Edit extends Component {
             <th>Datatyp</th>
             <th>Listvärden</th>
             <th>Standardvärde</th>
-            <th>Custom Validation</th> 
-            <th>Custom Meddelande</th>
+            <th>Inmatningskontroll</th> 
+            <th>Felmeddelande</th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>

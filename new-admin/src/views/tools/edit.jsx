@@ -65,6 +65,11 @@ class ToolOptions extends Component {
           instruction: tool.options.instruction,
           requireConfirmOnSave: tool.options.requireConfirmOnSave,
           confirmAsDefault: tool.options.confirmAsDefault,
+          setFieldsFromMatchingMapValues:
+            tool.options.setFieldsFromMatchingMapValues,
+          userOverrideMatchingMapValues:
+            tool.options.userOverrideMatchingMapValues,
+          pasteFeatureTool: tool.options.pasteFeatureTool,
           activeServices: tool.options.activeServices || [],
           visibleAtStart: tool.options.visibleAtStart,
           visibleForGroups:
@@ -230,6 +235,10 @@ class ToolOptions extends Component {
         height: this.state.height,
         instruction: this.state.instruction,
         requireConfirmOnSave: this.state.requireConfirmOnSave,
+        setFieldsFromMatchingMapValues:
+          this.state.setFieldsFromMatchingMapValues,
+        userOverrideMatchingMapValues: this.state.userOverrideMatchingMapValues,
+        pasteFeatureTool: this.state.pasteFeatureTool,
         confirmAsDefault: this.state.confirmAsDefault,
         activeServices: this.state.activeServices,
         visibleAtStart: this.state.visibleAtStart,
@@ -537,6 +546,54 @@ class ToolOptions extends Component {
             />
             &nbsp;
             <label htmlFor="confirmAsDefault">Bekräfta som standardval</label>
+          </div>
+
+          <div>
+            <input
+              id="setFieldsFromMatchingMapValues"
+              name="setFieldsFromMatchingMapValues"
+              type="checkbox"
+              onChange={e => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.setFieldsFromMatchingMapValues}
+            />
+            &nbsp;
+            <label htmlFor="setFieldsFromMatchingMapValues">
+              Ställ automatiskt in värden från kartvärdena
+            </label>
+          </div>
+
+          <div>
+            <input
+              id="userOverrideMatchingMapValues"
+              name="userOverrideMatchingMapValues"
+              type="checkbox"
+              onChange={e => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.userOverrideMatchingMapValues}
+            />
+            &nbsp;
+            <label htmlFor="userOverrideMatchingMapValues">
+              Tillåt åsidosättande av kartvärden
+            </label>
+          </div>
+
+          <div>
+            <input
+              id="pasteFeatureTool"
+              name="pasteFeatureTool"
+              type="checkbox"
+              onChange={e => {
+                this.handleInputChange(e);
+              }}
+              checked={this.state.pasteFeatureTool}
+            />
+            &nbsp;
+            <label htmlFor="pasteFeatureTool">
+              Tillåt inklistring av kartobjekt
+            </label>
           </div>
 
           <div>
