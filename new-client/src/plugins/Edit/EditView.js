@@ -335,6 +335,7 @@ class EditView extends React.PureComponent {
 
   render() {
     const { activeStep, editSource, editFeature, loading } = this.state;
+    const { options } = this.props;
     return (
       <>
         <Stepper activeStep={activeStep} orientation="vertical">
@@ -412,6 +413,9 @@ class EditView extends React.PureComponent {
           contentDescription={this.state.editSummary}
           cancel={"Avbryt"}
           confirm={"Bekräfta"}
+          defaultChoice={
+            options.confirmAsDefault === true ? "confirm" : "cancel"
+          }
           handleConfirm={() => this.handleSaveConfirmation()}
           handleAbort={() => this.handleSaveConfirmationAbort()}
         />
