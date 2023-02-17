@@ -550,13 +550,20 @@ class EditModel {
     this.observer.publish("layerChanged", this.layer);
   }
 
-  #zoomToFeature = (feature) => {
+  #goToFeature = (feature) => {
     if (!feature) {
       return;
     }
 
     const extent = feature.getGeometry().getExtent();
     this.map.getView().fit(extent);
+
+    //Set the map to a reasonable zoom extent - a full fit to extent was thought to be a little 'aggressive'.
+    const suggestedZoomLevel = this.map.getView().getZoom() - 2;
+
+    if (suggestedZoomLevel < this.map.getView().getMinZoom()) return;
+
+    this.map.getView().setZoom(this.map.getView().getZoom() - 2);
   };
 
   pasteFeature(feature) {
@@ -577,8 +584,8 @@ class EditModel {
     //Add our feature to the current edit drawing layer.
     this.vectorSource.addFeature(feature);
 
-    //Center on or zoom the feature - as the user has not drawn the feature we need to make it clear which feature has been added.
-    this.#zoomToFeature(feature); //Call the zoomToFeature on the MapViewModel instead?
+    //Center on the feature - as the user has not drawn the feature we need to make it clear which feature has been added.
+    this.#goToFeature(feature);
 
     // Below we do some actions that usually happen when the 'add' draw interaction finishes, when a feature
     // is being added by the draw, instead of being pasted in.

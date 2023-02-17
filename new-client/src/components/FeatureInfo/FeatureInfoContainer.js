@@ -321,7 +321,7 @@ class FeatureInfoContainer extends React.PureComponent {
             variant="contained"
             onClick={() => {
               this.props.onCopyFeature(features[this.state.selectedIndex]);
-              this.props.enqueueSnackbar("Kopierad till kartans urklipp", {
+              this.props.enqueueSnackbar("Kopierad till kartans urklipp.", {
                 variant: "success",
                 autoHideDuration: 2000,
               });
