@@ -207,10 +207,10 @@ class EditView extends React.PureComponent {
         model.refreshEditingLayer();
         model.editFeatureBackup = undefined;
         this.handleNext();
-        app.globalObserver.publish(
-          "core.alert",
-          this.getStatusMessage(response)
-        );
+        this.props.enqueueSnackbar("Uppdateringen lyckades.", {
+          variant: "success",
+          autoHideDuration: 2000,
+        });
         this.toggleActiveTool(undefined);
         model.deactivateInteraction();
       }
@@ -249,18 +249,18 @@ class EditView extends React.PureComponent {
       try {
         //No obvious reasons why we shouldn't be able to add the feature to the edit layer. Try to add.
         this.props.model.pasteFeature(feature);
-        this.props.enqueueSnackbar("Inklistringen lyckades", {
+        this.props.enqueueSnackbar("Inklistringen lyckades.", {
           variant: "success",
           autoHideDuration: 2000,
         });
       } catch (error) {
-        this.props.enqueueSnackbar(`Inklistring misslyckades`, {
+        this.props.enqueueSnackbar(`Inklistringen misslyckades.`, {
           variant: "warning",
         });
       }
     } else {
       this.props.enqueueSnackbar(
-        `Inklistring misslyckades: ${featureValid.message}`,
+        `Inklistringen misslyckades: ${featureValid.message}`,
         {
           variant: "warning",
         }
