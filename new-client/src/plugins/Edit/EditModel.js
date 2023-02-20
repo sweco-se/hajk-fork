@@ -1,6 +1,6 @@
 import { WFS } from "ol/format";
 import { Style, Stroke, Fill, Circle, RegularShape } from "ol/style";
-import { MultiPoint, Polygon } from "ol/geom";
+import { MultiPoint, Polygon, MultiPolygon } from "ol/geom";
 import Vector from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { all as strategyAll } from "ol/loadingstrategy";
@@ -177,28 +177,41 @@ class EditModel {
   }
 
   checkPasteIsValid(feature) {
-    const editSource = this.editSource;
+    let allowPolygonToMultipolygon = true; //Have this here to potentially make configurable.
 
     // Make sure that we have both a feature to paste and a source to paste into.
-    if (!feature || !editSource || !this.vectorSource)
+    if (!feature || !this.editSource || !this.vectorSource)
       return {
         valid: false,
         message: "Kopieringsobjekt eller mållager saknas.",
       };
 
-    // Make sure that the geometry type of the pasted feature matches that of the edit source (e.g. polygon)
     let pasteFeatureGeometryType = feature.getGeometry().getType();
     let editSourceGeometryType =
       this.vectorSource.getFeatures().length > 0
         ? this.vectorSource.getFeatures()[0].getGeometry().getType()
         : "empty";
 
-    if (pasteFeatureGeometryType !== editSourceGeometryType)
+    //Handle the case that we have a Polygon/Multipolygon non-matching geometry type that we may want to copy anyway.
+    if (
+      allowPolygonToMultipolygon &&
+      pasteFeatureGeometryType === "Polygon" &&
+      editSourceGeometryType === "MultiPolygon"
+    ) {
+      return {
+        valid: true,
+        message: "",
+        mixedPolygons: true,
+      };
+    }
+
+    if (pasteFeatureGeometryType !== editSourceGeometryType) {
       return {
         valid: false,
         message:
           "Kopierad objektet och redigeringslagret har inte samma geometrityp",
       };
+    }
 
     // If we reach here, there are no clear reasons why we shouldn't be able to add the copied feature to the edit layer.
     // Try to paste the feature.
@@ -566,16 +579,33 @@ class EditModel {
     this.map.getView().setZoom(this.map.getView().getZoom() - 2);
   };
 
-  pasteFeature(feature) {
+  #convertToMultiPolygon = (feature) => {
+    if (feature.getGeometry().getType() === "Polygon") {
+      let polygonCoordsArray = [feature.getGeometry().getCoordinates()];
+
+      return new MultiPolygon(
+        polygonCoordsArray,
+        feature.getGeometry().getLayout()
+      );
+    }
+  };
+
+  // At this stage we have done a check on the geometry validity that the geometry types match.
+  // The variable mixed polygons, will be true if our feature to paste is a Polygon, and our edit layer is a MultiPolygon.
+  pasteFeature(feature, mixedPolygons) {
     // Here we are pasting into draw interaction layer being edited by the edit tool.
     // The Geometry name was set when the draw interaction was created (as this.geometryName), so we need to make sure
     // That when we paste in our feature, we give it the same geometry name as the draw interaction was given.
 
-    //If our geometry names differ, add a geometry property under the correct geometry name.
+    let updateGeometry = mixedPolygons
+      ? this.#convertToMultiPolygon(feature)
+      : feature.getGeometry();
+
+    //If our geometry names differ, add a geometry property under the correct geometry name (the name the edit source is using).
     if (this.geometryName !== feature.getGeometryName()) {
       const newGeometryName = this.geometryName;
 
-      let newGeomProperty = { [newGeometryName]: feature.getGeometry() };
+      let newGeomProperty = { [newGeometryName]: updateGeometry };
 
       feature.setProperties(newGeomProperty);
       feature.setGeometryName(newGeometryName);

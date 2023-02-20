@@ -248,7 +248,7 @@ class EditView extends React.PureComponent {
     if (featureValid.valid) {
       try {
         //No obvious reasons why we shouldn't be able to add the feature to the edit layer. Try to add.
-        this.props.model.pasteFeature(feature);
+        this.props.model.pasteFeature(feature, featureValid.mixedPolygons);
         this.props.enqueueSnackbar("Inklistringen lyckades.", {
           variant: "success",
           autoHideDuration: 2000,
