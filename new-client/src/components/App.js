@@ -37,6 +37,7 @@ import Information from "../controls/Information";
 import PresetLinks from "../controls/PresetLinks";
 import ExternalLinks from "../controls/ExternalLinks";
 import RecentlyUsedPlugins from "../controls/RecentlyUsedPlugins";
+import MapClipboard from "../controls/MapClipboard";
 
 import DrawerToggleButtons from "../components/Drawer/DrawerToggleButtons";
 
@@ -1240,6 +1241,14 @@ class App extends React.PureComponent {
                     showRecentlyUsedPlugins={
                       this.appModel.config.mapConfig.map.showRecentlyUsedPlugins
                     }
+                  />
+                )}
+                {clean === false && (
+                  <MapClipboard
+                    globalObserver={this.globalObserver}
+                    showMapClipboard={true}
+                    appModel={this.appModel}
+                    map={this.appModel.getMap()}
                   />
                 )}
               </Box>

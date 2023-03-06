@@ -114,7 +114,7 @@ class Toolbar extends Component {
 
   onPasteFeatureClicked() {
     let mapClipboardFeature = this.props.app.getMapClipboardFeature();
-    this.props.onPasteFeature(mapClipboardFeature);
+    this.props.onPasteFeature(mapClipboardFeature.feature);
   }
 
   render() {

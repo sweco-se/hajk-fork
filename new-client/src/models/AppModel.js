@@ -155,8 +155,20 @@ class AppModel {
     const featureCopy = new Feature({
       geometry: feature.getGeometry().clone(),
     });
+    featureCopy.setProperties({ ...feature.getProperties() });
 
-    this.mapClipboardFeature = featureCopy;
+    // Add a 'copyDetails' object with some additional details that can be accessed along with the copied feature.
+    // These can be displayed when showing a summary of what is currently on the clipoard and potentially used when
+    // later doing something with the copied feature.
+    const copyDetails = {
+      copiedLayerName: feature.layer.getProperties().name ?? "",
+      copiedLayerCaption: feature.layer.getProperties().caption ?? "",
+    };
+
+    this.mapClipboardFeature = {
+      feature: featureCopy,
+      copyDetails: copyDetails,
+    };
 
     // Let other tools know that a feature has been added to the clipboard.
     // If something wants to get the feature, they can fetch it using getMapClipboardFeature() on the appModel;
