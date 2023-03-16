@@ -57,6 +57,12 @@ class EditView extends React.PureComponent {
       });
     });
 
+    this.props.observer.subscribe("multipart-added", () => {
+      this.setState({
+        activeTool: undefined,
+      });
+    });
+
     this.props.app.globalObserver.subscribe(
       "core.clipboard-feature-updated",
       () => {
@@ -333,6 +339,15 @@ class EditView extends React.PureComponent {
     );
   };
 
+  getGeometryTypeLabel = () => {
+    const type = this.props.model.vectorSource
+      ?.getFeatures()[0]
+      ?.getGeometry()
+      ?.getType();
+
+    return type ? `(${type})` : "";
+  };
+
   render() {
     const { activeStep, editSource, editFeature, loading } = this.state;
     const { options } = this.props;
@@ -352,7 +367,9 @@ class EditView extends React.PureComponent {
           <Step key="2">
             <StepLabel>
               {activeStep === 1
-                ? `Redigerar ${editSource?.caption}`
+                ? `Redigerar ${
+                    editSource?.caption
+                  } ${this.getGeometryTypeLabel()}`
                 : `Redigera`}
             </StepLabel>
             <StepContent>

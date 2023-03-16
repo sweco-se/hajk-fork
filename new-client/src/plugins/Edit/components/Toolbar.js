@@ -8,6 +8,8 @@ import LinearScaleIcon from "@mui/icons-material/LinearScale";
 import ZoomOutMapIcon from "@mui/icons-material/ZoomOutMap";
 import FormatShapesIcon from "@mui/icons-material/FormatShapes";
 import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import FormGroup from "@mui/material/FormGroup";
@@ -64,6 +66,12 @@ class Toolbar extends Component {
       case "move":
         model.activateInteraction("move");
         break;
+      case "addMultipart":
+        model.activateInteraction("addMultipart");
+        break;
+      case "removeMultipart":
+        model.activateInteraction("removeMultipart");
+        break;
       default:
         break;
     }
@@ -94,6 +102,18 @@ class Toolbar extends Component {
       "add",
       this.props.editSource.editMultiPolygon ? "MultiPolygon" : "Polygon"
     );
+  }
+
+  onAddMultiPartClicked() {
+    this.props.model.layer.dragLocked = true;
+    this.props.toggleActiveTool("addMultipart");
+    this.changeTool("addMultipart");
+  }
+
+  onRemoveMultiPartClicked() {
+    this.props.model.layer.dragLocked = true;
+    this.props.toggleActiveTool("removeMultipart");
+    this.changeTool("removeMultipart");
   }
 
   onRemoveClicked() {
@@ -252,6 +272,38 @@ class Toolbar extends Component {
           >
             Ändra
             <FormatShapesIcon sx={{ marginLeft: 1 }} />
+          </StyledButton>
+        </Grid>
+        <Grid item xs={6}>
+          <StyledButton
+            variant="contained"
+            fullWidth
+            disabled={!editSource.editMultiPolygon}
+            onClick={() => {
+              this.onAddMultiPartClicked();
+            }}
+            type="button"
+            title="Lägg till delyta"
+            selected={this.props.activeTool === "addMultipart"}
+          >
+            Addera Del
+            <AddIcon sx={{ marginLeft: 1 }} />
+          </StyledButton>
+        </Grid>
+        <Grid item xs={6}>
+          <StyledButton
+            variant="contained"
+            fullWidth
+            disabled={!editSource.editMultiPolygon}
+            onClick={() => {
+              this.onRemoveMultiPartClicked();
+            }}
+            type="button"
+            title="Ta bort delyta"
+            selected={this.props.activeTool === "removeMultipart"}
+          >
+            Radera Del
+            <RemoveIcon sx={{ marginLeft: 1 }} />
           </StyledButton>
         </Grid>
       </Grid>

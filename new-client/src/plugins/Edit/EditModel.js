@@ -23,7 +23,10 @@ class EditModel {
 
     this.vectorSource = undefined;
     this.layer = undefined;
+    this.multipartTempSource = undefined;
+    this.multipartTempLayer = undefined;
     this.select = undefined;
+    this.multipartSelect = undefined;
     this.modify = undefined;
     this.key = undefined;
     this.editFeature = undefined;
@@ -34,6 +37,7 @@ class EditModel {
     this.instruction = "";
     this.filty = false;
     this.removalToolMode = "off";
+    this.multipartBaseFeature = undefined;
 
     // Normalize the sources that come from options.
     this.options.sources = this.options.sources.map((s) => {
@@ -349,6 +353,40 @@ class EditModel {
     ];
   }
 
+  getSketchMultipartStyle() {
+    return new Style({
+      fill: new Fill({
+        color: "rgba(0, 0, 0, 0.5)",
+      }),
+      stroke: new Stroke({
+        color: "rgba(255, 255, 0, 1)",
+        width: 4,
+      }),
+      image: new Circle({
+        radius: 6,
+        fill: new Fill({
+          color: "rgba(255, 255, 0, 0.5)",
+        }),
+        stroke: new Stroke({
+          color: "rgba(255, 255, 255, 0.5)",
+          width: 2,
+        }),
+      }),
+    });
+  }
+
+  getActiveMultipartStyle() {
+    return new Style({
+      fill: new Fill({
+        color: "rgba(255, 255, 0, 0.5)",
+      }),
+      stroke: new Stroke({
+        color: "rgba(255, 255, 255, 1)",
+        width: 3,
+      }),
+    });
+  }
+
   filterByDefaultValue(features) {
     return features.filter((feature) => {
       return this.editSource.editableFields.some((field) => {
@@ -542,6 +580,26 @@ class EditModel {
       projection: this.source.projection,
     });
 
+    // Create a source and layer to use when drawing multipolygons with the Draw interaction.
+    // This is because when adding a new polygon part, we don't actually want the Draw interaction to add a new Feature
+    // to our edit layer. We instead want to take the polygon created by Draw and append it to our base feature that we are adding a
+    // new part to. We will then discard the temporary layer, with the feature created by Draw. We are in this way updating an existing
+    // geometry, not creating a new feature.
+
+    this.multipartTempSource = new VectorSource({
+      strategy: strategyAll,
+      projection: this.source.projection,
+    });
+
+    this.multidrawTempLayer = new Vector({
+      layerType: "system",
+      zIndex: 5000,
+      name: "PluginEditMultipartLayer",
+      caption: "Edit layer - Multipart temp layer",
+      source: this.multipartTempSource,
+      style: this.getHiddenStyle(),
+    });
+
     this.layer = new Vector({
       layerType: "system",
       zIndex: 5000,
@@ -555,7 +613,12 @@ class EditModel {
       this.map.removeLayer(this.layer);
     }
 
+    if (this.multidrawTempLayer) {
+      this.map.removeLayer(this.layer);
+    }
+
     this.map.addLayer(this.layer);
+    this.map.addLayer(this.multidrawTempLayer);
     this.editSource = this.source;
     this.editFeature = null;
     this.observer.publish("editSource", this.source);
@@ -650,6 +713,49 @@ class EditModel {
     this.map.clickLock.add("edit");
   }
 
+  handleMultipartDrawn = (drawnMultipart) => {
+    const existingGeometry = this.multipartBaseFeature.getGeometry();
+    const newPartGeometry = drawnMultipart.getGeometry();
+
+    existingGeometry.appendPolygon(newPartGeometry);
+    this.multipartBaseFeature.modification = "updated";
+
+    this.observer.publish("multipart-added");
+  };
+
+  multipartBaseSelected = (event) => {
+    if (event.selected.length === 0) {
+      return;
+    }
+
+    this.multipartBaseFeature = event.selected[0];
+    //Highlight the base feature being edited, to give the user a chance to know what they are adding a part to.
+    this.multipartBaseFeature.setStyle(this.getActiveMultipartStyle());
+
+    //Get the correct geometryLayout (XY or XYZ) to provide to the Draw interaction.
+    const layout = this.multipartBaseFeature.getGeometry().getLayout();
+
+    //Create and add a draw event for drawing the new part.
+    this.draw = new Draw({
+      source: this.multipartTempSource,
+      style: this.getSketchMultipartStyle(),
+      type: "Polygon",
+      stopClick: true,
+      geometryName: this.geometryName,
+      geometryLayout: layout,
+    });
+    this.draw.on("drawend", (event) => {
+      this.handleMultipartDrawn(event.feature);
+      setTimeout(() => {
+        // Elsewhere in the Edit tool we have delayed deactivating the Draw interaction
+        // In order to avoid an unwanted doubleclick zoom. We do the the same here.
+        this.deactivateInteraction();
+      }, 1);
+    });
+
+    this.map.addInteraction(this.draw);
+  };
+
   activateAdd(geometryType) {
     this.draw = new Draw({
       source: this.vectorSource,
@@ -675,9 +781,29 @@ class EditModel {
     this.map.clickLock.add("edit");
   }
 
+  activateAddMultipart() {
+    this.multipartSelect = new Select({
+      style: this.getSelectStyle(),
+      toggleCondition: never,
+      layers: [this.layer],
+    });
+
+    this.multipartSelect.on("select", (event) => {
+      this.multipartBaseSelected(event, this.source);
+    });
+    this.map.addInteraction(this.multipartSelect);
+  }
+
   activateRemove() {
     this.remove = true;
     this.map.on("singleclick", this.removeSelected);
+  }
+
+  activateRemoveMultipart() {
+    this.remove = true;
+    this.map.on("singleclick", (event) => {
+      this.removeSelectedMultipart(event);
+    });
   }
 
   activateMove() {
@@ -700,19 +826,28 @@ class EditModel {
   activateInteraction(type, geometryType) {
     if (type === "add") {
       this.activateAdd(geometryType);
+      this.activateSnapping();
     }
     if (type === "move") {
       this.activateMove();
+      this.activateSnapping();
     }
     if (type === "modify") {
       this.activateModify();
+      this.activateSnapping();
     }
     if (type === "remove") {
       this.map.clickLock.add("edit");
       this.activateRemove();
     }
-
-    this.activateSnapping();
+    if (type === "addMultipart") {
+      this.map.clickLock.add("edit");
+      this.activateAddMultipart();
+    }
+    if (type === "removeMultipart") {
+      this.map.clickLock.add("edit");
+      this.activateRemoveMultipart();
+    }
   }
 
   removeSelected = (e) => {
@@ -724,6 +859,53 @@ class EditModel {
           feature.modification = "removed";
         }
         feature.setStyle(this.getHiddenStyle());
+      }
+    });
+  };
+
+  removeSelectedMultipart = (e) => {
+    this.map.forEachFeatureAtPixel(e.pixel, (feature) => {
+      // TODO - Is the current behaviour a bug that  if you have for example 4 features on top of each other it would delete all of them.
+      // Alternative would be to delete one at a time, which feels more intuitive.
+      const clickedCoordinate = this.map.getCoordinateFromPixel(e.pixel);
+
+      if (this.vectorSource.getFeatures().some((f) => f === feature)) {
+        // How do we deal with finding out if it should still be "updated".
+        // For example, they added 3 polygon parts. And then removed some.
+        // Need to do some kind of comparison to the original feature.
+
+        if (feature.getGeometry().getPolygons().length > 1) {
+          const remainingPolygons = [];
+
+          feature
+            .getGeometry()
+            .getPolygons()
+            .forEach((polygonPart) => {
+              //Keep the polygons that were not clicked on.
+              if (!polygonPart.intersectsCoordinate(clickedCoordinate)) {
+                remainingPolygons.push(polygonPart);
+              }
+            });
+
+          feature.setGeometry(
+            new MultiPolygon(
+              remainingPolygons,
+              feature.getGeometry().getLayout()
+            )
+          );
+          //When removing only a part, we want to update the feature, not remove it.
+          feature.modification = "updated";
+        } else {
+          // In this case, we have a MultiPolygon of only one part, and we should delete the entire feature
+          // In the same way as the normal delete button.
+
+          if (feature.modification === "added") {
+            feature.modification = undefined;
+          } else {
+            feature.modification = "removed";
+          }
+          feature.setStyle(this.getHiddenStyle());
+        }
       }
     });
   };
@@ -745,6 +927,9 @@ class EditModel {
     if (this.move) {
       this.map.removeInteraction(this.move);
     }
+    if (this.multipartSelect) {
+      this.map.removeInteraction(this.multipartSelect);
+    }
     if (this.remove) {
       this.remove = false;
       this.map.clickLock.delete("edit");
@@ -763,6 +948,10 @@ class EditModel {
     if (this.layer) {
       this.map.removeLayer(this.layer);
       this.layer = undefined;
+    }
+    if (this.multidrawTempLayer) {
+      this.map.removeLayer(this.multidrawTempLayer);
+      this.multidrawTempLayer = undefined;
     }
     this.deactivateInteraction();
   }
