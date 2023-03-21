@@ -131,10 +131,20 @@ class EditView extends React.PureComponent {
     });
   };
 
+  resetActiveTool = () => {
+    this.setState({ activeTool: undefined });
+    this.props.model.deactivateInteraction();
+  };
+
   handleFeatureSaveFailure = (model) => {
     //Add the feature back, otherwise subsequent attempts to edit it again will crash.
     model.editFeature = model.editFeatureBackup;
   };
+
+  exitAttributeEditor() {
+    this.props.model.resetEditFeature();
+    this.resetActiveTool();
+  }
 
   getStatusMessage = (data) => {
     if (!data) {
@@ -335,6 +345,8 @@ class EditView extends React.PureComponent {
         model={model}
         observer={observer}
         panel={this}
+        exitAttributeEditor={() => this.exitAttributeEditor()}
+        activeTool={this.state.activeTool}
       />
     );
   };

@@ -17,6 +17,7 @@ class EditModel {
     this.app = settings.app;
     this.observer = settings.observer;
     this.options = settings.options;
+    this.featureChangeLog = [];
 
     this.activeServices = this.options.activeServices;
     this.sources = this.options.sources;
@@ -426,16 +427,77 @@ class EditModel {
     }
   }
 
+  createFeatureChangeLog(features) {
+    // We store an array of unsaved changes made to each feature before saving. We can use this in order to reset a change,
+    // Or cancel an attribute change, without reloading the edit layer and starting from the beginning.
+
+    //Ensure the log is empty when we create it.
+    this.featureChangeLog = [];
+
+    features.forEach((f) => {
+      let featureLog = { id: f.hajkId, original: f, changes: [] };
+      this.featureChangeLog.push(featureLog);
+    });
+  }
+
+  addNewFeatureToChangeLog(feature) {
+    // Add a new feature (for example a newly drawn feature) to the change log. The new feature goes into the changes array. It
+    // Nothing gets put in 'original' as it did not exist as a feature when the editLayer was loaded.
+
+    //Create an id that will be shared between the feature in the edit layer and the feature copy stored in the change log.
+    const hajkId = Date.now() + "_" + feature.ol_uid;
+    feature.hajkId = hajkId;
+
+    const featureLog = {
+      id: feature.hajkId,
+      original: null,
+      changes: [feature.clone()],
+    };
+    this.featureChangeLog.push(featureLog);
+  }
+
+  updateFeatureInChangeLog(feature) {
+    // If there is a matching feature in the changelog, we will add a new change entry. Otherwise we will
+    // create the first change entry in the changelog for the feature.
+
+    // We clone the feature that we add to the change log, as we need them to actually different objects
+    // Otherwise they will both get changed when we edit the feature again.
+    const clonedFeature = feature.clone();
+    clonedFeature.hajkId = feature.hajkId;
+
+    const existingFeatureLog = this.featureChangeLog.find(
+      (f) => (f.id = feature.hajkId)
+    );
+
+    if (existingFeatureLog) {
+      existingFeatureLog.changes.push(clonedFeature);
+    } else {
+      this.addNewFeatureToChangeLog(feature);
+    }
+  }
+
+  //Add an id to be used by the feature log.
+  addHajkId(features, originalFeatures) {
+    features.forEach((f, index) => {
+      const hajkId = Date.now() + "_" + index.toString();
+      f.hajkId = hajkId;
+      originalFeatures[index].hajkId = hajkId;
+    });
+  }
+
   loadDataSuccess = (data) => {
     var format = new WFS();
+    var originalFeatures;
     var features;
     try {
+      originalFeatures = format.readFeatures(data);
       features = format.readFeatures(data);
     } catch (e) {
       alert("Fel: data kan inte läsas in. Kontrollera koordinatsystem.");
     }
 
     //If there is a global filter on the map, we take this into account. If there is no filter, all features will be returned.
+    originalFeatures = this.#filterByMapFilter(originalFeatures);
     features = this.#filterByMapFilter(features);
 
     // Make sure we have a name for geometry column. If there are features already,
@@ -448,8 +510,15 @@ class EditModel {
         : this.editSource.geometryField || "geom";
 
     if (this.editSource.editableFields.some((field) => field.hidden)) {
+      originalFeatures = this.#filterByMapFilter(originalFeatures);
       features = this.filterByDefaultValue(features);
     }
+
+    this.addHajkId(features, originalFeatures);
+
+    // After loading the features, we initialize a change log where we will store changes that have been made to each
+    // feature, but have not been saved to the server yet. This will be used to cancel/rollback unwanted changes without needing to reload the edit layer and lose other ongoing edits.
+    this.createFeatureChangeLog(originalFeatures);
 
     this.vectorSource.addFeatures(features);
     this.vectorSource.getFeatures().forEach((feature) => {
@@ -677,14 +746,10 @@ class EditModel {
     //Add our feature to the current edit drawing layer.
     this.vectorSource.addFeature(feature);
 
-    //Center on the feature - as the user has not drawn the feature we need to make it clear which feature has been added.
-    this.#goToFeature(feature);
-
-    // Below we do some actions that usually happen when the 'add' draw interaction finishes, when a feature
-    // is being added by the draw, instead of being pasted in.
-
     // Add the 'added' flag, so that The edit tool knows that it is changed.
     feature.modification = "added";
+    //Center on the feature - as the user has not drawn the feature we need to make it clear which feature has been added.
+    this.#goToFeature(feature);
 
     // Call this.editAttributes otherwise we will never jump to the attribute step in the edit menu.
     this.editAttributes(feature);
@@ -938,6 +1003,7 @@ class EditModel {
   }
 
   reset() {
+    this.featureChangeLog = [];
     this.editSource = undefined;
     this.editFeature = undefined;
     this.removeFeature = undefined;

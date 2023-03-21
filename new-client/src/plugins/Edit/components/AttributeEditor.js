@@ -153,7 +153,7 @@ class AttributeEditor extends React.Component {
     return setOnlyByMap;
   }
 
-  updateFeature() {
+  updateFeatureAttributes() {
     const featureProps = this.props.model.editFeature.getProperties();
     Object.keys(this.state.formValues).forEach((key) => {
       let value = this.state.formValues[key];
@@ -188,6 +188,10 @@ class AttributeEditor extends React.Component {
     this.props.model.editFeature.setProperties(featureProps);
   }
 
+  updateFeatureChangeLog() {
+    this.props.model.updateFeatureInChangeLog(this.props.model.editFeature);
+  }
+
   checkInteger(name, value) {
     let formValues = Object.assign({}, this.state.formValues);
     if (/^\d+$/.test(value) || value === "") {
@@ -197,14 +201,9 @@ class AttributeEditor extends React.Component {
         formValues[name] = "";
       }
     }
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   // Was not sure why we are switching booleans to "ja/nej" text or 0/1 instead of using true/false, but didn't want to
@@ -235,14 +234,9 @@ class AttributeEditor extends React.Component {
   checkBoolean(field, value) {
     let formValues = Object.assign({}, this.state.formValues);
     formValues[field.name] = this.mapFromBooleanValue(field, value);
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkNumber(name, value) {
@@ -255,14 +249,9 @@ class AttributeEditor extends React.Component {
         formValues[name] = "";
       }
     }
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkUrl(name, value) {
@@ -278,67 +267,41 @@ class AttributeEditor extends React.Component {
       this.formErrors[name] =
         "Ange en giltig url. t.ex. https://www.example.com";
     }
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkText(name, value) {
     let formValues = Object.assign({}, this.state.formValues);
     formValues[name] = value;
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkSelect(name, value) {
     let formValues = Object.assign({}, this.state.formValues);
     formValues[name] = value;
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkMultiple(name, checked, value, index) {
     let formValues = Object.assign({}, this.state.formValues);
     formValues[name][index].checked = checked;
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkDate(name, date) {
     let formValues = Object.assign({}, this.state.formValues);
     formValues[name] = date;
-    this.updateFeature();
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
-    );
+    this.setState({
+      formValues: formValues,
+    });
   }
 
   checkCustomValidation(name, validationRule, validationMessage, value) {
@@ -358,14 +321,42 @@ class AttributeEditor extends React.Component {
       this.formErrors[name] = message;
     }
 
-    this.setState(
-      {
-        formValues: formValues,
-      },
-      () => {
-        this.updateFeature();
-      }
+    this.setState({
+      formValues: formValues,
+    });
+  }
+
+  cancelAddFeature() {
+    // If the user cancels the change, remove the new feature from the layer.
+    this.props.model.layer.getSource().removeFeature(this.state.feature);
+  }
+
+  cancelUpdateFeature() {
+    // If the user cancels an update, we rollback to the previous version by looking at the feature changelog.
+    // The feature change log contains changes made to each feature, that haven't been saved yet.
+    // In the way the user adjusts the geometry of a feature on two separate occasions before saving, and cancels the second change we can rollback to the previous change instead of resetting all the way to the orginal item.
+
+    //The id used to locate the feature in the feature changes array.
+
+    const hajkId = this.state.feature.hajkId;
+
+    let changeFeature = this.props.model.featureChangeLog.find(
+      (featureLog) => featureLog.id === hajkId
     );
+
+    //Reset to the previous change.
+    let previousGeometry;
+
+    if (changeFeature.changes.length > 0) {
+      let previousFeature =
+        changeFeature.changes[changeFeature.changes.length - 1];
+      previousGeometry = previousFeature.getGeometry().clone();
+    } else {
+      let originalFeature = changeFeature.original;
+      previousGeometry = originalFeature.getGeometry().clone();
+    }
+
+    this.state.feature.setGeometry(previousGeometry);
   }
 
   setChanged() {
@@ -728,7 +719,6 @@ class AttributeEditor extends React.Component {
 
   render() {
     const { formValues } = this.state;
-    const { model } = this.props;
 
     if (!formValues || this.props.editSource === undefined) return null;
 
@@ -770,9 +760,26 @@ class AttributeEditor extends React.Component {
         <StyledGrid item xs={12}>
           <Button
             color="primary"
-            sx={{ width: "100px" }}
+            sx={{ width: "100px", mx: "2px" }}
             variant="contained"
-            onClick={model.resetEditFeature}
+            onClick={() => {
+              this.props.activeTool === "modify"
+                ? this.cancelUpdateFeature()
+                : this.cancelAddFeature();
+              this.props.exitAttributeEditor();
+            }}
+          >
+            Avbryt
+          </Button>
+          <Button
+            color="primary"
+            sx={{ width: "100px", mx: "2px" }}
+            variant="contained"
+            onClick={() => {
+              this.updateFeatureAttributes();
+              this.updateFeatureChangeLog();
+              this.props.exitAttributeEditor();
+            }}
           >
             OK
           </Button>
