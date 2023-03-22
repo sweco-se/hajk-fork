@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -23,26 +24,31 @@ const StyledButton = styled(Button)(({ selected, theme }) => ({
     : `${theme.spacing(0.5)} solid transparent`,
 }));
 
-class Toolbar extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      editFeature: undefined,
-    };
+const Toolbar = (props) => {
+  const { model, observer, activeTool, editSource } = props;
+  const [editFeature, setEditFeature] = useState(undefined);
 
-    this.props.observer.subscribe("feature-to-update-view", (feature) => {
-      this.setState({
-        editFeature: feature,
-      });
+  React.useEffect(() => {
+    observer.subscribe("feature-to-update-view", (feature) => {
+      setEditFeature(feature);
     });
-  }
+    return () => {
+      observer.unsubscribe("feature-to-update-view");
+    };
+  }, [observer]);
 
-  componentWillUnmount() {
-    this.props.observer.unsubscribe("feature-to-update-view");
-  }
+  useHotkeys("s", () => {
+    if (snapIsAvailable()) {
+      props.toggleSnap();
+    }
+  });
 
-  changeTool(type, geometryType) {
-    const { model, activeTool } = this.props;
+  const snapIsAvailable = () => {
+    if (props.activeTool) return true;
+    return false;
+  };
+
+  const changeTool = (type, geometryType) => {
     if (geometryType && activeTool === geometryType.toLowerCase()) {
       model.deactivateInteraction();
       return;
@@ -75,240 +81,229 @@ class Toolbar extends Component {
       default:
         break;
     }
-  }
+  };
 
-  onAddPointClicked() {
-    this.props.model.layer.dragLocked = true;
-    this.props.toggleActiveTool("point");
-    this.changeTool(
+  const onAddPointClicked = () => {
+    model.layer.dragLocked = true;
+    props.toggleActiveTool("point");
+    changeTool("add", props.editSource.editMultiPoint ? "MultiPoint" : "Point");
+  };
+
+  const onAddLineClicked = () => {
+    model.layer.dragLocked = true;
+    props.toggleActiveTool("linestring");
+    changeTool(
       "add",
-      this.props.editSource.editMultiPoint ? "MultiPoint" : "Point"
+      props.editSource.editMultiLine ? "MultiLineString" : "LineString"
     );
-  }
+  };
 
-  onAddLineClicked() {
-    this.props.model.layer.dragLocked = true;
-    this.props.toggleActiveTool("linestring");
-    this.changeTool(
+  const onAddPolygonClicked = () => {
+    model.layer.dragLocked = true;
+    props.toggleActiveTool("polygon");
+    changeTool(
       "add",
-      this.props.editSource.editMultiLine ? "MultiLineString" : "LineString"
+      props.editSource.editMultiPolygon ? "MultiPolygon" : "Polygon"
     );
-  }
+  };
 
-  onAddPolygonClicked() {
-    this.props.model.layer.dragLocked = true;
-    this.props.toggleActiveTool("polygon");
-    this.changeTool(
-      "add",
-      this.props.editSource.editMultiPolygon ? "MultiPolygon" : "Polygon"
-    );
-  }
+  const onAddMultiPartClicked = () => {
+    model.layer.dragLocked = true;
+    props.toggleActiveTool("addMultipart");
+    changeTool("addMultipart");
+  };
 
-  onAddMultiPartClicked() {
-    this.props.model.layer.dragLocked = true;
-    this.props.toggleActiveTool("addMultipart");
-    this.changeTool("addMultipart");
-  }
+  const onRemoveMultiPartClicked = () => {
+    model.layer.dragLocked = true;
+    props.toggleActiveTool("removeMultipart");
+    changeTool("removeMultipart");
+  };
 
-  onRemoveMultiPartClicked() {
-    this.props.model.layer.dragLocked = true;
-    this.props.toggleActiveTool("removeMultipart");
-    this.changeTool("removeMultipart");
-  }
+  const onRemoveClicked = () => {
+    props.toggleActiveTool("remove");
+    changeTool("remove");
+  };
 
-  onRemoveClicked() {
-    this.props.toggleActiveTool("remove");
-    this.changeTool("remove");
-  }
+  const onModifyClicked = () => {
+    props.toggleActiveTool("modify");
+    changeTool("modify");
+  };
 
-  onModifyClicked() {
-    this.props.toggleActiveTool("modify");
-    this.changeTool("modify");
-  }
+  const onMoveClicked = () => {
+    model.layer.dragLocked = false;
+    props.toggleActiveTool("move");
+    changeTool("move");
+  };
 
-  onMoveClicked() {
-    this.props.model.layer.dragLocked = false;
-    this.props.toggleActiveTool("move");
-    this.changeTool("move");
-  }
+  const onPasteFeatureClicked = () => {
+    let mapClipboardFeature = props.app.getMapClipboardFeature();
+    props.onPasteFeature(mapClipboardFeature);
+  };
 
-  onPasteFeatureClicked() {
-    let mapClipboardFeature = this.props.app.getMapClipboardFeature();
-    this.props.onPasteFeature(mapClipboardFeature);
-  }
-
-  render() {
-    const { editSource, snapOn, model, isClipboardFeature } = this.props;
-    const { editFeature } = this.state;
-
-    if (!editSource || editFeature) return null;
-
-    return (
-      <Grid container spacing={1}>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={snapOn}
-                onChange={this.props.toggleSnap}
-                disabled={!this.props.activeTool}
-              />
-            }
-            label="Snappa"
-          />
-        </FormGroup>
-        {model.options.pasteFeatureTool === true && (
-          <StyledButton
-            variant="contained"
-            endIcon={<ContentPasteIcon />}
-            title="Klistra in objeckt från kartans urklipp"
-            disabled={
-              !["point", "linestring", "polygon"].includes(
-                this.props.activeTool
-              ) || !isClipboardFeature === true
-            }
-            onClick={() => {
-              this.onPasteFeatureClicked();
-            }}
-          >
-            Klistra in
-          </StyledButton>
-        )}
-        <Grid item xs={12}>
-          <Typography>Lägg till</Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            disabled={!editSource.editPoint && !editSource.editMultiPoint}
-            onClick={() => {
-              this.onAddPointClicked();
-            }}
-            selected={this.props.activeTool === "point"}
-            type="button"
-            title="Lägg till punkt"
-          >
-            Punkt
-            <ScatterPlotIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            disabled={!editSource.editLine && !editSource.editMultiLine}
-            onClick={() => {
-              this.onAddLineClicked();
-            }}
-            type="button"
-            title="Lägg till linje"
-            selected={this.props.activeTool === "linestring"}
-          >
-            Linje
-            <LinearScaleIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            disabled={!editSource.editPolygon && !editSource.editMultiPolygon}
-            onClick={() => {
-              this.onAddPolygonClicked();
-            }}
-            type="button"
-            title="Lägg till yta"
-            selected={this.props.activeTool === "polygon"}
-          >
-            Yta
-            <BorderStyleIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography>Editera</Typography>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              this.onMoveClicked();
-            }}
-            type="button"
-            title="Flytta geometri"
-            selected={this.props.activeTool === "move"}
-          >
-            Flytta
-            <ZoomOutMapIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              this.onRemoveClicked();
-            }}
-            type="button"
-            title="Ta bort geometri"
-            selected={this.props.activeTool === "remove"}
-          >
-            Radera
-            <DeleteIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={4}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            onClick={() => {
-              this.onModifyClicked();
-            }}
-            type="button"
-            title="Ändra geometri"
-            selected={this.props.activeTool === "modify"}
-          >
-            Ändra
-            <FormatShapesIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={6}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            disabled={!editSource.editMultiPolygon}
-            onClick={() => {
-              this.onAddMultiPartClicked();
-            }}
-            type="button"
-            title="Lägg till delyta"
-            selected={this.props.activeTool === "addMultipart"}
-          >
-            Addera Del
-            <AddIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
-        <Grid item xs={6}>
-          <StyledButton
-            variant="contained"
-            fullWidth
-            disabled={!editSource.editMultiPolygon}
-            onClick={() => {
-              this.onRemoveMultiPartClicked();
-            }}
-            type="button"
-            title="Ta bort delyta"
-            selected={this.props.activeTool === "removeMultipart"}
-          >
-            Radera Del
-            <RemoveIcon sx={{ marginLeft: 1 }} />
-          </StyledButton>
-        </Grid>
+  return !editSource || editFeature ? null : (
+    <Grid container spacing={1}>
+      <FormGroup>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={props.snapOn}
+              onChange={props.toggleSnap}
+              disabled={!props.activeTool}
+            />
+          }
+          label="Snappa"
+        />
+      </FormGroup>
+      {model.options.pasteFeatureTool === true && (
+        <StyledButton
+          variant="contained"
+          endIcon={<ContentPasteIcon />}
+          title="Klistra in objeckt från kartans urklipp"
+          disabled={
+            !["point", "linestring", "polygon"].includes(props.activeTool) ||
+            !props.isClipboardFeature === true
+          }
+          onClick={() => {
+            onPasteFeatureClicked();
+          }}
+        >
+          Klistra in
+        </StyledButton>
+      )}
+      <Grid item xs={12}>
+        <Typography>Lägg till</Typography>
       </Grid>
-    );
-  }
-}
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          disabled={!editSource.editPoint && !editSource.editMultiPoint}
+          onClick={() => {
+            onAddPointClicked();
+          }}
+          selected={props.activeTool === "point"}
+          type="button"
+          title="Lägg till punkt"
+        >
+          Punkt
+          <ScatterPlotIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          disabled={!editSource.editLine && !editSource.editMultiLine}
+          onClick={() => {
+            onAddLineClicked();
+          }}
+          type="button"
+          title="Lägg till linje"
+          selected={props.activeTool === "linestring"}
+        >
+          Linje
+          <LinearScaleIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          disabled={!editSource.editPolygon && !editSource.editMultiPolygon}
+          onClick={() => {
+            onAddPolygonClicked();
+          }}
+          type="button"
+          title="Lägg till yta"
+          selected={props.activeTool === "polygon"}
+        >
+          Yta
+          <BorderStyleIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Typography>Editera</Typography>
+      </Grid>
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          onClick={() => {
+            onMoveClicked();
+          }}
+          type="button"
+          title="Flytta geometri"
+          selected={props.activeTool === "move"}
+        >
+          Flytta
+          <ZoomOutMapIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          onClick={() => {
+            onRemoveClicked();
+          }}
+          type="button"
+          title="Ta bort geometri"
+          selected={props.activeTool === "remove"}
+        >
+          Radera
+          <DeleteIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={4}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          onClick={() => {
+            onModifyClicked();
+          }}
+          type="button"
+          title="Ändra geometri"
+          selected={props.activeTool === "modify"}
+        >
+          Ändra
+          <FormatShapesIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={6}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          disabled={!editSource.editMultiPolygon}
+          onClick={() => {
+            onAddMultiPartClicked();
+          }}
+          type="button"
+          title="Lägg till delyta"
+          selected={props.activeTool === "addMultipart"}
+        >
+          Addera Del
+          <AddIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+      <Grid item xs={6}>
+        <StyledButton
+          variant="contained"
+          fullWidth
+          disabled={!editSource.editMultiPolygon}
+          onClick={() => {
+            onRemoveMultiPartClicked();
+          }}
+          type="button"
+          title="Ta bort delyta"
+          selected={props.activeTool === "removeMultipart"}
+        >
+          Radera Del
+          <RemoveIcon sx={{ marginLeft: 1 }} />
+        </StyledButton>
+      </Grid>
+    </Grid>
+  );
+};
 
 export default Toolbar;

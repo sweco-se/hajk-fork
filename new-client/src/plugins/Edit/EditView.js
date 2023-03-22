@@ -320,7 +320,6 @@ class EditView extends React.PureComponent {
   renderToolbar = () => {
     return (
       <Toolbar
-        ref="toolbar"
         editSource={this.state.editSource}
         model={this.props.model}
         observer={this.props.observer}
