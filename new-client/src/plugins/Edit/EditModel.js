@@ -803,6 +803,8 @@ class EditModel {
     //Create and add a draw event for drawing the new part.
     this.draw = new Draw({
       source: this.multipartTempSource,
+      traceSource: this.vectorSource,
+      trace: false,
       style: this.getSketchMultipartStyle(),
       type: "Polygon",
       stopClick: true,
@@ -824,6 +826,8 @@ class EditModel {
   activateAdd(geometryType) {
     this.draw = new Draw({
       source: this.vectorSource,
+      traceSource: this.vectorSource,
+      trace: false,
       style: this.getSketchStyle(),
       type: geometryType,
       stopClick: true,
@@ -886,6 +890,27 @@ class EditModel {
   deactivateSnapping() {
     this.map.snapHelper.delete("edit");
     this.observer.publish("edit-snap-changed", false);
+  }
+
+  activateTracing() {
+    // For tracing to be of any use, we need to have snapping active, so let's activate snapping
+    // As a part of activating tracing.
+    this.activateSnapping();
+
+    // The setTrace method on the Draw interaction is not mentioned anywhere in the OpenLayers documentation, but is there
+    // as a public method in the source code of Draw.js that does just what we need. This way of tracing is fairly new in
+    // OpenLayers (https://github.com/openlayers/openlayers/pull/14046).
+    if (this.draw) {
+      this.draw.setTrace(true);
+      this.observer.publish("edit-trace-changed", true);
+    }
+  }
+
+  deactivateTracing() {
+    if (this.draw) {
+      this.draw.setTrace(false);
+      this.observer.publish("edit-trace-changed", false);
+    }
   }
 
   activateInteraction(type, geometryType) {
@@ -978,6 +1003,7 @@ class EditModel {
   deactivateInteraction() {
     // First remove the snap interaction
     this.deactivateSnapping();
+    this.deactivateTracing();
 
     // Next, remove correct map interaction
     if (this.select) {

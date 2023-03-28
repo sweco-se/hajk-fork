@@ -38,12 +38,17 @@ const Toolbar = (props) => {
   }, [observer]);
 
   useHotkeys("s", () => {
-    if (snapIsAvailable()) {
+    if (snapToolsAvailable()) {
       props.toggleSnap();
     }
   });
+  useHotkeys("t", () => {
+    if (snapToolsAvailable()) {
+      props.toggleTrace();
+    }
+  });
 
-  const snapIsAvailable = () => {
+  const snapToolsAvailable = () => {
     if (props.activeTool) return true;
     return false;
   };
@@ -140,36 +145,49 @@ const Toolbar = (props) => {
     props.onPasteFeature(mapClipboardFeature);
   };
 
-  return !editSource || editFeature ? null : (
-    <Grid container spacing={1}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={props.snapOn}
-              onChange={props.toggleSnap}
-              disabled={!props.activeTool}
+  const renderSnappingBar = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <Typography>Snappa</Typography>
+        </Grid>
+        <Grid item xs={4}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={props.snapOn}
+                  onChange={props.toggleSnap}
+                  disabled={!props.activeTool}
+                />
+              }
+              label="Snappa"
             />
-          }
-          label="Snappa"
-        />
-      </FormGroup>
-      {model.options.pasteFeatureTool === true && (
-        <StyledButton
-          variant="contained"
-          endIcon={<ContentPasteIcon />}
-          title="Klistra in objeckt från kartans urklipp"
-          disabled={
-            !["point", "linestring", "polygon"].includes(props.activeTool) ||
-            !props.isClipboardFeature === true
-          }
-          onClick={() => {
-            onPasteFeatureClicked();
-          }}
-        >
-          Klistra in
-        </StyledButton>
-      )}
+          </FormGroup>
+        </Grid>
+        <Grid item xs={4}>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={props.traceOn}
+                  onChange={props.toggleTrace}
+                  disabled={!props.activeTool}
+                />
+              }
+              label="Spåra"
+            />
+          </FormGroup>
+        </Grid>
+      </>
+    );
+  };
+
+  const hideToolbar = !editSource || editFeature;
+
+  return hideToolbar ? null : (
+    <Grid container spacing={1}>
+      {renderSnappingBar()}
       <Grid item xs={12}>
         <Typography>Lägg till</Typography>
       </Grid>
@@ -221,6 +239,26 @@ const Toolbar = (props) => {
           <BorderStyleIcon sx={{ marginLeft: 1 }} />
         </StyledButton>
       </Grid>
+
+      {/* Klistra in button */}
+      {model.options.pasteFeatureTool === true && (
+        <Grid item xs={4}>
+          <StyledButton
+            variant="contained"
+            endIcon={<ContentPasteIcon />}
+            title="Klistra in objeckt från kartans urklipp"
+            disabled={
+              !["point", "linestring", "polygon"].includes(props.activeTool) ||
+              !props.isClipboardFeature === true
+            }
+            onClick={() => {
+              onPasteFeatureClicked();
+            }}
+          >
+            Klistra in
+          </StyledButton>
+        </Grid>
+      )}
 
       <Grid item xs={12}>
         <Typography>Editera</Typography>

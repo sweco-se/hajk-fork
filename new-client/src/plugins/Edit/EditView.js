@@ -27,6 +27,7 @@ class EditView extends React.PureComponent {
       showSaveConfirmation: false,
       editSummary: "",
       snapOn: false,
+      traceOn: false,
       isClipboardFeature: props.app.getMapClipboardFeature() !== null,
     };
     this.bindSubscriptions();
@@ -54,6 +55,12 @@ class EditView extends React.PureComponent {
     this.props.observer.subscribe("edit-snap-changed", (snapEnabled) => {
       this.setState({
         snapOn: snapEnabled,
+      });
+    });
+
+    this.props.observer.subscribe("edit-trace-changed", (traceEnabled) => {
+      this.setState({
+        traceOn: traceEnabled,
       });
     });
 
@@ -258,6 +265,12 @@ class EditView extends React.PureComponent {
       : this.props.model.activateSnapping();
   }
 
+  toggleTrace() {
+    this.state.traceOn
+      ? this.props.model.deactivateTracing()
+      : this.props.model.activateTracing();
+  }
+
   pasteFeature(feature) {
     const featureValid = this.props.model.checkPasteIsValid(feature);
 
@@ -327,7 +340,9 @@ class EditView extends React.PureComponent {
         activeTool={this.state.activeTool}
         toggleActiveTool={(toolName) => this.toggleActiveTool(toolName)}
         toggleSnap={() => this.toggleSnap()}
+        toggleTrace={() => this.toggleTrace()}
         snapOn={this.state.snapOn}
+        traceOn={this.state.traceOn}
         isClipboardFeature={this.state.isClipboardFeature}
         onPasteFeature={(feature) => this.pasteFeature(feature)}
       />
