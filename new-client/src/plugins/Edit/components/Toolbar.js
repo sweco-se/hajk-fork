@@ -47,6 +47,11 @@ const Toolbar = (props) => {
       props.toggleTrace();
     }
   });
+  useHotkeys("esc", () => {
+    if (model.draw) {
+      model.draw.abortDrawing();
+    }
+  });
 
   const snapToolsAvailable = () => {
     if (props.activeTool) return true;
