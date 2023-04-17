@@ -1013,6 +1013,21 @@ class AppModel {
           editTool.options.sources = [];
         }
       }
+
+      //Go through vector layers to check for layers set as snapSources for the edit tool.
+      if (editTool.options.availableSnapLayers === null) {
+        editTool.options.snapSources = [];
+      } else {
+        let snapSourceIds = editTool.options.availableSnapLayers.map(
+          (source) => source.id
+        );
+
+        const snapSources = layers.vectorlayers.filter((l) => {
+          return snapSourceIds.includes(l.id);
+        });
+
+        editTool.options.snapSources = snapSources;
+      }
     }
 
     return this.mergeConfigWithValuesFromParams(

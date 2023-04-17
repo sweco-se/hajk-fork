@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ScatterPlotIcon from "@mui/icons-material/ScatterPlot";
 import BorderStyleIcon from "@mui/icons-material/BorderStyle";
@@ -16,6 +17,10 @@ import Grid from "@mui/material/Grid";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Checkbox from "@mui/material/Checkbox";
+import { FormControl } from "@mui/material";
 
 const StyledButton = styled(Button)(({ selected, theme }) => ({
   borderTop: `${theme.spacing(0.5)} solid transparent`,
@@ -27,6 +32,9 @@ const StyledButton = styled(Button)(({ selected, theme }) => ({
 const Toolbar = (props) => {
   const { model, observer, activeTool, editSource } = props;
   const [editFeature, setEditFeature] = useState(undefined);
+  const [activeSnapLayers, setActiveSnapLayers] = useState([
+    editSource?.id || [],
+  ]);
 
   React.useEffect(() => {
     observer.subscribe("feature-to-update-view", (feature) => {
@@ -150,39 +158,118 @@ const Toolbar = (props) => {
     props.onPasteFeature(mapClipboardFeature);
   };
 
+  const handleSnapLayerSelect = (values) => {
+    setActiveSnapLayers(values);
+    const chosenLayers = [];
+    values.forEach((v) => {
+      //The current editing layer may not be under snapSources, but should still be snappable.
+      if (v === props.editSource.id) {
+        chosenLayers.push(props.editSource);
+      } else {
+        chosenLayers.push(
+          props.model.snapSources.find((source) => source.id === v)
+        );
+      }
+    });
+    props.model.changeSnapLayers(chosenLayers);
+  };
+
+  const getSnapLayerDisplayNames = (selectedIds) => {
+    if (selectedIds.length === 0) {
+      return ["Inga lager valda"];
+    }
+
+    const displayNames = [];
+    selectedIds.forEach((id) => {
+      if (id === editSource.id) {
+        displayNames.push("Nuvarande Redigeringslager");
+      } else {
+        const source = props.model.snapSources.find(
+          (source) => source.id === id
+        );
+        displayNames.push(source.caption);
+      }
+    });
+    return displayNames;
+  };
+
   const renderSnappingBar = () => {
+    const snapSources = props.model.snapSources;
     return (
       <>
         <Grid item xs={12}>
           <Typography>Snappa</Typography>
         </Grid>
-        <Grid item xs={4}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={props.snapOn}
-                  onChange={props.toggleSnap}
-                  disabled={!props.activeTool}
-                />
-              }
-              label="Snappa"
-            />
-          </FormGroup>
-        </Grid>
-        <Grid item xs={4}>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={props.traceOn}
-                  onChange={props.toggleTrace}
-                  disabled={!props.activeTool}
-                />
-              }
-              label="Spåra"
-            />
-          </FormGroup>
+        <Grid container>
+          <Grid item xs={12}>
+            <Box sx={{ display: "flex" }}>
+              <Box sx={{ display: "flex", justifyContent: "flex-start" }}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={props.snapOn}
+                        onChange={props.toggleSnap}
+                        disabled={!props.activeTool}
+                      />
+                    }
+                    label="Snappa"
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={props.traceOn}
+                        onChange={props.toggleTrace}
+                        disabled={!props.activeTool}
+                      />
+                    }
+                    label="Spåra"
+                  />
+                </FormGroup>
+              </Box>
+              <Box sx={{ display: "flex" }}>
+                <FormGroup>
+                  <FormControl sx={{ m: 0, maxWidth: 230 }}>
+                    <Select
+                      multiple={true}
+                      autoWidth={false}
+                      labelId="snap-layer-select-label"
+                      id="snap-layer-select"
+                      value={activeSnapLayers}
+                      size="small"
+                      label={"Snaplager"}
+                      onChange={(e) => handleSnapLayerSelect(e.target.value)}
+                      disabled={!props.snapOn}
+                      displayEmpty
+                      renderValue={(selected) => {
+                        let displayNames = getSnapLayerDisplayNames(selected);
+                        return displayNames.join(", ");
+                      }}
+                    >
+                      <MenuItem value={editSource.id}>
+                        <Checkbox
+                          checked={activeSnapLayers.includes(editSource.id)}
+                        />
+                        <Typography>Nuvarande redigeringslager</Typography>
+                      </MenuItem>
+                      {snapSources.map((source) => {
+                        return (
+                          <MenuItem key={source.id} value={source.id}>
+                            <Checkbox
+                              checked={activeSnapLayers.includes(source.id)}
+                            />
+                            <Typography>{source.caption}</Typography>
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </FormControl>
+                </FormGroup>
+              </Box>
+            </Box>
+          </Grid>
         </Grid>
       </>
     );

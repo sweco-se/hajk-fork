@@ -38,6 +38,23 @@ export default class SnapHelper {
     // Add the plugin to our stack
     this.activePlugins.add(plugin);
   }
+
+  /**
+   * @summary Fulfils the same functionality as the standard add method, can be used if
+   * we want to specify which vector sources we want to be available to snap to, instead
+   * of the standard, which adds all VectorSources available in the map.
+   *
+   * @param {string} plugin
+   * @param {Object[]} vectorSources
+   * @memberof SnapHelper
+   */
+  addWithSources(plugin, vectorSources) {
+    this.activePlugins.size === 0 &&
+      this.#addSnapToChosenVectorSources(vectorSources);
+
+    this.activePlugins.add(plugin);
+  }
+
   /**
    * @summary Does the opposite of add() by deleting a plugin from the Set.
    * When the set is empty, Snap helper knows that no one is interested in snapping
@@ -103,6 +120,19 @@ export default class SnapHelper {
       .map((l) => l.getSource()) // Get each layer's source
       .filter(this.#isVectorSource); // but only if it is a VectorSource (which we'll know by checking for "getFeatures").
 
+    // Add the snap interaction for each found source
+    vectorSources.forEach((source) => {
+      const snap = new Snap({
+        source,
+      });
+      this.map.addInteraction(snap);
+
+      // And save each interaction into a local stack (so we can remove them later)
+      this.snapInteractions.push(snap);
+    });
+  };
+
+  #addSnapToChosenVectorSources = (vectorSources) => {
     // Add the snap interaction for each found source
     vectorSources.forEach((source) => {
       const snap = new Snap({

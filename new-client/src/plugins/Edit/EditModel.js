@@ -18,10 +18,10 @@ class EditModel {
     this.observer = settings.observer;
     this.options = settings.options;
     this.featureChangeLog = [];
-
     this.activeServices = this.options.activeServices;
+    this.availableSnapLayers = this.options?.availableSnapLayers || [];
     this.sources = this.options.sources;
-
+    this.snapSources = this.options.snapSources;
     this.vectorSource = undefined;
     this.layer = undefined;
     this.multipartTempSource = undefined;
@@ -39,6 +39,8 @@ class EditModel {
     this.filty = false;
     this.removalToolMode = "off";
     this.multipartBaseFeature = undefined;
+    this.activeSnapLayers = [];
+    this.activeSnapSources = [];
 
     // Normalize the sources that come from options.
     this.options.sources = this.options.sources.map((s) => {
@@ -425,6 +427,7 @@ class EditModel {
 
       return features;
     }
+    return features;
   }
 
   createFeatureChangeLog(features) {
@@ -543,6 +546,75 @@ class EditModel {
     });
   };
 
+  loadSnapDataSuccess = (data, source) => {
+    var format = new WFS();
+    var features;
+    try {
+      features = format.readFeatures(data);
+    } catch (e) {
+      alert("Fel: data kan inte läsas in. Kontrollera koordinatsystem.");
+    }
+
+    //If there is a global filter on the map, we take this into account. If there is no filter, all features will be returned.
+    features = this.#filterByMapFilter(features);
+    this.geometryName =
+      features.length > 0 ? features[0].getGeometryName() : "geom";
+
+    let snapSource = this.activeSnapSources.find(
+      (s) => s.get("snapLayerId") === source.id
+    );
+    snapSource.addFeatures(features);
+  };
+
+  loadSnapData(source, extent, done) {
+    const url = new URL(source.url);
+
+    const existingSearchParams = {};
+    for (const [k, v] of url.searchParams.entries()) {
+      existingSearchParams[k.toUpperCase()] = v;
+    }
+
+    let layer;
+    if (source.layers) {
+      layer = source.layers[0];
+    } else {
+      layer = source.layer;
+    }
+
+    const mergedSearchParams = {
+      ...existingSearchParams,
+      SERVICE: "WFS",
+      version: "1.1.0",
+      REQUEST: "GetFeature",
+      TYPENAME: layer,
+      SRSNAME: source.projection,
+    };
+
+    // Create a new URLSearchParams object from the merged object…
+    const searchParams = new URLSearchParams(mergedSearchParams);
+    // …and update our URL's search string with the new value
+    url.search = searchParams.toString();
+
+    // Send a String as HFetch doesn't currently accept true URL objects
+    hfetch(url.toString())
+      .then((response) => {
+        if (response.status !== 200) {
+          return done("data-load-error");
+        }
+        response.text().then((data) => {
+          if (data.includes("ows:ExceptionReport")) {
+            return done("data-load-error");
+          }
+          this.loadSnapDataSuccess(data, source);
+          return done("data-load-success");
+        });
+      })
+      .catch((error) => {
+        console.warn(`Error loading vectorsource... ${error}`);
+        return done("data-load-error");
+      });
+  }
+
   loadData(source, extent, done) {
     // Prepare the URL for retrieving WFS data. We will want to set
     // some search params later on, but we want to avoid any duplicates.
@@ -561,12 +633,21 @@ class EditModel {
     // below. We can be confident that we won't have duplicates and that
     // our values "win", as they are defined last.
 
+    // Quick fix to adjust for the in wfslayers config it's called layers and in
+    // vectorlayers config it's called layer.
+    let layer;
+    if (source.layers) {
+      layer = source.layers[0];
+    } else {
+      layer = source.layer;
+    }
+
     const mergedSearchParams = {
       ...existingSearchParams,
       SERVICE: "WFS",
       version: "1.1.0", // or "1.0.0"
       REQUEST: "GetFeature",
-      TYPENAME: source.layers[0],
+      TYPENAME: layer,
       SRSNAME: source.projection,
     };
 
@@ -648,6 +729,12 @@ class EditModel {
       strategy: strategyAll,
       projection: this.source.projection,
     });
+
+    //Add to snapSources so we can use with the snap selector.
+    this.activeSnapSources = [];
+
+    this.vectorSource.set("snapLayerId", serviceId);
+    this.activeSnapSources.push(this.vectorSource);
 
     // Create a source and layer to use when drawing multipolygons with the Draw interaction.
     // This is because when adding a new polygon part, we don't actually want the Draw interaction to add a new Feature
@@ -883,13 +970,59 @@ class EditModel {
   }
 
   activateSnapping() {
-    this.map.snapHelper.add("edit");
+    this.map.snapHelper.addWithSources("edit", this.activeSnapSources);
+
     this.observer.publish("edit-snap-changed", true);
   }
 
   deactivateSnapping() {
     this.map.snapHelper.delete("edit");
+    this.activeSnapLayers.forEach((l) => this.map.removeLayer(l));
     this.observer.publish("edit-snap-changed", false);
+  }
+
+  changeSnapLayers(snapLayers) {
+    // Remove the existing snap for the edit tool.
+    this.map.snapHelper.delete("edit");
+
+    //Remove any existing layers.
+    this.activeSnapLayers.forEach((l) => this.map.removeLayer(l));
+
+    //Reset the test layers and sources:
+    this.activeSnapLayers = [];
+    this.activeSnapSources = [];
+
+    //We will need to make several sources for snapping.
+    snapLayers.forEach((snapLayer) => {
+      //Special case if the layer is the current editing layer. //In this case we want to push the edit layer vector source and layer to snap.
+      if (snapLayer.id === this.layer.id) {
+        this.activeSnapSources.push(this.vectorSource);
+      } else {
+        let snapShadowSource = new VectorSource({
+          loader: (extent) => this.loadSnapData(snapLayer, extent, () => {}),
+          strategy: strategyAll,
+          projection: snapLayer.projection,
+        });
+        snapShadowSource.set("snapLayerId", snapLayer.id);
+        this.activeSnapSources.push(snapShadowSource);
+
+        let snapShadowLayer = new Vector({
+          layerType: "system",
+          zIndex: 5000,
+          name: "pluginEditSnap",
+          caption: "Edit layer Snap",
+          source: snapShadowSource,
+          style: this.getHiddenStyle(),
+        });
+
+        this.activeSnapLayers.push(snapShadowLayer);
+      }
+    });
+
+    if (this.activeSnapSources.length > 0) {
+      this.activeSnapLayers.forEach((l) => this.map.addLayer(l));
+      this.map.snapHelper.addWithSources("edit", this.activeSnapSources);
+    }
   }
 
   activateTracing() {
