@@ -1000,6 +1000,9 @@ class WMSLayerForm extends Component {
     // Previously this was done while rendering.
 
     let layerOpts = {};
+    let fixLayer = capabilities.Capability.Layer?.Layer;
+
+    if (fixLayer) {
     capabilities.Capability.Layer.Layer.forEach((_layer) => {
       let trueTitle = _layer.hasOwnProperty("Title") ? _layer.Title : "";
       let abstract = _layer.hasOwnProperty("Abstract") ? _layer.Abstract : "";
@@ -1014,6 +1017,7 @@ class WMSLayerForm extends Component {
       };
       layerOpts[_layer.Name] = opts;
     });
+  }
     this.setState({ layerOpts: layerOpts });
   }
 
