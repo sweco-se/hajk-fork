@@ -66,11 +66,24 @@ const Toolbar = (props) => {
     return false;
   };
 
+  const isSameType = (activeTool, geometryType) => {
+    if (!activeTool || !geometryType) return false;
+
+    const types = {
+      polygon: ["polygon", "multipolygon"],
+      point: ["point", "multipoint"],
+      linestring: ["linestring", "multilinestring"],
+    };
+
+    return types[activeTool].includes(geometryType);
+  };
+
   const changeTool = (type, geometryType) => {
-    if (geometryType && activeTool === geometryType.toLowerCase()) {
+    if (geometryType && isSameType(activeTool, geometryType.toLowerCase())) {
       model.deactivateInteraction();
       return;
     }
+
     if (activeTool === type) {
       model.deactivateInteraction();
       return;
