@@ -574,13 +574,6 @@ class AttributeEditor extends React.Component {
               onChange={(e) => {
                 this.setChanged();
                 this.checkText(field.name, e.target.value);
-                field.initialRender = false;
-              }}
-              onBlur={(e) => {
-                this.setChanged();
-                if (field.textType === "url") {
-                  this.checkUrl(field.name, e.target.value);
-                }
                 //If we have something in the customValidation field. We want to do a validity check on it.
                 if (field.customValidation) {
                   this.checkCustomValidation(
@@ -589,6 +582,13 @@ class AttributeEditor extends React.Component {
                     field.customValidationMessage,
                     e.target.value
                   );
+                }
+                field.initialRender = false;
+              }}
+              onBlur={(e) => {
+                this.setChanged();
+                if (field.textType === "url") {
+                  this.checkUrl(field.name, e.target.value);
                 }
                 field.initialRender = false;
               }}
@@ -719,6 +719,7 @@ class AttributeEditor extends React.Component {
 
   render() {
     const { formValues } = this.state;
+    const isErrors = Object.keys(this.formErrors).length > 0;
 
     if (!formValues || this.props.editSource === undefined) return null;
 
@@ -766,6 +767,7 @@ class AttributeEditor extends React.Component {
               this.props.activeTool === "modify"
                 ? this.cancelUpdateFeature()
                 : this.cancelAddFeature();
+              this.formErrors = {};
               this.props.exitAttributeEditor();
             }}
           >
@@ -775,9 +777,11 @@ class AttributeEditor extends React.Component {
             color="primary"
             sx={{ width: "100px", mx: "2px" }}
             variant="contained"
+            disabled={isErrors}
             onClick={() => {
               this.updateFeatureAttributes();
               this.updateFeatureChangeLog();
+              this.formErrors = {};
               this.props.exitAttributeEditor();
             }}
           >
