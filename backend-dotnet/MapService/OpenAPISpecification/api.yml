@@ -493,7 +493,7 @@ paths:
                 $ref: "#/components/schemas/MapBody"
   /config/{map}:
     get:
-      deprecated: true
+      deprecated: false
       tags:
         - Client-accessible
       description: Fetch contents of a map configuration
