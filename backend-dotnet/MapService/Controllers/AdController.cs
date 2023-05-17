@@ -6,7 +6,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MapService.Controllers
 {
-    [Route("ad")]
+    [Route("api/v{version:apiVersion}/ad")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class AdController : ControllerBase
@@ -29,6 +30,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("availableadgroups")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -73,6 +75,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("findcommongroupsforusers")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -117,6 +120,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -161,6 +165,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("groups")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -205,6 +210,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("groupsPerUser")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -249,6 +255,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("flushStores")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

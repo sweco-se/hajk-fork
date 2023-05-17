@@ -8,7 +8,9 @@ using System.Text.Json.Nodes;
 
 namespace MapService.Controllers
 {
-    [Route("mapconfig")]
+    [Route("api/v{version:apiVersion}/mapconfig")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class MapConfigController : ControllerBase
@@ -31,6 +33,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("layers")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -78,6 +82,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("{map}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -121,6 +127,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("duplicate/{nameFrom}/{nameTo}")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -158,18 +165,19 @@ namespace MapService.Controllers
         /// <remarks>
         /// Delete an existing map configuration
         /// </remarks>
-        /// <param name="name">Name of the map to be deleted</param>
+        /// <param name="map">Name of the map to be deleted</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
-        [Route("delete/{name}")]
+        [Route("{map}")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        public ActionResult DeleteMap(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        public ActionResult DeleteMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
             {
@@ -185,7 +193,7 @@ namespace MapService.Controllers
                     }
                 }
 
-                MapConfigHandler.DeleteMap(name);
+                MapConfigHandler.DeleteMap(map);
             }
             catch (Exception ex)
             {
@@ -206,11 +214,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("delete/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult GetDeleteMap(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -248,6 +256,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("list")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -290,6 +300,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listimage")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -332,6 +343,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listvideo")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -374,6 +386,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listaudio")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -419,6 +432,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("export/{map}/{format}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -462,12 +477,12 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("create/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
-        public ActionResult CreateDeprecated(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        public ActionResult CreateMap_v1(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
             {
@@ -502,18 +517,19 @@ namespace MapService.Controllers
         /// <remarks>
         /// Create a new map configuration
         /// </remarks>
-        /// <param name="name">The name of the map to create </param>
+        /// <param name="map">The name of the map to create </param>
         /// <param name="userPrincipalName">User name that will be supplied to AD</param>
         /// <response code="200">The map configuration was created successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
-        [Route("create/{name}")]
+        [Route("{map}")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        public ActionResult Create(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        public ActionResult CreateMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
             {
@@ -529,12 +545,12 @@ namespace MapService.Controllers
                     }
                 }
 
-                MapConfigHandler.CreateMapConfiguration(name);
+                MapConfigHandler.CreateMapConfiguration(map);
             }
             catch (IOException iex)
             {
                 _logger.LogError(iex, "Internal Server Error");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Kartan " + name + " finns redan. Ta bort kartan " + name + " innan du skapar om den på nytt. ");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Kartan " + map + " finns redan. Ta bort kartan " + map + " innan du skapar om den på nytt. ");
             }
             catch (Exception ex)
             {
