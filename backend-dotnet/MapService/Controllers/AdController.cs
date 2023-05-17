@@ -47,7 +47,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -92,7 +92,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -137,7 +137,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -182,7 +182,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -227,7 +227,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -270,7 +270,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
