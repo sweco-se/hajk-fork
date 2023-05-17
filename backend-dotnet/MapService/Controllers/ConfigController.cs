@@ -11,7 +11,9 @@ using System.Text.Json.Nodes;
 
 namespace MapService.Controllers
 {
-    [Route("config")]
+    [Route("api/v{version:apiVersion}/config")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class ConfigController : ControllerBase
@@ -33,6 +35,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("layers")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
@@ -67,6 +70,8 @@ namespace MapService.Controllers
 
         [HttpGet]
         [Route("{map}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
@@ -112,11 +117,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("delete/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult Delete(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -152,6 +157,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("userspecificmaps")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
@@ -198,11 +204,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("list")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetMaps([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             IEnumerable<string> maps;
@@ -241,11 +247,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listimage")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListImage([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfImages = new List<string>();
@@ -285,11 +291,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listvideo")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListVideo([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfVideos = new List<string>();
@@ -329,11 +335,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listaudio")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListAudio([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfAudioFiles = new List<string>();
@@ -374,11 +380,11 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("create/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult Create(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try

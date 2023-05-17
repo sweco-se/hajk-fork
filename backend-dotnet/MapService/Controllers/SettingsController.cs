@@ -8,7 +8,9 @@ using System.Text.Json.Nodes;
 
 namespace MapService.Controllers
 {
-    [Route("settings")]
+    [Route("api/v{version:apiVersion}/settings")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class SettingsController : ControllerBase
@@ -30,6 +32,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("mapsettings")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -70,6 +74,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("layermenu")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -110,6 +116,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("toolsettings")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -150,6 +158,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPost]
         [Route("{layerType}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -190,6 +200,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("{layerType}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -230,6 +242,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
         [Route("{type}/{layerId}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -274,6 +288,8 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("update/{map}/{tool}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
