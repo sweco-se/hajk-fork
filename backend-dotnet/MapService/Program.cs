@@ -1,3 +1,4 @@
+using MapService.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -19,6 +20,7 @@ builder.Services.AddSwaggerGen(options =>
         Title = "hajk-backend",
         Description = ".NET-backend for HAJK."
     });
+
     options.SwaggerDoc("v2", new OpenApiInfo
     {
         Version = "v2.0",
@@ -42,11 +44,23 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
     options.ReportApiVersions = true;
 });
+
 builder.Services.AddVersionedApiExplorer(options =>
 {
     options.GroupNameFormat = "'v'VVV";
     options.SubstituteApiVersionInUrl = true;
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("*")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddMemoryCache();
 
 builder.Host.UseSerilog();
@@ -76,6 +90,11 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.yml", "HAJK .NET Backend v1");
 });
 //}
+
+if (ConfigurationUtility.EnvironmentIsDevelopment())
+{
+    app.UseCors();
+}
 
 app.UseAuthorization();
 

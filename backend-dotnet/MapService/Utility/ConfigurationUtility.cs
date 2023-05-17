@@ -1,12 +1,15 @@
 ﻿namespace MapService.Utility
 {
     /// <summary>
-    /// Handles configuration settings.  
+    /// Handles configuration settings.
     /// </summary>
     public static class ConfigurationUtility
     {
+        public enum Environment
+        { Development, Production }
+
         /// <summary>
-        /// Gets the configuration, i.e. the configuration fromm the appsettings.json file. 
+        /// Gets the configuration, i.e. the configuration fromm the appsettings.json file.
         /// </summary>
         /// <returns>Returns the configuration. </returns>
         /// <exception cref="NullReferenceException">Configuration Error</exception>
@@ -23,8 +26,34 @@
             return configurationObject as IConfiguration;
         }
 
+        private static Environment GetEnvironment()
+        {
+            var env = Environment.Production;
+
+            if (GetSectionItem("Environment").ToLower() == "development")
+            {
+                env = Environment.Development;
+            }
+
+            return env;
+        }
+
         /// <summary>
-        /// Gets the settings item for a section. 
+        /// Checks if the the environment in the configuration is set to development or not.
+        /// </summary>
+        /// <returns></returns>
+        public static bool EnvironmentIsDevelopment()
+        {
+            if (GetEnvironment() == Environment.Development)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the settings item for a section.
         /// </summary>
         /// <param name="sectionKeyPath">The path in the configuration, i.e. Media:Image:AllowedExtensions</param>
         /// <returns></returns>
@@ -35,7 +64,7 @@
         }
 
         /// <summary>
-        /// Gets the settings item for a section. 
+        /// Gets the settings item for a section.
         /// </summary>
         /// <param name="sectionKeyPath">The path in the configuration, i.e. Media:Image:AllowedExtensions</param>
         /// <returns></returns>
@@ -45,7 +74,7 @@
         }
 
         /// <summary>
-        /// Gets the settings array for a section. 
+        /// Gets the settings array for a section.
         /// </summary>
         /// <param name="sectionKeyPath">The path in the configuration, i.e. Media:Image:AllowedExtensions</param>
         /// <returns></returns>
@@ -56,7 +85,7 @@
         }
 
         /// <summary>
-        /// Gets the settings array for a section. 
+        /// Gets the settings array for a section.
         /// </summary>
         /// <param name="sectionKeyPath">The path in the configuration, i.e. Media:Image:AllowedExtensions</param>
         /// <returns></returns>
@@ -64,7 +93,6 @@
         {
             return configuration.GetSection(sectionKeyPath).Get<List<string>>();
         }
-
 
         /// <summary>
         /// Adds the letter 's' to the end of the layer type name if necessary
