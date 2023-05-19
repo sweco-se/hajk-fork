@@ -1,13 +1,19 @@
+using Json.More;
 using MapService.Business.Ad;
 using MapService.Business.Config;
 using MapService.Business.MapConfig;
 using MapService.Filters;
 using MapService.Models;
+using MapService.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace MapService.Controllers
 {
@@ -68,10 +74,66 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, layerObject);
         }
 
+        /// <remarks>
+        /// Gets the map config, together with all needed layers and list of user specific maps.
+        /// </remarks>
+        /// <param name="map">The map file to be retrieved</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <response code="200">All fetched successfully</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("{map}")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Client-accessible" })]
+        public ActionResult GetMapWithLayers(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        {
+            JsonObject? resultJson;
+
+            try
+            {
+                JsonObject mapObject = MapConfigHandler.GetMapAsJsonObject(map); 
+                var userSpecificMaps = ConfigHandler.GetUserSpecificMaps(); //TODO: Only get userSpecificMaps if they are needed based on map config
+
+
+                if (AdHandler.AdIsActive)
+                {
+                    var adHandler = new AdHandler(_memoryCache, _logger);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
+
+                    if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
+                    }
+
+                    adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
+
+                    mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
+                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
+                }
+
+                JsonObject layersObject = MapConfigHandler.GetLayersAsJsonObject(); //TODO: Only get layers that are needed based on map config
+                JsonArray userSpecificMapsArray = JsonUtility.ConvertToJsonArray(userSpecificMaps); 
+
+                resultJson = new JsonObject();
+                resultJson.Add("mapConfig", mapObject);
+                resultJson.Add("layersConfig", layersObject);
+                resultJson.Add("userSpecificMaps", userSpecificMapsArray);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Internal server error");
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+
+            return StatusCode(StatusCodes.Status200OK, resultJson);
+        }
+
         [HttpGet]
         [Route("{map}")]
         [MapToApiVersion("1.0")]
-        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
