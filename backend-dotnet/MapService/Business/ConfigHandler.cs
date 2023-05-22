@@ -1,4 +1,5 @@
-﻿using MapService.DataAccess;
+﻿using Json.Path;
+using MapService.DataAccess;
 using MapService.Models;
 using MapService.Utility;
 using System.Text.Json;
@@ -69,6 +70,82 @@ namespace MapService.Business.Config
             if (result == null) { return null; }
 
             return JsonSerializer.Deserialize<JsonObject>(result.Value.GetRawText());
+        }
+
+        public static IEnumerable<string>? GetLayerIdsFromMapConfiguration(JsonDocument mapConfiguration)
+        {
+            List<string>? layerIds = new List<string>();
+
+            // Get layer ids from baselayers in layerswitcher
+            var input = "$.tools[?(@.type == 'layerswitcher')].options.baselayers[*].id";
+            var result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+
+            if (result != null)
+            {
+                foreach (var element in result)
+                {
+                    string? id = element.Value.GetString();
+                    if (string.IsNullOrEmpty(id)) continue;
+                    if (layerIds.Contains(id)) continue;
+
+                    layerIds.Add(id);
+                }
+            }
+
+            // Get layer ids from groups in layerswitcher
+            input = "$.tools[?(@.type == 'layerswitcher')].options.groups..layers[*].id";
+            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+
+            if (result != null)
+            {
+                foreach (var element in result)
+                {
+                    string? id = element.Value.GetString();
+                    if (string.IsNullOrEmpty(id)) continue;
+                    if (layerIds.Contains(id)) continue;
+
+                    layerIds.Add(id);
+                }
+            }
+
+            // Get layer ids from layers in search
+            input = "$.tools[?(@.type == 'search')].options.layers[*].id";
+            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+
+            if (result != null)
+            {
+                foreach (var element in result)
+                {
+                    string? id = element.Value.GetString();
+                    if (string.IsNullOrEmpty(id)) continue;
+                    if (layerIds.Contains(id)) continue;
+
+                    layerIds.Add(id);
+                }
+            }
+
+            // Get layer ids from layers in edit
+            input = "$.tools[?(@.type == 'edit')].options.activeServices[*].visibleForGroups";
+            var resultActiveServices = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+            string searchStringActiveServices = "activeServices[*].id";
+            if (resultActiveServices == null || resultActiveServices.Count == 0) searchStringActiveServices = "activeServices.*";
+
+            input = "$.tools[?(@.type == 'edit')].options." + searchStringActiveServices;
+            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+
+            if (result != null)
+            {
+                foreach (var element in result)
+                {
+                    string? id = element.Value.GetString();
+                    if (string.IsNullOrEmpty(id)) continue;
+                    if (layerIds.Contains(id)) continue;
+
+                    layerIds.Add(id);
+                }
+            }
+
+            return layerIds;
         }
     }
 }
