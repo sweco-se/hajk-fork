@@ -2,6 +2,8 @@
 using MapService.DataAccess;
 using MapService.Models;
 using MapService.Utility;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -76,76 +78,55 @@ namespace MapService.Business.Config
         {
             List<string>? layerIds = new List<string>();
 
-            // Get layer ids from baselayers in layerswitcher
+            // Get layer ids from baselayers in layerswitcher tool
             var input = "$.tools[?(@.type == 'layerswitcher')].options.baselayers[*].id";
-            var result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
 
-            if (result != null)
-            {
-                foreach (var element in result)
-                {
-                    string? id = element.Value.GetString();
-                    if (string.IsNullOrEmpty(id)) continue;
-                    if (layerIds.Contains(id)) continue;
-
-                    layerIds.Add(id);
-                }
-            }
-
-            // Get layer ids from groups in layerswitcher
+            // Get layer ids from groups in layerswitcher tool
             input = "$.tools[?(@.type == 'layerswitcher')].options.groups..layers[*].id";
-            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
 
-            if (result != null)
-            {
-                foreach (var element in result)
-                {
-                    string? id = element.Value.GetString();
-                    if (string.IsNullOrEmpty(id)) continue;
-                    if (layerIds.Contains(id)) continue;
-
-                    layerIds.Add(id);
-                }
-            }
-
-            // Get layer ids from layers in search
+            // Get layer ids from layers in search tool
             input = "$.tools[?(@.type == 'search')].options.layers[*].id";
-            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
 
-            if (result != null)
-            {
-                foreach (var element in result)
-                {
-                    string? id = element.Value.GetString();
-                    if (string.IsNullOrEmpty(id)) continue;
-                    if (layerIds.Contains(id)) continue;
-
-                    layerIds.Add(id);
-                }
-            }
-
-            // Get layer ids from layers in edit
+            // Get layer ids from layers in edit tool
             input = "$.tools[?(@.type == 'edit')].options.activeServices[*].visibleForGroups";
             var resultActiveServices = JsonPathUtility.GetJsonArray(mapConfiguration, input);
             string searchStringActiveServices = "activeServices[*].id";
             if (resultActiveServices == null || resultActiveServices.Count == 0) searchStringActiveServices = "activeServices.*";
 
             input = "$.tools[?(@.type == 'edit')].options." + searchStringActiveServices;
-            result = JsonPathUtility.GetJsonArray(mapConfiguration, input);
+            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
+
+            return layerIds;
+        }
+
+        private static void AddStringValuesToLayerIdsList(JsonDocument mapConfiguration, string jsonPathString, ref List<string> layerIds)
+        {
+            var result = JsonPathUtility.GetJsonArray(mapConfiguration, jsonPathString);
 
             if (result != null)
             {
                 foreach (var element in result)
                 {
-                    string? id = element.Value.GetString();
+
+                    string? id;
+                    try
+                    {
+                        id = element.Value.GetString();
+                    }
+                    catch (Exception ex)
+                    {
+                        id = element.Value.GetRawText();
+                    }
+
                     if (string.IsNullOrEmpty(id)) continue;
                     if (layerIds.Contains(id)) continue;
 
                     layerIds.Add(id);
                 }
             }
-
-            return layerIds;
         }
     }
 }

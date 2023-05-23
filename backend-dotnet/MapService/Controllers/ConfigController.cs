@@ -113,16 +113,15 @@ namespace MapService.Controllers
                     userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
                 }
 
-                JsonObject layersObject = MapConfigHandler.GetLayersAsJsonObject();
                 JsonArray userSpecificMapsArray = JsonUtility.ConvertToJsonArray(userSpecificMaps);
 
                 JsonDocument layersDocument = MapConfigHandler.GetLayersAsJsonDocument();
                 JsonDocument mapDocument = MapConfigHandler.GetMapAsJsonDocument(map);
-                var layerIds = ConfigHandler.GetLayerIdsFromMapConfiguration(mapDocument);
+                JsonObject filteredLayers = ConfigFilter.FilterLayersBasedOnMapConfig(mapDocument, layersDocument);
 
                 resultJson = new JsonObject();
                 resultJson.Add("mapConfig", mapObject);
-                resultJson.Add("layersConfig", layersObject);
+                resultJson.Add("layersConfig", filteredLayers);
                 resultJson.Add("userSpecificMaps", userSpecificMapsArray);
             }
             catch (Exception ex)

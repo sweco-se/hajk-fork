@@ -79,5 +79,31 @@ namespace MapService.Filters
 
             return filteredMapObjects;
         }
+
+        internal static JsonObject FilterLayersBasedOnMapConfig(JsonDocument mapConfiguration, JsonDocument layers)
+        {
+            JsonObject resultJson = new JsonObject();
+            JsonElement root = layers.RootElement;
+            var layerIds = ConfigHandler.GetLayerIdsFromMapConfiguration(mapConfiguration);
+
+            foreach (JsonProperty property in root.EnumerateObject())
+            {
+                string propertyName = property.Name;
+                JsonElement propertyValue = property.Value;
+
+                JsonArray jsonArray = new JsonArray();
+                foreach (JsonElement jsonElement in propertyValue.EnumerateArray())
+                {
+                    JsonElement idOfLayer = jsonElement.GetProperty("id");
+                    if (layerIds.Contains(idOfLayer.ToString()))
+                    {
+                        jsonArray.Add(jsonElement);
+                    }
+                }
+
+                resultJson.Add(propertyName, jsonArray);
+            }
+            return resultJson;
+        }
     }
 }
