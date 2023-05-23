@@ -64,6 +64,16 @@ namespace MapService.Business.Config
             return JsonSerializer.Deserialize<IEnumerable<String>>(result.Value.GetRawText());
         }
 
+        public static bool IncludeUserSpecificMaps(JsonDocument mapConfiguration)
+        {
+            var input = "$.map.mapselector";
+            var result = JsonPathUtility.GetJsonElement(mapConfiguration, input);
+
+            if (result == null) { return false; }
+
+            return JsonSerializer.Deserialize<bool>(result.Value.GetRawText());
+        }
+
         private static JsonObject? GetMapfromMapConfiguration(JsonDocument mapConfiguration)
         {
             var input = "$.map";
