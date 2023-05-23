@@ -1,5 +1,7 @@
 ﻿using Json.Path;
+using MapService.Business.MapConfig;
 using MapService.DataAccess;
+using MapService.Filters;
 using MapService.Models;
 using MapService.Utility;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -72,6 +74,25 @@ namespace MapService.Business.Config
             if (result == null) { return false; }
 
             return JsonSerializer.Deserialize<bool>(result.Value.GetRawText());
+        }
+
+        public static JsonObject GetMapWithLayers(JsonObject mapObject, IEnumerable<UserSpecificMaps> userSpecificMaps)
+        {
+            JsonObject mapWithLayers = new JsonObject();
+
+            JsonDocument layersDocument = MapConfigHandler.GetLayersAsJsonDocument();
+            JsonDocument mapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(mapObject);
+            JsonObject filteredLayers = ConfigFilter.FilterLayersBasedOnMapConfig(mapDocument, layersDocument);
+
+            JsonArray userSpecificMapsArray = new JsonArray();
+            if (ConfigHandler.IncludeUserSpecificMaps(mapDocument))
+                userSpecificMapsArray = JsonUtility.ConvertToJsonArray(userSpecificMaps);
+
+            mapWithLayers.Add("mapConfig", mapObject);
+            mapWithLayers.Add("layersConfig", filteredLayers);
+            mapWithLayers.Add("userSpecificMaps", userSpecificMapsArray);
+
+            return mapWithLayers;
         }
 
         private static JsonObject? GetMapfromMapConfiguration(JsonDocument mapConfiguration)

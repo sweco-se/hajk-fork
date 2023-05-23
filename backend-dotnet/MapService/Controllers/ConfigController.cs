@@ -75,7 +75,7 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        /// Gets the map config, together with all needed layers and list of user specific maps.
+        /// Get the map config, together with all needed layers and list of user specific maps.
         /// </remarks>
         /// <param name="map">The map file to be retrieved</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD</param>
@@ -89,13 +89,12 @@ namespace MapService.Controllers
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
         public ActionResult GetMapWithLayers(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
-            JsonObject? resultJson;
+            JsonObject? mapWithLayers;
 
             try
             {
                 JsonObject mapObject = MapConfigHandler.GetMapAsJsonObject(map); 
-                var userSpecificMaps = ConfigHandler.GetUserSpecificMaps(); //TODO: Only get userSpecificMaps if they are needed based on map config
-
+                var userSpecificMaps = ConfigHandler.GetUserSpecificMaps();
 
                 if (AdHandler.AdIsActive)
                 {
@@ -113,18 +112,7 @@ namespace MapService.Controllers
                     userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
                 }
 
-                JsonDocument layersDocument = MapConfigHandler.GetLayersAsJsonDocument();
-                JsonDocument mapDocument = MapConfigHandler.GetMapAsJsonDocument(map);
-                JsonObject filteredLayers = ConfigFilter.FilterLayersBasedOnMapConfig(mapDocument, layersDocument);
-
-                JsonArray userSpecificMapsArray = new JsonArray();
-                if (ConfigHandler.IncludeUserSpecificMaps(mapDocument)) 
-                    userSpecificMapsArray = JsonUtility.ConvertToJsonArray(userSpecificMaps);
-
-                resultJson = new JsonObject();
-                resultJson.Add("mapConfig", mapObject);
-                resultJson.Add("layersConfig", filteredLayers);
-                resultJson.Add("userSpecificMaps", userSpecificMapsArray);
+                mapWithLayers = ConfigHandler.GetMapWithLayers(mapObject, userSpecificMaps);
             }
             catch (Exception ex)
             {
@@ -133,7 +121,7 @@ namespace MapService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
 
-            return StatusCode(StatusCodes.Status200OK, resultJson);
+            return StatusCode(StatusCodes.Status200OK, mapWithLayers);
         }
 
         [HttpGet]
