@@ -82,7 +82,7 @@ namespace MapService.Filters
 
         internal static JsonObject FilterLayersBasedOnMapConfig(JsonDocument mapConfiguration, JsonDocument layers)
         {
-            JsonObject resultJson = new JsonObject();
+            JsonObject filteredLayers = new JsonObject();
             JsonElement root = layers.RootElement;
             var layerIds = ConfigHandler.GetLayerIdsFromMapConfiguration(mapConfiguration);
 
@@ -90,20 +90,38 @@ namespace MapService.Filters
             {
                 string propertyName = property.Name;
                 JsonElement propertyValue = property.Value;
-
-                JsonArray jsonArray = new JsonArray();
+                
+                JsonArray layersArray = new JsonArray();
                 foreach (JsonElement jsonElement in propertyValue.EnumerateArray())
                 {
                     JsonElement idOfLayer = jsonElement.GetProperty("id");
                     if (layerIds.Contains(idOfLayer.ToString()))
                     {
-                        jsonArray.Add(jsonElement);
+                        layersArray.Add(jsonElement);
                     }
                 }
 
-                resultJson.Add(propertyName, jsonArray);
+                // Check if key is already in the resulting JsonObject add the jsonArray it to the existing json node
+                if (filteredLayers.ContainsKey(propertyName))
+                {
+                    JsonArray existingLayersArray = filteredLayers[propertyName].AsArray();
+                    
+                    foreach (var node in layersArray)
+                    {
+                        var clonedNode = JsonUtility.CloneJsonNodeFromJsonNode(node);
+                        existingLayersArray.Add(clonedNode);
+                    }
+
+                    filteredLayers[propertyName] = existingLayersArray;
+                }
+                else // Create a new json node
+                {
+                    filteredLayers.Add(propertyName, layersArray);
+                }
+                
             }
-            return resultJson;
+
+            return filteredLayers;
         }
     }
 }

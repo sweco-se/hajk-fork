@@ -82,10 +82,11 @@ namespace MapService.Business.Config
 
             JsonDocument layersDocument = MapConfigHandler.GetLayersAsJsonDocument();
             JsonDocument mapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(mapObject);
+
             JsonObject filteredLayers = ConfigFilter.FilterLayersBasedOnMapConfig(mapDocument, layersDocument);
 
             JsonArray userSpecificMapsArray = new JsonArray();
-            if (ConfigHandler.IncludeUserSpecificMaps(mapDocument))
+            if (IncludeUserSpecificMaps(mapDocument))
                 userSpecificMapsArray = JsonUtility.ConvertToJsonArray(userSpecificMaps);
 
             mapWithLayers.Add("mapConfig", mapObject);
@@ -111,15 +112,15 @@ namespace MapService.Business.Config
 
             // Get layer ids from baselayers in layerswitcher tool
             var input = "$.tools[?(@.type == 'layerswitcher')].options.baselayers[*].id";
-            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
+            AddStringValuesToLayerIdList(mapConfiguration, input, ref layerIds);
 
             // Get layer ids from groups in layerswitcher tool
             input = "$.tools[?(@.type == 'layerswitcher')].options.groups..layers[*].id";
-            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
+            AddStringValuesToLayerIdList(mapConfiguration, input, ref layerIds);
 
             // Get layer ids from layers in search tool
             input = "$.tools[?(@.type == 'search')].options.layers[*].id";
-            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
+            AddStringValuesToLayerIdList(mapConfiguration, input, ref layerIds);
 
             // Get layer ids from layers in edit tool
             input = "$.tools[?(@.type == 'edit')].options.activeServices[*].visibleForGroups";
@@ -128,12 +129,12 @@ namespace MapService.Business.Config
             if (resultActiveServices == null || resultActiveServices.Count == 0) searchStringActiveServices = "activeServices.*";
 
             input = "$.tools[?(@.type == 'edit')].options." + searchStringActiveServices;
-            AddStringValuesToLayerIdsList(mapConfiguration, input, ref layerIds);
+            AddStringValuesToLayerIdList(mapConfiguration, input, ref layerIds);
 
             return layerIds;
         }
 
-        private static void AddStringValuesToLayerIdsList(JsonDocument mapConfiguration, string jsonPathString, ref List<string> layerIds)
+        private static void AddStringValuesToLayerIdList(JsonDocument mapConfiguration, string jsonPathString, ref List<string> layerIds)
         {
             var result = JsonPathUtility.GetJsonArray(mapConfiguration, jsonPathString);
 
