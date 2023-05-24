@@ -79,5 +79,49 @@ namespace MapService.Filters
 
             return filteredMapObjects;
         }
+
+        internal static JsonObject FilterLayersBasedOnMapConfig(JsonDocument mapConfiguration, JsonDocument layers)
+        {
+            JsonObject filteredLayers = new JsonObject();
+            JsonElement root = layers.RootElement;
+            var layerIds = ConfigHandler.GetLayerIdsFromMapConfiguration(mapConfiguration);
+
+            foreach (JsonProperty property in root.EnumerateObject())
+            {
+                string propertyName = property.Name;
+                JsonElement propertyValue = property.Value;
+                
+                JsonArray layersArray = new JsonArray();
+                foreach (JsonElement jsonElement in propertyValue.EnumerateArray())
+                {
+                    JsonElement idOfLayer = jsonElement.GetProperty("id");
+                    if (layerIds.Contains(idOfLayer.ToString()))
+                    {
+                        layersArray.Add(jsonElement);
+                    }
+                }
+
+                // Check if key is already in the resulting JsonObject add the jsonArray it to the existing json node
+                if (filteredLayers.ContainsKey(propertyName))
+                {
+                    JsonArray existingLayersArray = filteredLayers[propertyName].AsArray();
+                    
+                    foreach (var node in layersArray)
+                    {
+                        var clonedNode = JsonUtility.CloneJsonNodeFromJsonNode(node);
+                        existingLayersArray.Add(clonedNode);
+                    }
+
+                    filteredLayers[propertyName] = existingLayersArray;
+                }
+                else // Create a new json node
+                {
+                    filteredLayers.Add(propertyName, layersArray);
+                }
+                
+            }
+
+            return filteredLayers;
+        }
     }
 }
