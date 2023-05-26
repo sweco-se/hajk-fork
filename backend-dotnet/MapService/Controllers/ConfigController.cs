@@ -75,7 +75,8 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        /// Get the map config, together with all needed layers and list of user specific maps.
+        /// Get the map config, together with all needed layers (depending on which layer id:s are found in the map config), a list of user specific maps 
+        /// if the config map property "mapselector" is set to true, and user information if AD is acitve and the settings flag that user should be returned is set to true.
         /// </remarks>
         /// <param name="map">The map file to be retrieved</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD</param>
