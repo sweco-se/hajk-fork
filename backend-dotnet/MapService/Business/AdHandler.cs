@@ -71,9 +71,9 @@ namespace MapService.Business.Ad
             get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:Groups"); }
         }
 
-        private static string UserAccountName
+        private static string UserNameKey
         {
-            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:UserAccountName"); }
+            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:UserNameKey"); }
         }
 
         private static DirectorySearcher CreateDirectorySearcher()
@@ -86,35 +86,35 @@ namespace MapService.Business.Ad
             return directorySearcher;
         }
 
-        private AdUser? FindUser(string? userAccountName)
+        private AdUser? FindUser(string? userIdentity)
         {
-            if (string.IsNullOrEmpty(userAccountName)) { return null; }
+            if (string.IsNullOrEmpty(userIdentity)) { return null; }
 
-            if (!_adCache.GetAdUsers().ContainsKey(userAccountName))
+            if (!_adCache.GetAdUsers().ContainsKey(userIdentity))
             {
-                var adUser = GetUserFromAd(userAccountName);
+                var adUser = GetUserFromAd(userIdentity);
 
-                _adCache.SetUser(userAccountName, adUser);
+                _adCache.SetUser(userIdentity, adUser);
 
                 var adGroupsForUser = GetGroupsForUserFromAd(adUser.DistinguishedName);
 
-                _adCache.SetGroupsPerUser(userAccountName, adGroupsForUser);
+                _adCache.SetGroupsPerUser(userIdentity, adGroupsForUser);
             }
 
-            _adCache.GetAdUsers().TryGetValue(userAccountName, out var user);
+            _adCache.GetAdUsers().TryGetValue(userIdentity, out var user);
 
             return user;
         }
 
-        private static AdUser GetUserFromAd(string? userAccountName)
+        private static AdUser GetUserFromAd(string? userIdentity)
         {
             var user = new AdUser();
 
-            if (string.IsNullOrEmpty(userAccountName)) { return user; }
+            if (string.IsNullOrEmpty(userIdentity)) { return user; }
 
             var directorySearcher = CreateDirectorySearcher();
 
-            directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserAccountName + "={0}))", userAccountName);
+            directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserNameKey + "={0}))", userIdentity);
 
             directorySearcher.PropertiesToLoad.Add("distinguishedname");
             directorySearcher.PropertiesToLoad.Add("userprincipalname");
@@ -228,9 +228,9 @@ namespace MapService.Business.Ad
             return groups;
         }
 
-        internal bool UserIsValid(string? userAccountName)
+        internal bool UserIsValid(string? userIdentity)
         {
-            var user = FindUser(userAccountName);
+            var user = FindUser(userIdentity);
 
             if (user == null) { return false; }
 
@@ -244,9 +244,7 @@ namespace MapService.Business.Ad
             if (IdentifyUserWithWindowsAuthentication)
                 return GetWindowsAuthenticationUserName();
             else
-            {
                 return GetValueFromTrustedHeader(request, userName);
-            }
         }
 
         public string GetWindowsAuthenticationUserName()
@@ -261,9 +259,19 @@ namespace MapService.Business.Ad
             else return String.Empty;
         }
 
-        internal static bool UserHasAdAccess(string? userAccountName)
+        public string GetValueFromTrustedHeader(HttpRequest request, string? userIdentity)
         {
-            if (string.IsNullOrEmpty(userAccountName)) { return false; }
+            if (userIdentity == null)
+            {
+                request.Headers.TryGetValue(TrustedHeader, out var trustedHeaderValue);
+                userIdentity = trustedHeaderValue;
+            }
+            return userIdentity;
+        }
+
+        internal static bool UserHasAdAccess(string? userIdentity)
+        {
+            if (string.IsNullOrEmpty(userIdentity)) { return false; }
 
             var directorySearcher = CreateDirectorySearcher();
 
@@ -279,14 +287,14 @@ namespace MapService.Business.Ad
                 {
                     var distinguishedGroupName = searchResultGroup.Properties["distinguishedname"][0].ToString();
 
-                    directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserAccountName + "={0})(memberOf={1}))", userAccountName, distinguishedGroupName);
+                    directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserNameKey + "={0})(memberOf={1}))", userIdentity, distinguishedGroupName);
                     directorySearcher.PropertiesToLoad.Add("userprincipalname");
 
                     var searchResultUserInGroup = directorySearcher.FindOne();
 
                     if (searchResultUserInGroup != null)
                     {
-                        if (searchResultUserInGroup.Properties[UserAccountName][0].ToString() == userAccountName)
+                        if (searchResultUserInGroup.Properties[UserNameKey][0].ToString() == userIdentity)
                         {
                             return true;
                         }
@@ -336,13 +344,13 @@ namespace MapService.Business.Ad
             {
                 bool allUserHasAdGroup = true;
 
-                foreach (string userAccountName in users)
+                foreach (string userIdentity in users)
                 {
-                    var user = FindUser(userAccountName);
+                    var user = FindUser(userIdentity);
 
                     if (user == null) { allUserHasAdGroup = false; }
 
-                    _adCache.GetAdGroupsPerUser().TryGetValue(userAccountName, out var adGroups);
+                    _adCache.GetAdGroupsPerUser().TryGetValue(userIdentity, out var adGroups);
 
                     if (adGroups == null || !adGroups.Contains(adGroup.Cn)) { allUserHasAdGroup = false; }
                 }
