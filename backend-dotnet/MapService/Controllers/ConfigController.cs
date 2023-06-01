@@ -1,19 +1,13 @@
-using Json.More;
 using MapService.Business.Ad;
 using MapService.Business.Config;
 using MapService.Business.MapConfig;
 using MapService.Filters;
 using MapService.Models;
-using MapService.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
 namespace MapService.Controllers
 {
@@ -75,7 +69,7 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        /// Get the map config, together with all needed layers (depending on which layer id:s are found in the map config), a list of user specific maps 
+        /// Get the map config, together with all needed layers (depending on which layer id:s are found in the map config), a list of user specific maps
         /// if the config map property "mapselector" is set to true, and user information if AD is acitve and the settings flag that user should be returned is set to true.
         /// </remarks>
         /// <param name="map">The map file to be retrieved</param>
@@ -94,8 +88,9 @@ namespace MapService.Controllers
 
             try
             {
-                JsonObject mapObject = MapConfigHandler.GetMapAsJsonObject(map); 
+                JsonObject mapObject = MapConfigHandler.GetMapAsJsonObject(map);
                 var userSpecificMaps = ConfigHandler.GetUserSpecificMaps();
+                AdUser? adUser = null;
 
                 if (AdHandler.AdIsActive)
                 {
@@ -109,11 +104,16 @@ namespace MapService.Controllers
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
 
+                    if (AdHandler.ExposeUserObject)
+                    {
+                        adUser = adHandler.FindUser(userPrincipalName);
+                    }
+
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
-                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
+                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);
                 }
 
-                mapWithLayers = ConfigHandler.GetMapWithLayers(mapObject, userSpecificMaps);
+                mapWithLayers = ConfigHandler.GetMapWithLayers(mapObject, userSpecificMaps, adUser);
             }
             catch (Exception ex)
             {

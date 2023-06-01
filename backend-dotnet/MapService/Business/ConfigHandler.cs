@@ -1,11 +1,8 @@
-﻿using Json.Path;
-using MapService.Business.MapConfig;
+﻿using MapService.Business.MapConfig;
 using MapService.DataAccess;
 using MapService.Filters;
 using MapService.Models;
 using MapService.Utility;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using System.Reflection.Metadata;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -76,7 +73,7 @@ namespace MapService.Business.Config
             return JsonSerializer.Deserialize<bool>(result.Value.GetRawText());
         }
 
-        public static JsonObject GetMapWithLayers(JsonObject mapObject, IEnumerable<UserSpecificMaps> userSpecificMaps)
+        public static JsonObject GetMapWithLayers(JsonObject mapObject, IEnumerable<UserSpecificMaps> userSpecificMaps, AdUser? adUser)
         {
             JsonObject mapWithLayers = new JsonObject();
 
@@ -92,6 +89,13 @@ namespace MapService.Business.Config
             mapWithLayers.Add("mapConfig", mapObject);
             mapWithLayers.Add("layersConfig", filteredLayers);
             mapWithLayers.Add("userSpecificMaps", userSpecificMapsArray);
+
+            if (adUser != null)
+            {
+                JsonObject? adUserObject = JsonUtility.ConvertToJsonObject(adUser);
+
+                mapWithLayers.Add("userDetails", adUserObject);
+            }
 
             return mapWithLayers;
         }
@@ -142,7 +146,6 @@ namespace MapService.Business.Config
             {
                 foreach (var element in result)
                 {
-
                     string? id;
                     try
                     {
