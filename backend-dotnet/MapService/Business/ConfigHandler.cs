@@ -106,6 +106,16 @@ namespace MapService.Business.Config
             return JsonSerializer.Deserialize<JsonObject>(result.Value.GetRawText());
         }
 
+        internal static JsonObject? GetToolFromMapConfiguration(JsonDocument mapConfiguration, string tool)
+        {
+            var input = "$.tools[?(@.type == '" + tool + "')]";
+            var result = JsonPathUtility.GetJsonElement(mapConfiguration, input);
+            
+            if (result == null) { return null; }
+
+            return JsonUtility.ConvertToJsonObject(result);
+        }
+
         public static IEnumerable<string>? GetLayerIdsFromMapConfiguration(JsonDocument mapConfiguration)
         {
             List<string>? layerIds = new List<string>();
