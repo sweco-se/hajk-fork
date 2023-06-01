@@ -39,7 +39,7 @@ namespace MapService.Filters
 
             var visibleForGroups = ConfigHandler.GetVisibleForGroups(mapDocument);
 
-            if (visibleForGroups == null) { return filteredMapObjects; }
+            if (visibleForGroups == null || !visibleForGroups.Any()) { return filteredMapObjects; }
             bool isGroupsMatched = false;
             foreach (var visibleForGroup in visibleForGroups)
             {

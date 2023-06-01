@@ -102,13 +102,13 @@ namespace MapService.Controllers
                     var adHandler = new AdHandler(_memoryCache, _logger);
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                    if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
-                    {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
-                    }
+                    //if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
+                    //{
+                    //    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
+                    //}
 
-                    adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
-                    
+                    //adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
+                    IEnumerable<string> adUserGroups = new string[] { userPrincipalName };
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
                     userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
                 }
@@ -144,13 +144,13 @@ namespace MapService.Controllers
                     var adHandler = new AdHandler(_memoryCache, _logger);
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                    if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
-                    {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
-                    }
+                    //if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
+                    //{
+                    //    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
+                    //}
 
-                    adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
-                    
+                    //adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
+                    IEnumerable<string> adUserGroups = new string[] { userPrincipalName };
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
                 }
             }
