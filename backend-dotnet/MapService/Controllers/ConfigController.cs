@@ -108,7 +108,7 @@ namespace MapService.Controllers
                     }
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
-
+                    
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
                     userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);                    
                 }
@@ -150,7 +150,7 @@ namespace MapService.Controllers
                     }
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
-
+                    
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
                 }
             }
@@ -236,7 +236,7 @@ namespace MapService.Controllers
                     }
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
-
+                    
                     userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);
                 }
             }
