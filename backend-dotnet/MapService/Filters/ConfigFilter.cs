@@ -39,7 +39,7 @@ namespace MapService.Filters
 
             var visibleForGroups = ConfigHandler.GetVisibleForGroups(mapDocument);
 
-            if (visibleForGroups == null) { return filteredMapObjects; }
+            if (visibleForGroups == null || !visibleForGroups.Any()) { return filteredMapObjects; }
             bool isGroupsMatched = false;
             foreach (var visibleForGroup in visibleForGroups)
             {
@@ -116,8 +116,8 @@ namespace MapService.Filters
                     continue;
                 }
 
-                var visibleFroGroupsArray = resultVisibleForGroups.Value.EnumerateArray();
-                if (visibleFroGroupsArray.Count() == 0) //No groups specified -> tool is visible for all users
+                var visibleForGroupsArray = resultVisibleForGroups.Value.EnumerateArray();
+                if (visibleForGroupsArray.Count() == 0) //No groups specified -> tool is visible for all users
                 {
                     var filteredTool = ConfigHandler.GetToolFromMapConfiguration(mapDocument, tool);
                     if (filteredTool is not null)
@@ -125,7 +125,8 @@ namespace MapService.Filters
                     continue;
                 }
 
-                foreach (var group in visibleFroGroupsArray)
+                // Check if the adgroup is in the visibleForGroups array
+                foreach (var group in visibleForGroupsArray)
                 {
                     if (group.ValueKind != JsonValueKind.String)
                         continue;
