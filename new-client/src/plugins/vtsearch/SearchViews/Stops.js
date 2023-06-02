@@ -1,34 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
-import withStyles from "@mui/styles/withStyles";
+// import withStyles from "@mui/styles/withStyles";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
+// import FormControl from "@mui/material/FormControl";
+// import MenuItem from "@mui/material/MenuItem";
+// import Select from "@mui/material/Select";
 import {
-  TextField,
-  Button,
+  // TextField,
+  // Button,
   Typography,
-  Divider,
+  // Divider,
   Grid,
-  ButtonGroup,
+  // ButtonGroup,
 } from "@mui/material";
-import InactivePolygon from "../img/polygonmarkering.png";
-import InactiveRectangle from "../img/rektangelmarkering.png";
-import ActivePolygon from "../img/polygonmarkering-blue.png";
-import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+// import InactivePolygon from "../img/polygonmarkering.png";
+// import InactiveRectangle from "../img/rektangelmarkering.png";
+// import ActivePolygon from "../img/polygonmarkering-blue.png";
+// import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
 // Define JSS styles that will be used in this component.
 // Examle below utilizes the very powerful "theme" object
 // that gives access to some constants, see: https://material-ui.com/customization/default-theme/
-const styles = (theme) => ({
-  divider: { marginTop: theme.spacing(2), marginBottom: theme.spacing(2) },
-  firstMenuItem: { minHeight: 36 },
-  searchButtonColor: { borderColor: theme.palette.primary.main },
-  searchButtonText: { color: theme.palette.primary.main },
-});
+// const styles = (theme) => ({
+//   divider: { marginTop: theme.spacing(2), marginBottom: theme.spacing(2) },
+//   firstMenuItem: { minHeight: 36 },
+//   searchButtonColor: { borderColor: theme.palette.primary.main },
+//   searchButtonText: { color: theme.palette.primary.main },
+// });
 
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -224,11 +224,11 @@ class Stops extends React.PureComponent {
   };
 
   renderTextParameterSection = () => {
-    const { municipalities } = this.state;
-    const { classes } = this.props;
+    // const { municipalities } = this.state;
+    // const { classes } = this.props;
     return (
       <>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Divider />
         </Grid>
         <Grid item xs={12}>
@@ -277,33 +277,34 @@ class Stops extends React.PureComponent {
               })}
             </Select>
           </FormControl>
-        </Grid>
+        </Grid> */}
       </>
     );
   };
 
   renderSearchButton = () => {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     return (
-      <Grid item xs={12}>
-        <ButtonGroup className={classes.searchButtonColor}>
-          <Button
-            className={classes.searchButtonColor}
-            onClick={this.doSearch}
-            variant="outlined"
-          >
-            <Typography className={classes.searchButtonText}>SÖK</Typography>
-          </Button>
-        </ButtonGroup>
-      </Grid>
+      <></>
+      // <Grid item xs={12}>
+      //   <ButtonGroup className={classes.searchButtonColor}>
+      //     <Button
+      //       className={classes.searchButtonColor}
+      //       onClick={this.doSearch}
+      //       variant="outlined"
+      //     >
+      //       <Typography className={classes.searchButtonText}>SÖK</Typography>
+      //     </Button>
+      //   </ButtonGroup>
+      // </Grid>
     );
   };
 
   renderSpatialSearchSection = () => {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     return (
       <>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Divider className={classes.divider} />
         </Grid>
         <Grid item xs={12}>
@@ -342,7 +343,7 @@ class Stops extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
       </>
     );
   };
@@ -370,4 +371,5 @@ class Stops extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-export default withStyles(styles)(Stops);
+// export default withStyles(styles)(Stops);
+export default Stops;

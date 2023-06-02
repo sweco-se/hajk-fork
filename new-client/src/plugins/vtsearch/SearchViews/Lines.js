@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import withStyles from "@mui/styles/withStyles";
+// import withStyles from "@mui/styles/withStyles";
 import {
   TextField,
   Button,
@@ -20,17 +20,17 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 // Example below utilizes the very powerful "theme" object
 // that gives access to some constants, see: https://material-ui.com/customization/default-theme/
 
-const styles = (theme) => ({
-  searchButton: { marginTop: 8, borderColor: theme.palette.primary.main },
-  divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-  textFields: { marginLeft: 10 },
-  fontSize: { fontSize: 12 },
-  polygonAndRectangle: {
-    marginLeft: 10,
-  },
-  firstMenuItem: { minHeight: 36 },
-  searchButtonText: { color: theme.palette.primary.main },
-});
+// const styles = (theme) => ({
+//   searchButton: { marginTop: 8, borderColor: theme.palette.primary.main },
+//   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
+//   textFields: { marginLeft: 10 },
+//   fontSize: { fontSize: 12 },
+//   polygonAndRectangle: {
+//     marginLeft: 10,
+//   },
+//   firstMenuItem: { minHeight: 36 },
+//   searchButtonText: { color: theme.palette.primary.main },
+// });
 
 //TODO - Only mockup //Tobias
 
@@ -266,85 +266,88 @@ class Lines extends React.PureComponent {
     const { trafficTransports } = this.state;
     const { classes } = this.props;
     return (
-      <Grid item xs={12}>
-        <FormControl fullWidth>
-          <Typography variant="caption">TRAFIKSLAG</Typography>
-          <Select
-            value={this.state.trafficTransport}
-            onChange={this.handleTrafficTransportChange}
-          >
-            {trafficTransports.map((name, index) => {
-              if (name === "") {
-                return (
-                  <MenuItem
-                    key={index}
-                    value={name}
-                    className={classes.firstMenuItem}
-                  >
-                    {name}
-                  </MenuItem>
-                );
-              } else {
-                return (
-                  <MenuItem key={index} value={name}>
-                    <Typography>{name}</Typography>
-                  </MenuItem>
-                );
-              }
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
+      <></>
+      // <Grid item xs={12}>
+      //   <FormControl fullWidth>
+      //     <Typography variant="caption">TRAFIKSLAG</Typography>
+      //     <Select
+      //       value={this.state.trafficTransport}
+      //       onChange={this.handleTrafficTransportChange}
+      //     >
+      //       {trafficTransports.map((name, index) => {
+      //         if (name === "") {
+      //           return (
+      //             <MenuItem
+      //               key={index}
+      //               value={name}
+      //               className={classes.firstMenuItem}
+      //             >
+      //               {name}
+      //             </MenuItem>
+      //           );
+      //         } else {
+      //           return (
+      //             <MenuItem key={index} value={name}>
+      //               <Typography>{name}</Typography>
+      //             </MenuItem>
+      //           );
+      //         }
+      //       })}
+      //     </Select>
+      //   </FormControl>
+      // </Grid>
     );
   };
   renderMunicipalitySection = () => {
     const { classes } = this.props;
     const { municipalities } = this.state;
     return (
-      <Grid item xs={12}>
-        <FormControl fullWidth>
-          <Typography variant="caption">KOMMUN</Typography>
-          <Select
-            value={this.state.municipality}
-            onChange={this.handleMunicipalChange}
-          >
-            {municipalities.map((municipality, index) => {
-              if (municipality.name === "") {
-                return (
-                  <MenuItem
-                    className={classes.firstMenuItem}
-                    key={index}
-                    value={municipality}
-                  >
-                    <Typography>{municipality.name}</Typography>
-                  </MenuItem>
-                );
-              } else {
-                return (
-                  <MenuItem key={index} value={municipality}>
-                    <Typography>{municipality.name}</Typography>
-                  </MenuItem>
-                );
-              }
-            })}
-          </Select>
-        </FormControl>
-      </Grid>
+      <></>
+      // <Grid item xs={12}>
+      //   <FormControl fullWidth>
+      //     <Typography variant="caption">KOMMUN</Typography>
+      //     <Select
+      //       value={this.state.municipality}
+      //       onChange={this.handleMunicipalChange}
+      //     >
+      //       {municipalities.map((municipality, index) => {
+      //         if (municipality.name === "") {
+      //           return (
+      //             <MenuItem
+      //               className={classes.firstMenuItem}
+      //               key={index}
+      //               value={municipality}
+      //             >
+      //               <Typography>{municipality.name}</Typography>
+      //             </MenuItem>
+      //           );
+      //         } else {
+      //           return (
+      //             <MenuItem key={index} value={municipality}>
+      //               <Typography>{municipality.name}</Typography>
+      //             </MenuItem>
+      //           );
+      //         }
+      //       })}
+      //     </Select>
+      //   </FormControl>
+      // </Grid>
     );
   };
 
   renderSearchButtonSection = () => {
     const { classes } = this.props;
     return (
-      <Grid item xs={12}>
-        <Button
-          className={classes.searchButton}
-          onClick={this.doSearch}
-          variant="outlined"
-        >
-          <Typography className={classes.searchButtonText}>SÖK</Typography>
-        </Button>
-      </Grid>
+      <></>
+      // <Grid item xs={12}>
+      //   <Button
+      //     className={classes.searchButton}
+      //     onClick={this.doSearch}
+      //     variant="outlined"
+      //   >
+      //     <Typography className={classes.searchButtonText}>SÖK</Typography>
+      //   </Button>
+      // </Grid>
     );
   };
 
@@ -352,7 +355,7 @@ class Lines extends React.PureComponent {
     const { classes } = this.props;
     return (
       <>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Divider className={classes.divider} />
         </Grid>
         <Grid item xs={12}>
@@ -391,7 +394,7 @@ class Lines extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid>
+        </Grid> */}
       </>
     );
   };
@@ -420,4 +423,5 @@ class Lines extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-export default withStyles(styles)(Lines);
+// export default withStyles(styles)(Lines);
+export default Lines;

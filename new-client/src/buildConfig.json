@@ -1,27 +1,7 @@
 {
   "activeTools": [
-    "Anchor",
-    "Bookmarks",
-    "Buffer",
-    "Collector",
-    "Coordinates",
-    "DocumentHandler",
-    "Draw",   
-    "Edit",
-    "Export",
-    "FmeServer",
-    "InfoDialog",
-    "LayerComparer",
-    "LayerSwitcher",
-    "Location",
-    "Measure",
-    "Measurer",     
-    "Print",
-    "Routing",
     "Search",
-    "Sketch",
-    "StreetView",
-    "TimeSlider"
+    "vtsearch"
   ],
   "allTools": [
     "Anchor",
@@ -45,7 +25,7 @@
     "LayerSwitcher",
     "Location",
     "Measure",
-    "Measurer",     
+    "Measurer",
     "Print",
     "Routing",
     "Search",
