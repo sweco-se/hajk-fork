@@ -5,16 +5,15 @@ import PropTypes from "prop-types";
 // Plugin-specific imports. Most plugins will need a Model, View and Observer
 // but make sure to only create and import whatever you need.
 import SearchModel from "./SearchModel";
-import Journeys from "./SearchViews/Journeys";
-import Stops from "./SearchViews/Stops";
-import Lines from "./SearchViews/Lines";
+// import Journeys from "./SearchViews/Journeys";
+// import Stops from "./SearchViews/Stops";
+// import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
-import { Tooltip } from "@mui/material";
+import { Tooltip, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IconButton from "@mui/material/IconButton";
-import clsx from "clsx";
 import MenuIcon from "@mui/icons-material/Menu";
-import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
 import FormControl from "@mui/material/FormControl";
 import LinearProgress from "@mui/material/LinearProgress";
 import InputLabel from "@mui/material/InputLabel";
@@ -28,78 +27,91 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import Search from "./../../components/Search/Search";
 
-const styles = (theme) => {
-  return {
-    root: {
-      padding: "2px 4px",
-      display: "flex",
-      alignItems: "center",
+// const styles = (theme) => {
+//   return {
+//     root: {
+//       padding: "2px 4px",
+//       display: "flex",
+//       alignItems: "center",
 
-      [theme.breakpoints.up("sm")]: {
-        maxWidth: 620,
-      },
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    searchContainer: {
-      maxWidth: 260,
-      boxShadow: theme.shadows[10],
-    },
-    searchContainerBox: {
-      display: "flex",
-      padding: 0, // override current padding
-      flexWrap: "wrap",
-      minHeight: 60,
-    },
-    expand: {
-      transform: "rotate(0deg)",
-      transition: theme.transitions.create("transform", {
-        duration: theme.transitions.duration.shortest,
-      }),
-    },
-    formControl: {
-      margin: theme.spacing(1),
-      marginLeft: "0px",
-      marginBottom: "24px",
-      width: "100%",
-      minWidth: 200,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-    expandOpen: {
-      transform: "rotate(180deg)",
-    },
-    searchContainerTitle: {
-      marginLeft: 10,
-    },
-    iconButton: { padding: 7 },
+//       [theme.breakpoints.up("sm")]: {
+//         maxWidth: 620,
+//       },
+//     },
+//     input: {
+//       marginLeft: theme.spacing(1),
+//       flex: 1,
+//     },
+//     searchContainer: {
+//       maxWidth: 260,
+//       boxShadow: theme.shadows[10],
+//     },
+//     searchContainerBox: {
+//       display: "flex",
+//       padding: 0, // override current padding
+//       flexWrap: "wrap",
+//       minHeight: 60,
+//     },
+//     expand: {
+//       transform: "rotate(0deg)",
+//       transition: theme.transitions.create("transform", {
+//         duration: theme.transitions.duration.shortest,
+//       }),
+//     },
+//     formControl: {
+//       margin: theme.spacing(1),
+//       marginLeft: "0px",
+//       marginBottom: "24px",
+//       width: "100%",
+//       minWidth: 200,
+//     },
+//     selectEmpty: {
+//       marginTop: theme.spacing(2),
+//     },
+//     expandOpen: {
+//       transform: "rotate(180deg)",
+//     },
+//     searchContainerTitle: {
+//       marginLeft: 10,
+//     },
+//     iconButton: { padding: 7 },
 
-    selectInput: {
-      padding: 5,
-    },
-    searchModuleContainer: {
-      minHeight: 200,
-    },
-    searchModuleContainerRoot: {
-      padding: 10,
-    },
-    loaderContainer: {
-      flexBasis: "100%",
-      minHeight: "5px",
-      marginTop: "10px",
-    },
-  };
-};
+//     selectInput: {
+//       padding: 5,
+//     },
+//     searchModuleContainer: {
+//       minHeight: 200,
+//     },
+//     searchModuleContainerRoot: {
+//       padding: 10,
+//     },
+//     loaderContainer: {
+//       flexBasis: "100%",
+//       minHeight: "5px",
+//       marginTop: "10px",
+//     },
+//   };
+// };
+
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginLeft: 0,
+  marginBottom: "24px",
+  minWidth: 200,
+}));
+
+const LoaderContainer = styled("div")(() => ({
+  flexBasis: "100%",
+  minHeight: "5px",
+  marginTop: "10px",
+}));
 
 const searchTypes = {
   DEFAULT: "",
   SEARCH: "Sök",
-  JOURNEYS: "Sök Turer",
-  LINES: "Sök Linjer",
-  STOPS: "Sök Hållplatser",
+  // JOURNEYS: "Sök Turer",
+  // LINES: "Sök Linjer",
+  // STOPS: "Sök Hållplatser",
 };
 
 /**
@@ -122,6 +134,7 @@ class VTSearch extends React.PureComponent {
     loading: false,
     appLoaded: false,
     draggingEnabled: true,
+    coreAppLoaded: false,
   };
 
   static propTypes = {
@@ -231,11 +244,12 @@ class VTSearch extends React.PureComponent {
   };
 
   renderSearchmodule = () => {
-    const { app } = this.props;
+    // const { app } = this.props;
     switch (this.state.activeSearchTool) {
       case searchTypes.SEARCH: {
         this.props.app.appModel = this.props.app; // Gör så för att Sökmodellen laddas inte från ComponentDidMount.
         this.props.app.appLoadedFromRenderElsewhere = this.state.appLoaded;
+        // debugger;
         return (
           <Search
             map={this.props.app.getMap()}
@@ -244,45 +258,72 @@ class VTSearch extends React.PureComponent {
           ></Search>
         );
       }
-      case searchTypes.JOURNEYS: {
-        return (
-          <Journeys
-            model={this.searchModel}
-            app={app}
-            localObserver={this.localObserver}
-          ></Journeys>
-        );
-      }
-      case searchTypes.LINES: {
-        return (
-          <Lines
-            model={this.searchModel}
-            app={app}
-            localObserver={this.localObserver}
-          ></Lines>
-        );
-      }
-      case searchTypes.STOPS: {
-        return (
-          <Stops
-            model={this.searchModel}
-            app={app}
-            localObserver={this.localObserver}
-          ></Stops>
-        );
-      }
+      // case searchTypes.JOURNEYS: {
+      //   return (
+      //     <Journeys
+      //       model={this.searchModel}
+      //       app={app}
+      //       localObserver={this.localObserver}
+      //     ></Journeys>
+      //   );
+      // }
+      // case searchTypes.LINES: {
+      //   return (
+      //     <Lines
+      //       model={this.searchModel}
+      //       app={app}
+      //       localObserver={this.localObserver}
+      //     ></Lines>
+      //   );
+      // }
+      // case searchTypes.STOPS: {
+      //   return (
+      //     <Stops
+      //       model={this.searchModel}
+      //       app={app}
+      //       localObserver={this.localObserver}
+      //     ></Stops>
+      //   );
+      // }
       default: {
       }
     }
   };
 
   renderDropDown() {
-    const { classes } = this.props;
+    // const { classes } = this.props;
+    // return (
+    //   <FormControl className={classes.formControl}>
+    //     <InputLabel id="search-type">SÖKALTERNATIV</InputLabel>
+    //     <Select
+    //       classes={{ root: classes.selectInput }}
+    //       onChange={this.handleChange}
+    //       native
+    //       inputProps={{
+    //         name: "searchType",
+    //         id: "search-type",
+    //       }}
+    //     >
+    //       {Object.keys(searchTypes).map((key) => {
+    //         if (key === "DEFAULT")
+    //           return <option key={key} value="" aria-label="None" />;
+    //         return (
+    //           <option key={key} value={key}>
+    //             {searchTypes[key]}
+    //           </option>
+    //         );
+    //       })}
+    //     </Select>
+    //   </FormControl>
+    // );
     return (
-      <FormControl className={classes.formControl}>
-        <InputLabel id="search-type">SÖKALTERNATIV</InputLabel>
+      <StyledFormControl fullWidth>
+        <InputLabel sx={{ left: "-14px" }} id="search-type-label">
+          SÖKALTERNATIV
+        </InputLabel>
         <Select
-          classes={{ root: classes.selectInput }}
+          variant="standard"
+          labelId="search-type-label"
           onChange={this.handleChange}
           native
           inputProps={{
@@ -300,20 +341,37 @@ class VTSearch extends React.PureComponent {
             );
           })}
         </Select>
-      </FormControl>
+      </StyledFormControl>
     );
   }
 
   renderExpansionButton() {
-    const { classes } = this.props;
+    // const { classes } = this.props;
+    // return (
+    //   <IconButton
+    //     className={
+    //       (clsx(classes.expand, {
+    //         [classes.expandOpen]: this.state.expanded,
+    //       }),
+    //       classes.dropDownIconButton)
+    //     }
+    //     onClick={this.handleExpandClick}
+    //     aria-expanded={this.state.expanded}
+    //     aria-label="show more"
+    //     size="large"
+    //   >
+    //     <ExpandMoreIcon />
+    //   </IconButton>
+    // );
     return (
       <IconButton
-        className={
-          (clsx(classes.expand, {
-            [classes.expandOpen]: this.state.expanded,
-          }),
-          classes.dropDownIconButton)
-        }
+        sx={{
+          transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
+          transition: (theme) =>
+            theme.transitions.create("transform", {
+              duration: (theme) => theme.transitions.duration.shortest,
+            }),
+        }}
         onClick={this.handleExpandClick}
         aria-expanded={this.state.expanded}
         aria-label="show more"
@@ -325,14 +383,28 @@ class VTSearch extends React.PureComponent {
   }
 
   renderMenuButton() {
-    const { onMenuClick, classes, menuButtonDisabled } = this.props;
+    // const { onMenuClick, classes, menuButtonDisabled } = this.props;
+    const { onMenuClick, menuButtonDisabled } = this.props;
     const tooltipText = menuButtonDisabled
       ? "Du måste först låsa upp verktygspanelen för kunna klicka på den här knappen. Tryck på hänglåset till vänster."
       : "Visa verktygspanelen";
+    // return (
+    //   <Tooltip disableInteractive title={tooltipText}>
+    //     <IconButton
+    //       className={classes.iconButton}
+    //       onClick={onMenuClick}
+    //       disabled={menuButtonDisabled}
+    //       aria-label="menu"
+    //       size="large"
+    //     >
+    //       <MenuIcon />
+    //     </IconButton>
+    //   </Tooltip>
+    // );
     return (
       <Tooltip disableInteractive title={tooltipText}>
         <IconButton
-          className={classes.iconButton}
+          sx={{ padding: "7px" }}
           onClick={onMenuClick}
           disabled={menuButtonDisabled}
           aria-label="menu"
@@ -377,7 +449,7 @@ class VTSearch extends React.PureComponent {
         <>
           {this.renderDropDown()}
           {this.renderSearchmodule()}
-          <div className={classes.loaderContainer}>{this.renderLoader()}</div>
+          <LoaderContainer>{this.renderLoader()}</LoaderContainer>
           {ReactDOM.createPortal(
             <SearchResultListContainer
               localObserver={this.localObserver}
@@ -394,4 +466,4 @@ class VTSearch extends React.PureComponent {
   }
 }
 
-export default withStyles(styles)(VTSearch);
+export default VTSearch;
