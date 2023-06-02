@@ -1,12 +1,12 @@
 import React from "react";
-import withStyles from "@mui/styles/withStyles";
+//import withStyles from "@mui/styles/withStyles";
 
 import AttributeTable from "./AttributeTable";
 import SummaryTable from "./SummaryTable";
 
-const styles = (theme) => ({
-  paper: { height: 240, marginBottom: 10, boxShadow: "none" },
-});
+// const styles = (theme) => ({
+//   paper: { height: 240, marginBottom: 10, boxShadow: "none" },
+// });
 
 /**
  * @summary Table used to show summary for journeys
@@ -131,4 +131,5 @@ class AdvancedAttributeTable extends React.Component {
   };
 }
 
-export default withStyles(styles)(AdvancedAttributeTable);
+//export default withStyles(styles)(AdvancedAttributeTable);
+export default AdvancedAttributeTable;

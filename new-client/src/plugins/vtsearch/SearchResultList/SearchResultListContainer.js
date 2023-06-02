@@ -1,18 +1,18 @@
 // Generic imports â€“ all plugins need these
 import React from "react";
 import PropTypes from "prop-types";
-import { Rnd } from "react-rnd";
-import withStyles from "@mui/styles/withStyles";
-import AppBar from "@mui/material/AppBar";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Grid from "@mui/material/Grid";
-import Toolbar from "@mui/material/Toolbar";
-import PanelToolbox from "./PanelToolbox";
+// import { Rnd } from "react-rnd";
+// import withStyles from "@mui/styles/withStyles";
+// import AppBar from "@mui/material/AppBar";
+// import Tabs from "@mui/material/Tabs";
+// import Tab from "@mui/material/Tab";
+// import Grid from "@mui/material/Grid";
+// import Toolbar from "@mui/material/Toolbar";
+// import PanelToolbox from "./PanelToolbox";
 import TabPanel from "./TabPanel";
-import ClearIcon from "@mui/icons-material/Clear";
+// import ClearIcon from "@mui/icons-material/Clear";
 import GeoJSON from "ol/format/GeoJSON";
-import { Typography } from "@mui/material";
+// import { Typography } from "@mui/material";
 
 /**
  * @summary Base in the search result list
@@ -23,31 +23,31 @@ import { Typography } from "@mui/material";
  * @extends {React.PureComponent}
  */
 
-const styles = (theme) => {
-  return {
-    window: {
-      zIndex: theme.zIndex.appBar,
-      background: theme.palette.common.white,
-      boxShadow: theme.shadows[24],
-      overflow: "hidden",
-      pointerEvents: "all",
-    },
-    tabsRoot: {
-      minHeight: 0,
-    },
-    tabRoot: {
-      minHeight: 0,
-      height: theme.spacing(4),
-      padding: theme.spacing(0),
-      marginLeft: theme.spacing(0.5),
-      backgroundColor: theme.palette.primary.light,
-    },
-    toolbar: {
-      minHeight: 0,
-      backgroundColor: theme.palette.primary.dark,
-    },
-  };
-};
+// const styles = (theme) => {
+//   return {
+//     window: {
+//       zIndex: theme.zIndex.appBar,
+//       background: theme.palette.common.white,
+//       boxShadow: theme.shadows[24],
+//       overflow: "hidden",
+//       pointerEvents: "all",
+//     },
+//     tabsRoot: {
+//       minHeight: 0,
+//     },
+//     tabRoot: {
+//       minHeight: 0,
+//       height: theme.spacing(4),
+//       padding: theme.spacing(0),
+//       marginLeft: theme.spacing(0.5),
+//       backgroundColor: theme.palette.primary.light,
+//     },
+//     toolbar: {
+//       minHeight: 0,
+//       backgroundColor: theme.palette.primary.dark,
+//     },
+//   };
+// };
 
 const windowsContainer = document.getElementById("windows-container");
 
@@ -305,8 +305,9 @@ class SearchResultListContainer extends React.Component {
   };
 
   renderTabs = (searchResult) => {
-    const { classes, toolConfig } = this.props;
-    var searchResultId = searchResult.id;
+    // const { classes, toolConfig } = this.props;
+    const { toolConfig } = this.props;
+    // var searchResultId = searchResult.id;
 
     if (
       !searchResult?.label &&
@@ -315,75 +316,78 @@ class SearchResultListContainer extends React.Component {
       searchResult.label = toolConfig.geoServer[searchResult.type].searchLabel;
 
     return (
-      <Tab
-        classes={{ root: classes.tabRoot }}
-        label={
-          <Grid container>
-            <Grid item xs={10}>
-              <Typography variant="subtitle2">{searchResult.label}</Typography>
-            </Grid>
-            <Grid item xs={2}>
-              <ClearIcon
-                onClick={(e) => {
-                  e.stopPropagation();
-                  this.onTabClose(searchResultId);
-                }}
-                fontSize="inherit"
-              />
-            </Grid>
-          </Grid>
-        }
-        value={searchResultId}
-        key={`simple-tabpanel-${searchResultId}`}
-        aria-controls={`simple-tabpanel-${searchResultId}`}
-      ></Tab>
+      <></>
+      // <Tab
+      //   classes={{ root: classes.tabRoot }}
+      //   label={
+      //     <Grid container>
+      //       <Grid item xs={10}>
+      //         <Typography variant="subtitle2">{searchResult.label}</Typography>
+      //       </Grid>
+      //       <Grid item xs={2}>
+      //         <ClearIcon
+      //           onClick={(e) => {
+      //             e.stopPropagation();
+      //             this.onTabClose(searchResultId);
+      //           }}
+      //           fontSize="inherit"
+      //         />
+      //       </Grid>
+      //     </Grid>
+      //   }
+      //   value={searchResultId}
+      //   key={`simple-tabpanel-${searchResultId}`}
+      //   aria-controls={`simple-tabpanel-${searchResultId}`}
+      // ></Tab>
     );
   };
 
   renderTabsController = (searchResults) => {
-    const { classes, windowVisible } = this.props;
+    // const { classes, windowVisible } = this.props;
     return (
-      <Tabs
-        classes={{
-          root: classes.tabsRoot,
-        }}
-        value={windowVisible ? this.state.activeTabId : false} // If the window is not visible,
-        // we cannot send a proper value to the tabs-component. If we do, mui will throw an error.
-        // false is OK though, apparently.
-        onChange={this.handleTabChange}
-        aria-label="search-result-tabs"
-      >
-        {searchResults.map((searchResult) => {
-          return this.renderTabs(searchResult);
-        })}
-      </Tabs>
+      <></>
+      // <Tabs
+      //   classes={{
+      //     root: classes.tabsRoot,
+      //   }}
+      //   value={windowVisible ? this.state.activeTabId : false} // If the window is not visible,
+      //   // we cannot send a proper value to the tabs-component. If we do, mui will throw an error.
+      //   // false is OK though, apparently.
+      //   onChange={this.handleTabChange}
+      //   aria-label="search-result-tabs"
+      // >
+      //   {searchResults.map((searchResult) => {
+      //     return this.renderTabs(searchResult);
+      //   })}
+      // </Tabs>
     );
   };
 
   renderTabsHeader = (searchResults) => {
-    const { classes, localObserver } = this.props;
+    // const { classes, localObserver } = this.props;
     return (
-      <AppBar
-        ref={(appbar) => {
-          if (this.appbarHeight === null) {
-            this.appbarHeight = appbar.offsetHeight;
-          }
-        }}
-        position="static"
-      >
-        <Toolbar classes={{ regular: classes.toolbar }}>
-          <Grid justifyContent="space-between" alignItems="center" container>
-            <Grid style={{ paddingLeft: 10 }} item>
-              {searchResults.length > 0 &&
-                this.renderTabsController(searchResults)}
-            </Grid>
+      <></>
+      // <AppBar
+      //   ref={(appbar) => {
+      //     if (this.appbarHeight === null) {
+      //       this.appbarHeight = appbar.offsetHeight;
+      //     }
+      //   }}
+      //   position="static"
+      // >
+      //   <Toolbar classes={{ regular: classes.toolbar }}>
+      //     <Grid justifyContent="space-between" alignItems="center" container>
+      //       <Grid style={{ paddingLeft: 10 }} item>
+      //         {searchResults.length > 0 &&
+      //           this.renderTabsController(searchResults)}
+      //       </Grid>
 
-            <Grid style={{ paddingLeft: 0 }} item>
-              <PanelToolbox localObserver={localObserver}></PanelToolbox>
-            </Grid>
-          </Grid>
-        </Toolbar>
-      </AppBar>
+      //       <Grid style={{ paddingLeft: 0 }} item>
+      //         <PanelToolbox localObserver={localObserver}></PanelToolbox>
+      //       </Grid>
+      //     </Grid>
+      //   </Toolbar>
+      // </AppBar>
     );
   };
 
@@ -423,67 +427,68 @@ class SearchResultListContainer extends React.Component {
   };
 
   renderSearchResultContainer = () => {
-    const { classes, windowContainerId } = this.props;
-    let searchResults = this.getSearchResults();
+    // const { classes, windowContainerId } = this.props;
+    // let searchResults = this.getSearchResults();
     this.handleMapResizeWhenRendering();
     return (
-      <Rnd
-        style={{
-          zIndex: this.state.zIndex,
-        }}
-        onClick={this.onClickSearchResultContainer}
-        className={classes.window}
-        size={{
-          width: this.state.windowWidth,
-          height: this.state.maximized
-            ? this.state.windowHeight
-            : this.state.minimized
-            ? this.appbarHeight
-            : this.state.resultListHeight,
-        }}
-        position={{
-          x: 0,
-          y: this.state.maximized
-            ? 0
-            : this.state.minimized
-            ? this.state.windowHeight - this.appbarHeight
-            : this.state.windowHeight - this.state.resultListHeight,
-        }}
-        ref={(container) => {
-          this.rnd = container;
-        }}
-        onResizeStop={(e, direction, ref, delta, position) => {
-          var height = ref.style.height.substring(
-            0,
-            ref.style.height.length - 2
-          );
+      <></>
+      // <Rnd
+      //   style={{
+      //     zIndex: this.state.zIndex,
+      //   }}
+      //   onClick={this.onClickSearchResultContainer}
+      //   className={classes.window}
+      //   size={{
+      //     width: this.state.windowWidth,
+      //     height: this.state.maximized
+      //       ? this.state.windowHeight
+      //       : this.state.minimized
+      //       ? this.appbarHeight
+      //       : this.state.resultListHeight,
+      //   }}
+      //   position={{
+      //     x: 0,
+      //     y: this.state.maximized
+      //       ? 0
+      //       : this.state.minimized
+      //       ? this.state.windowHeight - this.appbarHeight
+      //       : this.state.windowHeight - this.state.resultListHeight,
+      //   }}
+      //   ref={(container) => {
+      //     this.rnd = container;
+      //   }}
+      //   onResizeStop={(e, direction, ref, delta, position) => {
+      //     var height = ref.style.height.substring(
+      //       0,
+      //       ref.style.height.length - 2
+      //     );
 
-          this.setState({
-            resultListHeight: parseInt(height),
-            maximized: false,
-            minimized: false,
-          });
-        }}
-        bounds={`#${windowContainerId}`}
-        disableDragging
-        enableResizing={{
-          bottom: false,
-          bottomLeft: false,
-          bottomRight: false,
-          left: false,
-          right: false,
-          top: true,
-          topLeft: false,
-          topRight: false,
-        }}
-      >
-        <section>
-          {this.renderTabsHeader(searchResults)}
-          {searchResults.map((searchResult) => {
-            return this.renderSearchResultAsTabContent(searchResult);
-          })}
-        </section>
-      </Rnd>
+      //     this.setState({
+      //       resultListHeight: parseInt(height),
+      //       maximized: false,
+      //       minimized: false,
+      //     });
+      //   }}
+      //   bounds={`#${windowContainerId}`}
+      //   disableDragging
+      //   enableResizing={{
+      //     bottom: false,
+      //     bottomLeft: false,
+      //     bottomRight: false,
+      //     left: false,
+      //     right: false,
+      //     top: true,
+      //     topLeft: false,
+      //     topRight: false,
+      //   }}
+      // >
+      //   <section>
+      //     {this.renderTabsHeader(searchResults)}
+      //     {searchResults.map((searchResult) => {
+      //       return this.renderSearchResultAsTabContent(searchResult);
+      //     })}
+      //   </section>
+      // </Rnd>
     );
   };
 
@@ -494,4 +499,5 @@ class SearchResultListContainer extends React.Component {
   }
 }
 
-export default withStyles(styles)(SearchResultListContainer);
+//export default withStyles(styles)(SearchResultListContainer);
+export default SearchResultListContainer;

@@ -1,10 +1,10 @@
 import React from "react";
 import Paper from "@mui/material/Paper";
 import VirtualizedTable from "./VirtualizedTable";
-import withStyles from "@mui/styles/withStyles";
+//import withStyles from "@mui/styles/withStyles";
 import { SortDirection } from "react-virtualized";
 
-const styles = (theme) => ({});
+//const styles = (theme) => ({});
 
 /**
  * @summary Attribute table for objects in the map
@@ -279,4 +279,5 @@ class AttributeTable extends React.Component {
   }
 }
 
-export default withStyles(styles)(AttributeTable);
+//export default withStyles(styles)(AttributeTable);
+export default AttributeTable;
