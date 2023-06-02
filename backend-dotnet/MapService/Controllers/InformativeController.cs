@@ -24,7 +24,7 @@ namespace MapService.Controllers
             _logger = logger;
         }
 
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return all available documents</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -67,7 +67,7 @@ namespace MapService.Controllers
         }
 
         /// <param name="name">Name of the map for which connected documents will be returned</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return available documents for the specified map</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -110,6 +110,7 @@ namespace MapService.Controllers
         }
 
         /// <param name="document">Name of the document to be fetched</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return the JSON file</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
@@ -150,7 +151,7 @@ namespace MapService.Controllers
         }
 
         /// <param name="requestBody">The name of the document and the map</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -191,7 +192,7 @@ namespace MapService.Controllers
         }
 
         /// <param name="requestBody">The name of the document and the map</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -236,7 +237,7 @@ namespace MapService.Controllers
         /// </remarks>
         /// <param name="name">Name of the document to be saved</param>
         /// <param name="requestBody">Settings from the request body</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -281,7 +282,7 @@ namespace MapService.Controllers
         /// </remarks>
         /// <param name="name">Name of the document to be saved</param>
         /// <param name="requestBody">Settings from the request body</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -325,7 +326,7 @@ namespace MapService.Controllers
         /// Delete an existing document
         /// </remarks>
         /// <param name="name">Document to be deleted</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>

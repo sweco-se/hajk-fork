@@ -24,7 +24,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get a list of all available AD groups to make it easier for admins to set map and layer permissions
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -69,7 +69,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Find out which AD group membership is shared between specified users
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -114,7 +114,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Users store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -159,7 +159,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Groups store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -204,7 +204,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD groups per user store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -249,7 +249,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Flush the contents of all local AD stores (removes the cached objects)
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>

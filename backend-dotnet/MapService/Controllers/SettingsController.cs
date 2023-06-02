@@ -27,6 +27,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -69,6 +70,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -111,6 +113,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -153,6 +156,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -195,6 +199,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -237,6 +242,7 @@ namespace MapService.Controllers
         /// <remarks>
         ///
         /// </remarks>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Layer deleted successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -282,6 +288,7 @@ namespace MapService.Controllers
         /// <param name="map">Name of the map</param>
         /// <param name="tool">Name of the tool to be edited</param>
         /// <param name="requestBody">Name of the tool to be edited</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="201">Created</response>
         /// <response code="204">Updated</response>
         /// <response code="403">Forbidden</response>

@@ -30,7 +30,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available layers. If AD authentication is active, filter by user's permission
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All layers were fetched successfully</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
@@ -68,6 +68,7 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, layerObject);
         }
 
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         [HttpGet]
         [Route("{map}")]
         [MapToApiVersion("1.0")]
@@ -111,7 +112,7 @@ namespace MapService.Controllers
         /// Delete an existing map configuration
         /// </remarks>
         /// <param name="name">Name of the map to be deleted</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -152,7 +153,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available layers, do not apply any visibility restrictions (required for Admin UI)
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All layers were fetched successfully</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
@@ -197,7 +198,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Gets all maps names.
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <returns>Return all map names. </returns>
         /// <response code="200">All map names were fetched successfully</response>
         /// <response code="403">Forbidden</response>
@@ -241,7 +242,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available images in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available images were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -285,7 +286,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available videos in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available videos were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -329,7 +330,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available audio files in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available audio files were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -374,7 +375,7 @@ namespace MapService.Controllers
         /// Create a new map configuration
         /// </summary>
         /// <param name="name">The name of the map to create </param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">The map configuration was created successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
