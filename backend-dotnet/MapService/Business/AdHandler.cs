@@ -61,6 +61,11 @@ namespace MapService.Business.Ad
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:TrustedHeader"); }
         }
 
+        private static IEnumerable<string> TrustedProxyIPs
+        {
+            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:TrustedProxyIPs"); }
+        }
+
         private static string BaseDN
         {
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:BaseDN"); }
@@ -268,6 +273,30 @@ namespace MapService.Business.Ad
             }
             return userIdentity;
         }
+        public string? GetRemoteIpAddress(HttpContext httpContext)
+        {            
+            return httpContext.Connection.RemoteIpAddress?.ToString();
+        }
+
+        public bool RequestComesFromAcceptedIp(HttpContext httpContext)
+        {
+            string? remoteIpAddress = GetRemoteIpAddress(httpContext);
+            if (TrustedProxyIPs.Contains(remoteIpAddress))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        internal bool IpRangeRestrictionIsSet()
+        {
+            if (TrustedProxyIPs != null)
+            { 
+                return true; 
+            }
+            return false;
+        }
+
 
         internal static bool UserHasAdAccess(string? userIdentity)
         {
