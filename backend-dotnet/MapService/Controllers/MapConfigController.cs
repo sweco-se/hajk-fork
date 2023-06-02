@@ -49,6 +49,17 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -97,6 +108,18 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -139,6 +162,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
@@ -185,6 +219,17 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -226,6 +271,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
@@ -272,6 +328,17 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -314,6 +381,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
@@ -358,6 +436,17 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -400,6 +489,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
@@ -448,6 +548,17 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
+
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
@@ -489,6 +600,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
@@ -536,6 +658,17 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
+
+                    string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                    if (!adHandler.IpRangeRestrictionIsSet())
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                               + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                    }
+                    if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                    }
 
                     userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
