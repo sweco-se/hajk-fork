@@ -479,7 +479,7 @@
         "markerImg": "",
         "delayBeforeAutoSearch": 300,
         "searchBarPlaceholder": "Sök...",
-        "renderElsewhere": false,
+        "renderElsewhere": true,
         "autocompleteWildcardAtStart": false,
         "enablePolygonSearch": true,
         "enableRadiusSearch": true,

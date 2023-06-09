@@ -117,6 +117,9 @@ class Search extends React.PureComponent {
     this.initMapViewModel();
     this.initExportHandlers();
     this.bindSubscriptions();
+
+    if (this.props.app.plugins.search.options?.renderElsewhere)
+      this.coreLoaded();
   }
 
   initMapViewModel = () => {
