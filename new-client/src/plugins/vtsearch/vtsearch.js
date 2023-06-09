@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import SearchModel from "./SearchModel";
 // import Journeys from "./SearchViews/Journeys";
 // import Stops from "./SearchViews/Stops";
-// import Lines from "./SearchViews/Lines";
+import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
 import { Tooltip, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -110,7 +110,7 @@ const searchTypes = {
   DEFAULT: "",
   SEARCH: "Sök",
   // JOURNEYS: "Sök Turer",
-  // LINES: "Sök Linjer",
+  LINES: "Sök Linjer",
   // STOPS: "Sök Hållplatser",
 };
 
@@ -244,7 +244,7 @@ class VTSearch extends React.PureComponent {
   };
 
   renderSearchmodule = () => {
-    // const { app } = this.props;
+    const { app } = this.props;
     switch (this.state.activeSearchTool) {
       case searchTypes.SEARCH: {
         this.props.app.appModel = this.props.app; // Gör så för att Sökmodellen laddas inte från ComponentDidMount.
@@ -267,15 +267,15 @@ class VTSearch extends React.PureComponent {
       //     ></Journeys>
       //   );
       // }
-      // case searchTypes.LINES: {
-      //   return (
-      //     <Lines
-      //       model={this.searchModel}
-      //       app={app}
-      //       localObserver={this.localObserver}
-      //     ></Lines>
-      //   );
-      // }
+      case searchTypes.LINES: {
+        return (
+          <Lines
+            model={this.searchModel}
+            app={app}
+            localObserver={this.localObserver}
+          ></Lines>
+        );
+      }
       // case searchTypes.STOPS: {
       //   return (
       //     <Stops

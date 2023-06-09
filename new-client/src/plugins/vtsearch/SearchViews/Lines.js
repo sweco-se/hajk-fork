@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 // import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
 import {
   TextField,
   Button,
@@ -33,6 +34,16 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 // });
 
 //TODO - Only mockup //Tobias
+
+const SearchButton = styled(Button)(({ theme }) => ({
+  marginTop: 8,
+  borderColor: theme.palette.primary.main,
+}));
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
 
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -264,99 +275,101 @@ class Lines extends React.PureComponent {
 
   renderTrafficTypeSection = () => {
     const { trafficTransports } = this.state;
-    const { classes } = this.props;
+    //const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <FormControl fullWidth>
-      //     <Typography variant="caption">TRAFIKSLAG</Typography>
-      //     <Select
-      //       value={this.state.trafficTransport}
-      //       onChange={this.handleTrafficTransportChange}
-      //     >
-      //       {trafficTransports.map((name, index) => {
-      //         if (name === "") {
-      //           return (
-      //             <MenuItem
-      //               key={index}
-      //               value={name}
-      //               className={classes.firstMenuItem}
-      //             >
-      //               {name}
-      //             </MenuItem>
-      //           );
-      //         } else {
-      //           return (
-      //             <MenuItem key={index} value={name}>
-      //               <Typography>{name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         }
-      //       })}
-      //     </Select>
-      //   </FormControl>
-      // </Grid>
+      <Grid item xs={12}>
+        <FormControl fullWidth>
+          <Typography variant="caption">TRAFIKSLAG</Typography>
+          <Select
+            value={this.state.trafficTransport}
+            onChange={this.handleTrafficTransportChange}
+          >
+            {trafficTransports.map((name, index) => {
+              if (name === "") {
+                return (
+                  <MenuItem
+                    key={index}
+                    value={name}
+                    //className={classes.firstMenuItem}
+                    minHeight={"36px"}
+                  >
+                    {name}
+                  </MenuItem>
+                );
+              } else {
+                return (
+                  <MenuItem key={index} value={name}>
+                    <Typography>{name}</Typography>
+                  </MenuItem>
+                );
+              }
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
     );
   };
   renderMunicipalitySection = () => {
-    const { classes } = this.props;
+    // const { classes } = this.props;
     const { municipalities } = this.state;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <FormControl fullWidth>
-      //     <Typography variant="caption">KOMMUN</Typography>
-      //     <Select
-      //       value={this.state.municipality}
-      //       onChange={this.handleMunicipalChange}
-      //     >
-      //       {municipalities.map((municipality, index) => {
-      //         if (municipality.name === "") {
-      //           return (
-      //             <MenuItem
-      //               className={classes.firstMenuItem}
-      //               key={index}
-      //               value={municipality}
-      //             >
-      //               <Typography>{municipality.name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         } else {
-      //           return (
-      //             <MenuItem key={index} value={municipality}>
-      //               <Typography>{municipality.name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         }
-      //       })}
-      //     </Select>
-      //   </FormControl>
-      // </Grid>
+      <Grid item xs={12}>
+        <FormControl fullWidth>
+          <Typography variant="caption">KOMMUN</Typography>
+          <Select
+            value={this.state.municipality}
+            onChange={this.handleMunicipalChange}
+          >
+            {municipalities.map((municipality, index) => {
+              if (municipality.name === "") {
+                return (
+                  <MenuItem
+                    //className={classes.firstMenuItem}
+                    minHeight={"36px"}
+                    key={index}
+                    value={municipality}
+                  >
+                    <Typography>{municipality.name}</Typography>
+                  </MenuItem>
+                );
+              } else {
+                return (
+                  <MenuItem key={index} value={municipality}>
+                    <Typography>{municipality.name}</Typography>
+                  </MenuItem>
+                );
+              }
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
     );
   };
 
   renderSearchButtonSection = () => {
-    const { classes } = this.props;
+    //const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Button
-      //     className={classes.searchButton}
-      //     onClick={this.doSearch}
-      //     variant="outlined"
-      //   >
-      //     <Typography className={classes.searchButtonText}>SÖK</Typography>
-      //   </Button>
-      // </Grid>
+      <Grid item xs={12}>
+        <SearchButton
+          //className={classes.searchButton}
+
+          onClick={this.doSearch}
+          variant="outlined"
+        >
+          {/* <Typography className={classes.searchButtonText}>SÖK</Typography> */}
+          <Typography sx={{ color: (theme) => theme.palette.primary.main }}>
+            SÖK
+          </Typography>
+        </SearchButton>
+      </Grid>
     );
   };
 
   renderSpatialSearchSection = () => {
-    const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider className={classes.divider} />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -394,7 +407,7 @@ class Lines extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
