@@ -35,7 +35,7 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
 //TODO - Only mockup //Tobias
 
-const SearchButton = styled(Button)(({ theme }) => ({
+const StyledSearchButton = styled(Button)(({ theme }) => ({
   marginTop: 8,
   borderColor: theme.palette.primary.main,
 }));
@@ -43,6 +43,10 @@ const SearchButton = styled(Button)(({ theme }) => ({
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginTop: theme.spacing(3),
   marginBottom: theme.spacing(3),
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
 }));
 
 class Lines extends React.PureComponent {
@@ -350,17 +354,18 @@ class Lines extends React.PureComponent {
     //const { classes } = this.props;
     return (
       <Grid item xs={12}>
-        <SearchButton
+        <StyledSearchButton
           //className={classes.searchButton}
 
           onClick={this.doSearch}
           variant="outlined"
         >
           {/* <Typography className={classes.searchButtonText}>SÖK</Typography> */}
-          <Typography sx={{ color: (theme) => theme.palette.primary.main }}>
+          {/* <Typography sx={{ color: (theme) => theme.palette.primary.main }}>
             SÖK
-          </Typography>
-        </SearchButton>
+          </Typography> */}
+          <StyledTypography>SÖK</StyledTypography>
+        </StyledSearchButton>
       </Grid>
     );
   };
