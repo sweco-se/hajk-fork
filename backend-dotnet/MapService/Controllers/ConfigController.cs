@@ -88,7 +88,7 @@ namespace MapService.Controllers
 
             try
             {
-                JsonObject mapObject = MapConfigHandler.GetMapAsJsonObject(map);
+                JsonObject? mapObject = MapConfigHandler.GetMapAsJsonObject(map);
                 var userSpecificMaps = ConfigHandler.GetUserSpecificMaps();
                 AdUser? adUser = null;
 
@@ -104,13 +104,19 @@ namespace MapService.Controllers
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
 
+                    mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
+
+                    if (mapObject == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, String.Format("Access to {0} not allowed for user {1}.", map, userPrincipalName));
+                    }
+
+                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);
+
                     if (AdHandler.ExposeUserObject)
                     {
                         adUser = adHandler.FindUser(userPrincipalName);
                     }
-
-                    mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
-                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);
                 }
 
                 mapWithLayers = ConfigHandler.GetMapWithLayers(mapObject, userSpecificMaps, adUser);
@@ -125,6 +131,13 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, mapWithLayers);
         }
 
+        /// <remarks>
+        /// Get the map config.
+        /// </remarks>
+        /// <param name="map">The map file to be retrieved</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <response code="200">All fetched successfully</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("{map}")]
         [MapToApiVersion("1.0")]
@@ -133,7 +146,7 @@ namespace MapService.Controllers
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
         public ActionResult GetMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
-            JsonObject mapObject;
+            JsonObject? mapObject;
 
             try
             {
@@ -152,6 +165,11 @@ namespace MapService.Controllers
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
 
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
+
+                    if (mapObject == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, String.Format("Access to {0} not allowed for user {1}.", map, userPrincipalName));
+                    }
                 }
             }
             catch (Exception ex)

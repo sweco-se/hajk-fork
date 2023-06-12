@@ -73,7 +73,7 @@ namespace MapService.Business.Config
             return JsonSerializer.Deserialize<bool>(result.Value.GetRawText());
         }
 
-        public static JsonObject GetMapWithLayers(JsonObject mapObject, IEnumerable<UserSpecificMaps> userSpecificMaps, AdUser? adUser)
+        public static JsonObject GetMapWithLayers(JsonObject? mapObject, IEnumerable<UserSpecificMaps> userSpecificMaps, AdUser? adUser)
         {
             JsonObject mapWithLayers = new JsonObject();
 
