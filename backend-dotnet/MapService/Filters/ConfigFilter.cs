@@ -92,7 +92,6 @@ namespace MapService.Filters
             //Get array of all map config tools
             var input = "$.tools[*].type";
             JsonDocument filterMapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(filteredMapObjects);
-            //var mapTools = JsonPathUtility.GetJsonArray(mapDocument, input);
             var mapTools = JsonPathUtility.GetJsonArray(filterMapDocument, input);
 
             if (mapTools is null)
