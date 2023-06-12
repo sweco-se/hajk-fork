@@ -114,7 +114,7 @@ namespace MapService.Controllers
 
                     if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
                     {
-                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
+                        return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                     }
 
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
