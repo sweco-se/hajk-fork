@@ -79,19 +79,21 @@ namespace MapService.Filters
             }
             #endregion
 
-            FilterToolsInMap(filteredMapObjects, mapDocument, adUserGroups);
+            FilterToolsInMap(filteredMapObjects, adUserGroups);
 
             return filteredMapObjects;
         }
 
-        internal static void FilterToolsInMap(JsonObject filteredMapObjects, JsonDocument mapDocument, IEnumerable<string>? adUserGroups)
+        internal static void FilterToolsInMap(JsonObject filteredMapObjects, IEnumerable<string>? adUserGroups)
         {
             if (adUserGroups is null || adUserGroups.Count() == 0)
                 return;
 
             //Get array of all map config tools
             var input = "$.tools[*].type";
-            var mapTools = JsonPathUtility.GetJsonArray(mapDocument, input);
+            JsonDocument filterMapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(filteredMapObjects);
+            //var mapTools = JsonPathUtility.GetJsonArray(mapDocument, input);
+            var mapTools = JsonPathUtility.GetJsonArray(filterMapDocument, input);
 
             if (mapTools is null)
                 return;
@@ -106,11 +108,11 @@ namespace MapService.Filters
                     continue;
 
                 var inputVisibleForGroups = "$.tools[?(@.type == '" + tool + "')].options.visibleForGroups";
-                var resultVisibleForGroups = JsonPathUtility.GetJsonElement(mapDocument, inputVisibleForGroups);
+                var resultVisibleForGroups = JsonPathUtility.GetJsonElement(filterMapDocument, inputVisibleForGroups);
 
                 if (resultVisibleForGroups is null || resultVisibleForGroups.Value.ValueKind != JsonValueKind.Array) //Value not set -> tool is visible for all users
                 {
-                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(mapDocument, tool);
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
                     if (filteredTool is not null )
                         filteredToolsArray.Add(filteredTool);
                     continue;
@@ -119,7 +121,7 @@ namespace MapService.Filters
                 var visibleForGroupsArray = resultVisibleForGroups.Value.EnumerateArray();
                 if (visibleForGroupsArray.Count() == 0) //No groups specified -> tool is visible for all users
                 {
-                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(mapDocument, tool);
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
                     if (filteredTool is not null)
                         filteredToolsArray.Add(filteredTool);
                     continue;
@@ -133,7 +135,7 @@ namespace MapService.Filters
 
                     if (adUserGroups.Contains(group.GetString()))
                     {
-                        var filteredTool = ConfigHandler.GetToolFromMapConfiguration(mapDocument, tool);
+                        var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
                         if (filteredTool is not null)
                             filteredToolsArray.Add(filteredTool);
                         break;
