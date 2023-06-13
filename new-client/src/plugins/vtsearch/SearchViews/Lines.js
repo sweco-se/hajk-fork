@@ -249,6 +249,7 @@ class Lines extends React.PureComponent {
             id="standard-helperText"
             onChange={this.handlePublicLineNameChange}
             value={this.state.publicLineName}
+            variant="standard"
           />
         </Grid>
         <Grid item xs={6}>
@@ -257,6 +258,7 @@ class Lines extends React.PureComponent {
             id="standard-helperText"
             onChange={this.handleInternalLineNrChange}
             value={this.state.internalLineNumber}
+            variant="standard"
           />
         </Grid>
       </>
@@ -272,6 +274,7 @@ class Lines extends React.PureComponent {
           id="standard-helperText"
           value={this.state.throughStopArea}
           onChange={this.handleThroughStopAreaChange}
+          variant="standard"
         />
       </Grid>
     );
@@ -287,6 +290,7 @@ class Lines extends React.PureComponent {
           <Select
             value={this.state.trafficTransport}
             onChange={this.handleTrafficTransportChange}
+            variant="standard"
           >
             {trafficTransports.map((name, index) => {
               if (name === "") {
@@ -323,6 +327,7 @@ class Lines extends React.PureComponent {
           <Select
             value={this.state.municipality}
             onChange={this.handleMunicipalChange}
+            variant="standard"
           >
             {municipalities.map((municipality, index) => {
               if (municipality.name === "") {
