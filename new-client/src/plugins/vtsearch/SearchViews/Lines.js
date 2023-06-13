@@ -57,7 +57,6 @@ class Lines extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    // classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
