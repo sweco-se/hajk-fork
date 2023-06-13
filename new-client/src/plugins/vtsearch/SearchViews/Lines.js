@@ -21,18 +21,6 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 // Example below utilizes the very powerful "theme" object
 // that gives access to some constants, see: https://material-ui.com/customization/default-theme/
 
-// const styles = (theme) => ({
-//   searchButton: { marginTop: 8, borderColor: theme.palette.primary.main },
-//   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-//   textFields: { marginLeft: 10 },
-//   fontSize: { fontSize: 12 },
-//   polygonAndRectangle: {
-//     marginLeft: 10,
-//   },
-//   firstMenuItem: { minHeight: 36 },
-//   searchButtonText: { color: theme.palette.primary.main },
-// });
-
 //TODO - Only mockup //Tobias
 
 const StyledSearchButton = styled(Button)(({ theme }) => ({
@@ -282,7 +270,6 @@ class Lines extends React.PureComponent {
 
   renderTrafficTypeSection = () => {
     const { trafficTransports } = this.state;
-    //const { classes } = this.props;
     return (
       <Grid item xs={12}>
         <FormControl fullWidth>
@@ -295,12 +282,7 @@ class Lines extends React.PureComponent {
             {trafficTransports.map((name, index) => {
               if (name === "") {
                 return (
-                  <MenuItem
-                    key={index}
-                    value={name}
-                    //className={classes.firstMenuItem}
-                    minHeight={"36px"}
-                  >
+                  <MenuItem key={index} value={name} minHeight={"36px"}>
                     {name}
                   </MenuItem>
                 );
@@ -318,7 +300,6 @@ class Lines extends React.PureComponent {
     );
   };
   renderMunicipalitySection = () => {
-    // const { classes } = this.props;
     const { municipalities } = this.state;
     return (
       <Grid item xs={12}>
@@ -332,12 +313,7 @@ class Lines extends React.PureComponent {
             {municipalities.map((municipality, index) => {
               if (municipality.name === "") {
                 return (
-                  <MenuItem
-                    //className={classes.firstMenuItem}
-                    minHeight={"36px"}
-                    key={index}
-                    value={municipality}
-                  >
+                  <MenuItem minHeight={"36px"} key={index} value={municipality}>
                     <Typography>{municipality.name}</Typography>
                   </MenuItem>
                 );
@@ -356,19 +332,9 @@ class Lines extends React.PureComponent {
   };
 
   renderSearchButtonSection = () => {
-    //const { classes } = this.props;
     return (
       <Grid item xs={12}>
-        <StyledSearchButton
-          //className={classes.searchButton}
-
-          onClick={this.doSearch}
-          variant="outlined"
-        >
-          {/* <Typography className={classes.searchButtonText}>SÖK</Typography> */}
-          {/* <Typography sx={{ color: (theme) => theme.palette.primary.main }}>
-            SÖK
-          </Typography> */}
+        <StyledSearchButton onClick={this.doSearch} variant="outlined">
           <StyledTypography>SÖK</StyledTypography>
         </StyledSearchButton>
       </Grid>
@@ -446,5 +412,4 @@ class Lines extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-// export default withStyles(styles)(Lines);
 export default Lines;
