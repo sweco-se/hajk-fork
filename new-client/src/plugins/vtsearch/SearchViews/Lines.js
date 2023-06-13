@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 // import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
 import {
   TextField,
   Button,
@@ -20,19 +21,21 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 // Example below utilizes the very powerful "theme" object
 // that gives access to some constants, see: https://material-ui.com/customization/default-theme/
 
-// const styles = (theme) => ({
-//   searchButton: { marginTop: 8, borderColor: theme.palette.primary.main },
-//   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-//   textFields: { marginLeft: 10 },
-//   fontSize: { fontSize: 12 },
-//   polygonAndRectangle: {
-//     marginLeft: 10,
-//   },
-//   firstMenuItem: { minHeight: 36 },
-//   searchButtonText: { color: theme.palette.primary.main },
-// });
-
 //TODO - Only mockup //Tobias
+
+const StyledSearchButton = styled(Button)(({ theme }) => ({
+  marginTop: 8,
+  borderColor: theme.palette.primary.main,
+}));
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
+}));
 
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -54,7 +57,6 @@ class Lines extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -234,6 +236,7 @@ class Lines extends React.PureComponent {
             id="standard-helperText"
             onChange={this.handlePublicLineNameChange}
             value={this.state.publicLineName}
+            variant="standard"
           />
         </Grid>
         <Grid item xs={6}>
@@ -242,6 +245,7 @@ class Lines extends React.PureComponent {
             id="standard-helperText"
             onChange={this.handleInternalLineNrChange}
             value={this.state.internalLineNumber}
+            variant="standard"
           />
         </Grid>
       </>
@@ -257,6 +261,7 @@ class Lines extends React.PureComponent {
           id="standard-helperText"
           value={this.state.throughStopArea}
           onChange={this.handleThroughStopAreaChange}
+          variant="standard"
         />
       </Grid>
     );
@@ -264,99 +269,82 @@ class Lines extends React.PureComponent {
 
   renderTrafficTypeSection = () => {
     const { trafficTransports } = this.state;
-    const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <FormControl fullWidth>
-      //     <Typography variant="caption">TRAFIKSLAG</Typography>
-      //     <Select
-      //       value={this.state.trafficTransport}
-      //       onChange={this.handleTrafficTransportChange}
-      //     >
-      //       {trafficTransports.map((name, index) => {
-      //         if (name === "") {
-      //           return (
-      //             <MenuItem
-      //               key={index}
-      //               value={name}
-      //               className={classes.firstMenuItem}
-      //             >
-      //               {name}
-      //             </MenuItem>
-      //           );
-      //         } else {
-      //           return (
-      //             <MenuItem key={index} value={name}>
-      //               <Typography>{name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         }
-      //       })}
-      //     </Select>
-      //   </FormControl>
-      // </Grid>
+      <Grid item xs={12}>
+        <FormControl fullWidth>
+          <Typography variant="caption">TRAFIKSLAG</Typography>
+          <Select
+            value={this.state.trafficTransport}
+            onChange={this.handleTrafficTransportChange}
+            variant="standard"
+          >
+            {trafficTransports.map((name, index) => {
+              if (name === "") {
+                return (
+                  <MenuItem key={index} value={name} minHeight={"36px"}>
+                    {name}
+                  </MenuItem>
+                );
+              } else {
+                return (
+                  <MenuItem key={index} value={name}>
+                    <Typography>{name}</Typography>
+                  </MenuItem>
+                );
+              }
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
     );
   };
   renderMunicipalitySection = () => {
-    const { classes } = this.props;
     const { municipalities } = this.state;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <FormControl fullWidth>
-      //     <Typography variant="caption">KOMMUN</Typography>
-      //     <Select
-      //       value={this.state.municipality}
-      //       onChange={this.handleMunicipalChange}
-      //     >
-      //       {municipalities.map((municipality, index) => {
-      //         if (municipality.name === "") {
-      //           return (
-      //             <MenuItem
-      //               className={classes.firstMenuItem}
-      //               key={index}
-      //               value={municipality}
-      //             >
-      //               <Typography>{municipality.name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         } else {
-      //           return (
-      //             <MenuItem key={index} value={municipality}>
-      //               <Typography>{municipality.name}</Typography>
-      //             </MenuItem>
-      //           );
-      //         }
-      //       })}
-      //     </Select>
-      //   </FormControl>
-      // </Grid>
+      <Grid item xs={12}>
+        <FormControl fullWidth>
+          <Typography variant="caption">KOMMUN</Typography>
+          <Select
+            value={this.state.municipality}
+            onChange={this.handleMunicipalChange}
+            variant="standard"
+          >
+            {municipalities.map((municipality, index) => {
+              if (municipality.name === "") {
+                return (
+                  <MenuItem minHeight={"36px"} key={index} value={municipality}>
+                    <Typography>{municipality.name}</Typography>
+                  </MenuItem>
+                );
+              } else {
+                return (
+                  <MenuItem key={index} value={municipality}>
+                    <Typography>{municipality.name}</Typography>
+                  </MenuItem>
+                );
+              }
+            })}
+          </Select>
+        </FormControl>
+      </Grid>
     );
   };
 
   renderSearchButtonSection = () => {
-    const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Button
-      //     className={classes.searchButton}
-      //     onClick={this.doSearch}
-      //     variant="outlined"
-      //   >
-      //     <Typography className={classes.searchButtonText}>SÖK</Typography>
-      //   </Button>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledSearchButton onClick={this.doSearch} variant="outlined">
+          <StyledTypography>SÖK</StyledTypography>
+        </StyledSearchButton>
+      </Grid>
     );
   };
 
   renderSpatialSearchSection = () => {
-    const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider className={classes.divider} />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -394,7 +382,7 @@ class Lines extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
@@ -423,5 +411,4 @@ class Lines extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-// export default withStyles(styles)(Lines);
 export default Lines;
