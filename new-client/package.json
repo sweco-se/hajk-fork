@@ -50,6 +50,7 @@
     "@mui/lab": "^5.0.0-alpha.110",
     "@mui/material": "^5.10.16",
     "@mui/x-data-grid": "^5.17.14",
+    "@mui/x-date-pickers": "^6.7.0",
     "@nieuwlandgeo/sldreader": "^0.2.16",
     "@turf/buffer": "^6.5.0",
     "@turf/transform-translate": "^6.5.0",

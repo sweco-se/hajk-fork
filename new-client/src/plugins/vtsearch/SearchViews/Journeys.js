@@ -4,7 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Typography, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDayjs";
+// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDayjs";
 // import AdapterDateFns from "@date-io/date-fns";
 // import AccessTimeIcon from "@mui/icons-material/AccessTime";
 // import EventIcon from "@mui/icons-material/Event";
@@ -581,9 +581,9 @@ class Journeys extends React.PureComponent {
           {this.renderFromDateSection()}
           {this.renderEndDateSection()}
         </MuiPickersUtilsProvider> */}
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
           {this.renderFromDateSection()}
-        </LocalizationProvider>
+        </LocalizationProvider> */}
         {this.renderSpatialSearchSection()}
       </div>
     );
