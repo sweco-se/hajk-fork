@@ -9,10 +9,8 @@ import {
   DatePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDayjs";
-// import AdapterDateFns from "@date-io/date-fns";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import EventIcon from "@mui/icons-material/Event";
+// import AccessTimeIcon from "@mui/icons-material/AccessTime";
+// import EventIcon from "@mui/icons-material/Event";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
@@ -52,7 +50,7 @@ const StyledLocalizationProvider = styled(LocalizationProvider)(
 
 const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   marginTop: 0,
-  marginBottom: -4,
+  marginBottom: 10,
   width: "100%",
   color: theme.palette.primary.main,
 }));
@@ -87,6 +85,10 @@ class Journeys extends React.PureComponent {
       )
     ),
     selectedFormType: "",
+    fromTimeInputErrorMessage: "",
+    fromDateInputErrorMessage: "",
+    endTimeInputErrorMessage: "",
+    endDateInputErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -124,6 +126,7 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedFromTime: fromTime,
+        fromTimeInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -167,6 +170,7 @@ class Journeys extends React.PureComponent {
         selectedFromTime: fromTime,
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        fromDateInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -193,6 +197,7 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedEndTime: endTime,
+        endTimeInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -219,6 +224,7 @@ class Journeys extends React.PureComponent {
       {
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        endDateInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -377,7 +383,6 @@ class Journeys extends React.PureComponent {
   };
 
   handleRectangleClick = () => {
-    console.log("CLICK");
     if (!this.state.spatialToolsEnabled) return;
 
     this.deactivateSearch();
@@ -419,6 +424,58 @@ class Journeys extends React.PureComponent {
     this.localObserver.publish("vtsearch-dragging-enabled", true);
   };
 
+  setFromTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setFromDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
   renderFromDateSection = () => {
     return (
       <>
@@ -426,32 +483,36 @@ class Journeys extends React.PureComponent {
           <Typography variant="caption">FRÅN OCH MED</Typography>
           <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             id="time-picker"
             ampm={false}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedFromTime}
             onChange={this.handleFromTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setFromTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromTimeInputErrorMessage,
+              },
+            }}
           />
           <Grid>
             <StyledDatePicker
               format="yyyy-MM-dd"
-              margin="normal"
-              keyboardIcon={<EventIcon></EventIcon>}
-              invalidDateMessage="FEL VÄRDE PÅ DATUM"
               value={this.state.selectedFromDate}
               onChange={this.handleFromDateChange}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
               onOpen={this.disableDrag}
               onClose={this.enableDrag}
+              onError={(newError) =>
+                this.setFromDateInputErrorMessage(newError)
+              }
+              slotProps={{
+                textField: {
+                  variant: "standard",
+                  helperText: this.state.fromDateInputErrorMessage,
+                },
+              }}
             />
           </Grid>
         </Grid>
@@ -500,30 +561,33 @@ class Journeys extends React.PureComponent {
           <Typography variant="caption">TILL OCH MED</Typography>
           <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             ampm={false}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedEndTime}
             onChange={this.handleEndTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setEndTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endTimeInputErrorMessage,
+              },
+            }}
           />
         </Grid>
         <StyledDatePicker
           format="yyyy-MM-dd"
-          margin="normal"
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
           value={this.state.selectedEndDate}
           onChange={this.handleEndDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
           onOpen={this.disableDrag}
           onClose={this.enableDrag}
+          onError={(newError) => this.setEndDateInputErrorMessage(newError)}
+          slotProps={{
+            textField: {
+              variant: "standard",
+              helperText: this.state.endDateInputErrorMessage,
+            },
+          }}
         />
         {this.showErrorMessage()}
         {/* <Grid item xs={12}>
