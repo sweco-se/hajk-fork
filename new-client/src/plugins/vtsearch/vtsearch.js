@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 // Plugin-specific imports. Most plugins will need a Model, View and Observer
 // but make sure to only create and import whatever you need.
 import SearchModel from "./SearchModel";
-// import Journeys from "./SearchViews/Journeys";
+import Journeys from "./SearchViews/Journeys";
 // import Stops from "./SearchViews/Stops";
 import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
@@ -109,7 +109,7 @@ const LoaderContainer = styled("div")(() => ({
 const searchTypes = {
   DEFAULT: "",
   SEARCH: "Sök",
-  // JOURNEYS: "Sök Turer",
+  JOURNEYS: "Sök Turer",
   LINES: "Sök Linjer",
   // STOPS: "Sök Hållplatser",
 };
@@ -257,15 +257,15 @@ class VTSearch extends React.PureComponent {
           ></Search>
         );
       }
-      // case searchTypes.JOURNEYS: {
-      //   return (
-      //     <Journeys
-      //       model={this.searchModel}
-      //       app={app}
-      //       localObserver={this.localObserver}
-      //     ></Journeys>
-      //   );
-      // }
+      case searchTypes.JOURNEYS: {
+        return (
+          <Journeys
+            model={this.searchModel}
+            app={app}
+            localObserver={this.localObserver}
+          ></Journeys>
+        );
+      }
       case searchTypes.LINES: {
         return (
           <Lines

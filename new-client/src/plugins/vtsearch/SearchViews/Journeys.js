@@ -1,40 +1,43 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import withStyles from "@mui/styles/withStyles";
-import {
-  Typography,
-  // Divider
-} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Typography, Divider, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
-// import DateFnsUtils from "@date-io/date-fns";
-// import AccessTimeIcon from "@mui/icons-material/AccessTime";
-// import EventIcon from "@mui/icons-material/Event";
-// import InactivePolygon from "../img/polygonmarkering.png";
-// import InactiveRectangle from "../img/rektangelmarkering.png";
-// import ActivePolygon from "../img/polygonmarkering-blue.png";
-// import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import {
+  LocalizationProvider,
+  TimePicker,
+  DatePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import InactivePolygon from "../img/polygonmarkering.png";
+import InactiveRectangle from "../img/rektangelmarkering.png";
+import ActivePolygon from "../img/polygonmarkering-blue.png";
+import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
-// import {
-//   MuiPickersUtilsProvider,
-//   KeyboardTimePicker,
-//   KeyboardDatePicker,
-// } from "@material-ui/pickers";
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
 
-// Define JSS styles that will be used in this component.
-// Examle below utilizes the very powerful "theme" object
-// that gives access to some constants, see: https://material-ui.com/customization/default-theme/
-// const styles = (theme) => ({
-//   journeysForm: { marginTop: 10 },
-//   dateForm: {
-//     marginTop: 0,
-//     marginBottom: -4,
-//     width: "100%",
-//     color: theme.palette.primary.main,
-//   },
-//   spaceToFromDate: { marginBottom: 40, width: "100%" },
-//   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-//   errorMessage: { color: theme.palette.error.main },
-// });
+const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
+  marginTop: 10,
+}));
+
+const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
+  marginTop: 0,
+  marginBottom: 10,
+  width: "100%",
+  color: theme.palette.primary.main,
+}));
+
+const StyledDatePicker = styled(DatePicker)(() => ({
+  marginBottom: 40,
+  width: "100%",
+}));
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
 
 class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -56,6 +59,10 @@ class Journeys extends React.PureComponent {
       )
     ),
     selectedFormType: "",
+    fromTimeInputErrorMessage: "",
+    fromDateInputErrorMessage: "",
+    endTimeInputErrorMessage: "",
+    endDateInputErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -66,7 +73,7 @@ class Journeys extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired,
+    // classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -93,6 +100,7 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedFromTime: fromTime,
+        fromTimeInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -136,6 +144,7 @@ class Journeys extends React.PureComponent {
         selectedFromTime: fromTime,
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        fromDateInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -162,6 +171,7 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedEndTime: endTime,
+        endTimeInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -188,6 +198,7 @@ class Journeys extends React.PureComponent {
       {
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        endDateInputErrorMessage: "",
       },
       () => {
         this.validateDateAndTime(
@@ -358,6 +369,7 @@ class Journeys extends React.PureComponent {
         if (this.state.isRectangleActive) this.activateSearch("Box");
       }
     );
+    console.log(this.state.isRectangleActive);
     if (this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -386,83 +398,138 @@ class Journeys extends React.PureComponent {
     this.localObserver.publish("vtsearch-dragging-enabled", true);
   };
 
+  setFromTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setFromDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
   renderFromDateSection = () => {
-    // const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
+        <Grid item xs={12}>
           <Typography variant="caption">FRÅN OCH MED</Typography>
-          <KeyboardTimePicker
+          <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             id="time-picker"
             ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedFromTime}
             onChange={this.handleFromTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setFromTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromTimeInputErrorMessage,
+              },
+            }}
           />
+          <Grid>
+            <StyledDatePicker
+              format="yyyy-MM-dd"
+              value={this.state.selectedFromDate}
+              onChange={this.handleFromDateChange}
+              onOpen={this.disableDrag}
+              onClose={this.enableDrag}
+              onError={(newError) =>
+                this.setFromDateInputErrorMessage(newError)
+              }
+              slotProps={{
+                textField: {
+                  variant: "standard",
+                  helperText: this.state.fromDateInputErrorMessage,
+                },
+              }}
+            />
+          </Grid>
         </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
-          format="yyyy-MM-dd"
-          margin="normal"
-          keyboardIcon={<EventIcon></EventIcon>}
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
-          value={this.state.selectedFromDate}
-          onChange={this.handleFromDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-        /> */}
       </>
     );
   };
 
   renderEndDateSection = () => {
-    // const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
+        <Grid item xs={12}>
           <Typography variant="caption">TILL OCH MED</Typography>
-          <KeyboardTimePicker
+          <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedEndTime}
             onChange={this.handleEndTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setEndTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endTimeInputErrorMessage,
+              },
+            }}
           />
         </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
+        <StyledDatePicker
           format="yyyy-MM-dd"
-          margin="normal"
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
           value={this.state.selectedEndDate}
           onChange={this.handleEndDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
           onOpen={this.disableDrag}
           onClose={this.enableDrag}
+          onError={(newError) => this.setEndDateInputErrorMessage(newError)}
+          slotProps={{
+            textField: {
+              variant: "standard",
+              helperText: this.state.endDateInputErrorMessage,
+            },
+          }}
         />
-        {this.showErrorMessage()} */}
+        {this.showErrorMessage()}
       </>
     );
   };
@@ -477,38 +544,32 @@ class Journeys extends React.PureComponent {
   };
 
   renderErrorMessageInvalidDate = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     DATUM MÅSTE ANGES
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          DATUM MÅSTE ANGES
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
   renderErrorMessageInvalidTime = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     KLOCKSLAG MÅSTE ANGES
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          KLOCKSLAG MÅSTE ANGES
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
   renderErrorMessageStartTimeBiggerThanEndTime = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     TILL OCH MED FÅR INTE VARA MINDRE ÄN FRÅN OCH MED
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TILL OCH MED FÅR INTE VARA MINDRE ÄN FRÅN OCH MED
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
@@ -517,11 +578,10 @@ class Journeys extends React.PureComponent {
   };
 
   renderSpatialSearchSection = () => {
-    // const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider className={classes.divider} />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -559,26 +619,20 @@ class Journeys extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
 
   render() {
-    // const { classes } = this.props;
-
     return (
-      <></>
-      // <div>
-      //   <MuiPickersUtilsProvider
-      //     className={classes.journeysForm}
-      //     utils={DateFnsUtils}
-      //   >
-      //     {this.renderFromDateSection()}
-      //     {this.renderEndDateSection()}
-      //   </MuiPickersUtilsProvider>
-      //   {this.renderSpatialSearchSection()}
-      // </div>
+      <div>
+        <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
+          {this.renderFromDateSection()}
+          {this.renderEndDateSection()}
+        </StyledLocalizationProvider>
+        {this.renderSpatialSearchSection()}
+      </div>
     );
   }
 }
@@ -587,5 +641,4 @@ class Journeys extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-// export default withStyles(styles)(Journeys);
 export default Journeys;
