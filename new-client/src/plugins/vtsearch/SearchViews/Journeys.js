@@ -1,18 +1,17 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import withStyles from "@mui/styles/withStyles";
-import {
-  Typography,
-  // Divider
-} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { Typography, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
-// import DateFnsUtils from "@date-io/date-fns";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDayjs";
+// import AdapterDateFns from "@date-io/date-fns";
 // import AccessTimeIcon from "@mui/icons-material/AccessTime";
 // import EventIcon from "@mui/icons-material/Event";
-// import InactivePolygon from "../img/polygonmarkering.png";
-// import InactiveRectangle from "../img/rektangelmarkering.png";
-// import ActivePolygon from "../img/polygonmarkering-blue.png";
-// import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import InactivePolygon from "../img/polygonmarkering.png";
+import InactiveRectangle from "../img/rektangelmarkering.png";
+import ActivePolygon from "../img/polygonmarkering-blue.png";
+import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
 // import {
 //   MuiPickersUtilsProvider,
@@ -35,6 +34,11 @@ import Grid from "@mui/material/Grid";
 //   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
 //   errorMessage: { color: theme.palette.error.main },
 // });
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  marginBottom: theme.spacing(3),
+}));
 
 class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -387,9 +391,11 @@ class Journeys extends React.PureComponent {
   };
 
   renderFromDateSection = () => {
-    // const { classes } = this.props;
     return (
       <>
+        <Grid item xs={12}>
+          <Typography variant="caption">FRÅN OCH MED</Typography>
+        </Grid>
         {/* <Grid item xs={12}>
           <Typography variant="caption">FRÅN OCH MED</Typography>
           <KeyboardTimePicker
@@ -517,11 +523,10 @@ class Journeys extends React.PureComponent {
   };
 
   renderSpatialSearchSection = () => {
-    // const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider className={classes.divider} />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -559,7 +564,7 @@ class Journeys extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
@@ -568,17 +573,19 @@ class Journeys extends React.PureComponent {
     // const { classes } = this.props;
 
     return (
-      <></>
-      // <div>
-      //   <MuiPickersUtilsProvider
-      //     className={classes.journeysForm}
-      //     utils={DateFnsUtils}
-      //   >
-      //     {this.renderFromDateSection()}
-      //     {this.renderEndDateSection()}
-      //   </MuiPickersUtilsProvider>
-      //   {this.renderSpatialSearchSection()}
-      // </div>
+      <div>
+        {/* <MuiPickersUtilsProvider
+          className={classes.journeysForm}
+          utils={DateFnsUtils}
+        >
+          {this.renderFromDateSection()}
+          {this.renderEndDateSection()}
+        </MuiPickersUtilsProvider> */}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          {this.renderFromDateSection()}
+        </LocalizationProvider>
+        {this.renderSpatialSearchSection()}
+      </div>
     );
   }
 }
