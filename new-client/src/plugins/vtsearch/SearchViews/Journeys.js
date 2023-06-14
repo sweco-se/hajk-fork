@@ -1,13 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
-import { Typography, Divider } from "@mui/material";
+import { Typography, Divider, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { LocalizationProvider } from "@mui/x-date-pickers";
+import {
+  LocalizationProvider,
+  TimePicker,
+  DatePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 // import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDayjs";
 // import AdapterDateFns from "@date-io/date-fns";
-// import AccessTimeIcon from "@mui/icons-material/AccessTime";
-// import EventIcon from "@mui/icons-material/Event";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import EventIcon from "@mui/icons-material/Event";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
@@ -34,6 +39,28 @@ import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 //   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
 //   errorMessage: { color: theme.palette.error.main },
 // });
+
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
+const StyledLocalizationProvider = styled(LocalizationProvider)(
+  ({ theme }) => ({
+    marginTop: 10,
+  })
+);
+
+const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
+  marginTop: 0,
+  marginBottom: -4,
+  width: "100%",
+  color: theme.palette.primary.main,
+}));
+
+const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
+  marginBottom: 40,
+  width: "100%",
+}));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginTop: theme.spacing(3),
@@ -70,7 +97,7 @@ class Journeys extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired,
+    // classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -350,6 +377,7 @@ class Journeys extends React.PureComponent {
   };
 
   handleRectangleClick = () => {
+    console.log("CLICK");
     if (!this.state.spatialToolsEnabled) return;
 
     this.deactivateSearch();
@@ -362,6 +390,7 @@ class Journeys extends React.PureComponent {
         if (this.state.isRectangleActive) this.activateSearch("Box");
       }
     );
+    console.log(this.state.isRectangleActive);
     if (this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -395,6 +424,36 @@ class Journeys extends React.PureComponent {
       <>
         <Grid item xs={12}>
           <Typography variant="caption">FRÅN OCH MED</Typography>
+          <StyledTimePicker
+            format="HH:mm"
+            margin="normal"
+            id="time-picker"
+            ampm={false}
+            invalidDateMessage="FEL VÄRDE PÅ TID"
+            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
+            value={this.state.selectedFromTime}
+            onChange={this.handleFromTimeChange}
+            KeyboardButtonProps={{
+              "aria-label": "change time",
+            }}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+          />
+          <Grid>
+            <StyledDatePicker
+              format="yyyy-MM-dd"
+              margin="normal"
+              keyboardIcon={<EventIcon></EventIcon>}
+              invalidDateMessage="FEL VÄRDE PÅ DATUM"
+              value={this.state.selectedFromDate}
+              onChange={this.handleFromDateChange}
+              KeyboardButtonProps={{
+                "aria-label": "change date",
+              }}
+              onOpen={this.disableDrag}
+              onClose={this.enableDrag}
+            />
+          </Grid>
         </Grid>
         {/* <Grid item xs={12}>
           <Typography variant="caption">FRÅN OCH MED</Typography>
@@ -437,6 +496,36 @@ class Journeys extends React.PureComponent {
     // const { classes } = this.props;
     return (
       <>
+        <Grid item xs={12}>
+          <Typography variant="caption">TILL OCH MED</Typography>
+          <StyledTimePicker
+            format="HH:mm"
+            margin="normal"
+            ampm={false}
+            invalidDateMessage="FEL VÄRDE PÅ TID"
+            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
+            value={this.state.selectedEndTime}
+            onChange={this.handleEndTimeChange}
+            KeyboardButtonProps={{
+              "aria-label": "change time",
+            }}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+          />
+        </Grid>
+        <StyledDatePicker
+          format="yyyy-MM-dd"
+          margin="normal"
+          invalidDateMessage="FEL VÄRDE PÅ DATUM"
+          value={this.state.selectedEndDate}
+          onChange={this.handleEndDateChange}
+          KeyboardButtonProps={{
+            "aria-label": "change date",
+          }}
+          onOpen={this.disableDrag}
+          onClose={this.enableDrag}
+        />
+        {this.showErrorMessage()}
         {/* <Grid item xs={12}>
           <Typography variant="caption">TILL OCH MED</Typography>
           <KeyboardTimePicker
@@ -483,38 +572,32 @@ class Journeys extends React.PureComponent {
   };
 
   renderErrorMessageInvalidDate = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     DATUM MÅSTE ANGES
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          DATUM MÅSTE ANGES
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
   renderErrorMessageInvalidTime = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     KLOCKSLAG MÅSTE ANGES
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          KLOCKSLAG MÅSTE ANGES
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
   renderErrorMessageStartTimeBiggerThanEndTime = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <Typography variant="body2" className={classes.errorMessage}>
-      //     TILL OCH MED FÅR INTE VARA MINDRE ÄN FRÅN OCH MED
-      //   </Typography>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TILL OCH MED FÅR INTE VARA MINDRE ÄN FRÅN OCH MED
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
@@ -581,9 +664,10 @@ class Journeys extends React.PureComponent {
           {this.renderFromDateSection()}
           {this.renderEndDateSection()}
         </MuiPickersUtilsProvider> */}
-        {/* <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
           {this.renderFromDateSection()}
-        </LocalizationProvider> */}
+          {this.renderEndDateSection()}
+        </StyledLocalizationProvider>
         {this.renderSpatialSearchSection()}
       </div>
     );
