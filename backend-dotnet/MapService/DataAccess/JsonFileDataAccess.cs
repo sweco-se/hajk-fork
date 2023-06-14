@@ -247,7 +247,7 @@ namespace MapService.DataAccess
 
         private static string GetPathToDocumentsFolder()
         {
-            var documentsFolderPath = PathUtility.GetPath("Documents:Path");
+            var documentsFolderPath = PathUtility.GetPath("Informative:Documents:Path");
 
             if (documentsFolderPath == null)
                 throw new DirectoryNotFoundException();

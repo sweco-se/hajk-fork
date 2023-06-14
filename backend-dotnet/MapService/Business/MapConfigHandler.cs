@@ -84,8 +84,8 @@ namespace MapService.Business.MapConfig
         /// <returns>Collection of image file names</returns>
         internal static IEnumerable<string> GetListOfImages()
         {
-            string mediaPath = GetMediaPath("Media:Image:Path");
-            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Media:Image:AllowedExtensions");
+            string mediaPath = GetMediaPath("Informative:Image:Path");
+            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Informative:Image:Extensions");
 
             return GetMediaFiles(mediaPath, allowedExtentions);
         }
@@ -96,8 +96,8 @@ namespace MapService.Business.MapConfig
         /// <returns>Collection of video file names</returns>
         internal static IEnumerable<string> GetListOfVideos()
         {
-            string mediaPath = GetMediaPath("Media:Video:Path");
-            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Media:Video:AllowedExtensions");
+            string mediaPath = GetMediaPath("Informative:Video:Path");
+            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Informative:Video:Extensions");
 
             return GetMediaFiles(mediaPath, allowedExtentions);
         }
@@ -108,8 +108,8 @@ namespace MapService.Business.MapConfig
         /// <returns>Collection of audio file names</returns>
         internal static IEnumerable<string> GetListOfAudioFiles()
         {
-            string mediaPath = GetMediaPath("Media:Audio:Path");
-            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Media:Audio:AllowedExtensions");
+            string mediaPath = GetMediaPath("Informative:Audio:Path");
+            IEnumerable<string> allowedExtentions = GetAllowedExtensions("Informative:Audio:Extensions");
 
             return GetMediaFiles(mediaPath, allowedExtentions);
         }
@@ -170,7 +170,7 @@ namespace MapService.Business.MapConfig
             var templateFileName = ConfigurationUtility.GetSectionItem("Templates:Name");
 
             File.Copy(
-                Path.Combine(templatesFolder, templateFileName), 
+                Path.Combine(templatesFolder, templateFileName),
                 Path.Combine(appDataFolder, GetNewFileNameWithExtension(name))
             );
         }
