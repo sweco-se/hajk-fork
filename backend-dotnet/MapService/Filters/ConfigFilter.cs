@@ -81,7 +81,71 @@ namespace MapService.Filters
 
             #endregion filter groups
 
+            FilterToolsInMap(filteredMapObjects, adUserGroups);
+
             return filteredMapObjects;
+        }
+
+        internal static void FilterToolsInMap(JsonObject filteredMapObjects, IEnumerable<string>? adUserGroups)
+        {
+            if (adUserGroups is null || adUserGroups.Count() == 0)
+                return;
+
+            //Get array of all map config tools
+            var input = "$.tools[*].type";
+            JsonDocument filterMapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(filteredMapObjects);
+            var mapTools = JsonPathUtility.GetJsonArray(filterMapDocument, input);
+
+            if (mapTools is null)
+                return;
+
+            JsonArray filteredToolsArray = new JsonArray();
+
+            //Check the adUserGroups against each tool's visibileForGroups array, and add tool to the filteredToolsArray if it should be visible for this user
+            foreach (var mapTool in mapTools)
+            {
+                var tool = JsonSerializer.Deserialize<string>(mapTool.Value.GetRawText());
+                if (tool is null)
+                    continue;
+
+                var inputVisibleForGroups = "$.tools[?(@.type == '" + tool + "')].options.visibleForGroups";
+                var resultVisibleForGroups = JsonPathUtility.GetJsonElement(filterMapDocument, inputVisibleForGroups);
+
+                if (resultVisibleForGroups is null || resultVisibleForGroups.Value.ValueKind != JsonValueKind.Array) //Value not set -> tool is visible for all users
+                {
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                    if (filteredTool is not null)
+                        filteredToolsArray.Add(filteredTool);
+                    continue;
+                }
+
+                var visibleForGroupsArray = resultVisibleForGroups.Value.EnumerateArray();
+                if (visibleForGroupsArray.Count() == 0) //No groups specified -> tool is visible for all users
+                {
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                    if (filteredTool is not null)
+                        filteredToolsArray.Add(filteredTool);
+                    continue;
+                }
+
+                // Check if the adgroup is in the visibleForGroups array
+                foreach (var group in visibleForGroupsArray)
+                {
+                    if (group.ValueKind != JsonValueKind.String)
+                        continue;
+
+                    if (adUserGroups.Contains(group.GetString()))
+                    {
+                        var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                        if (filteredTool is not null)
+                            filteredToolsArray.Add(filteredTool);
+                        break;
+                    }
+                }
+            }
+
+            // Overwrite the current map tools with the filtered tools
+            filteredMapObjects["tools"] = filteredToolsArray;
         }
 
         internal static JsonObject FilterLayersBasedOnMapConfig(JsonDocument mapConfiguration, JsonDocument layers)
