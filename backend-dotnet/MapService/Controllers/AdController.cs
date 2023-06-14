@@ -6,7 +6,8 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MapService.Controllers
 {
-    [Route("ad")]
+    [Route("api/v{version:apiVersion}/ad")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class AdController : ControllerBase
@@ -23,12 +24,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get a list of all available AD groups to make it easier for admins to set map and layer permissions
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("availableadgroups")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -45,7 +47,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -67,12 +69,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Find out which AD group membership is shared between specified users
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("findcommongroupsforusers")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -89,7 +92,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -111,12 +114,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Users store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("users")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -133,7 +137,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -155,12 +159,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Groups store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("groups")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -177,7 +182,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -199,12 +204,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD groups per user store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("groupsPerUser")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -221,7 +227,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {
@@ -243,12 +249,13 @@ namespace MapService.Controllers
         /// <remarks>
         /// Flush the contents of all local AD stores (removes the cached objects)
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpPut]
         [Route("flushStores")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -263,7 +270,7 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                 if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                 {

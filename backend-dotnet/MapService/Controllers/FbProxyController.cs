@@ -6,7 +6,9 @@ using MapService.Business.FbProxy;
 
 namespace MapService.Controllers
 {
-    [Route("fbproxy")]
+    [Route("api/v{version:apiVersion}/fbproxy")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [ApiController]
     public class FbProxyController : ControllerBase
     {
@@ -20,16 +22,14 @@ namespace MapService.Controllers
         ///<remarks>Proxy the specified query to Sokigo's FB API</remarks>
         /// <param query="query">The query to be proxied</param>
         /// <response code="200">Result will vary depending on response from the API.</response>
+        [HttpGet]
         [Route("{*query}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Sokigo FB Proxy" })]
-        [HttpGet]
-        [HttpPost]
-        [HttpPut]
-        [HttpDelete]
-        [HttpPatch]
         public async Task<IActionResult> SendQueryToFbAPI(string query)
         {
             HttpResponseMessage response = new HttpResponseMessage();

@@ -8,7 +8,9 @@ using System.Text.Json.Nodes;
 
 namespace MapService.Controllers
 {
-    [Route("informative")]
+    [Route("api/v{version:apiVersion}/informative")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class InformativeController : ControllerBase
@@ -22,13 +24,15 @@ namespace MapService.Controllers
             _logger = logger;
         }
 
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return all available documents</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>List of string</returns>
         [HttpGet]
         [Route("list")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -43,7 +47,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -63,13 +67,15 @@ namespace MapService.Controllers
         }
 
         /// <param name="name">Name of the map for which connected documents will be returned</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return available documents for the specified map</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>List of string</returns>
         [HttpGet]
         [Route("list/{name}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -84,7 +90,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -103,18 +109,21 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, documentList);
         }
 
-        /// <param name="name">Name of the document to be fetched</param>
+        /// <param name="document">Name of the document to be fetched</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Return the JSON file</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
         [HttpGet]
-        [Route("load/{name}")]
+        [Route("load/{document}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
-        public ActionResult GetDocument(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        public ActionResult GetDocument(string document, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
-            JsonObject document;
+            JsonObject documentAsJson;
 
             try
             {
@@ -122,7 +131,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
                     
                     if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
                     {
@@ -130,7 +139,7 @@ namespace MapService.Controllers
                     }
                 }
 
-                document = InformativeHandler.GetDocument(name);
+                documentAsJson = InformativeHandler.GetDocument(document);
             }
             catch (Exception ex)
             {
@@ -138,22 +147,22 @@ namespace MapService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
             }
 
-            return StatusCode(StatusCodes.Status200OK, document);
+            return StatusCode(StatusCodes.Status200OK, documentAsJson);
         }
 
         /// <param name="requestBody">The name of the document and the map</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
         [HttpPost]
         [Route("create")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Informative/DocumentHandler" })]
-        [Obsolete]
         public ActionResult CreateDocumentPost([Required][FromBody] JsonObject requestBody, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -162,7 +171,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -183,13 +192,14 @@ namespace MapService.Controllers
         }
 
         /// <param name="requestBody">The name of the document and the map</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
         [HttpPut]
         [Route("create")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -202,7 +212,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -227,18 +237,18 @@ namespace MapService.Controllers
         /// </remarks>
         /// <param name="name">Name of the document to be saved</param>
         /// <param name="requestBody">Settings from the request body</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
         [HttpPost]
         [Route("save/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Informative/DocumentHandler" })]
-        [Obsolete]
         public ActionResult SaveDocumentPost(string name, [Required][FromBody] JsonObject requestBody, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -247,7 +257,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -272,13 +282,14 @@ namespace MapService.Controllers
         /// </remarks>
         /// <param name="name">Name of the document to be saved</param>
         /// <param name="requestBody">Settings from the request body</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         /// <returns>JsonObject</returns>
         [HttpPut]
         [Route("save/{name}")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -291,7 +302,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -315,12 +326,14 @@ namespace MapService.Controllers
         /// Delete an existing document
         /// </remarks>
         /// <param name="name">Document to be deleted</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All good</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpDelete]
         [Route("delete/{name}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -333,7 +346,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {

@@ -1,3 +1,5 @@
+using MapService.Utility;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
@@ -14,7 +16,14 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Version = "1.1.0",
+        Version = "v1.0",
+        Title = "hajk-backend",
+        Description = ".NET-backend for HAJK."
+    });
+
+    options.SwaggerDoc("v2", new OpenApiInfo
+    {
+        Version = "v2.0",
         Title = "hajk-backend",
         Description = ".NET-backend for HAJK."
     });
@@ -27,6 +36,29 @@ builder.Services.AddSwaggerGen(options =>
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
 
     options.IncludeXmlComments(xmlPath);
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
+
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("*")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddMemoryCache();
@@ -53,10 +85,16 @@ app.UseSwagger();
 
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/spec", "HAJK Backend");
-    c.SwaggerEndpoint("/swagger/v1/swagger.yml", "HAJK .NET Backend");
+    //c.SwaggerEndpoint("/api/v1/spec", "HAJK Backend");
+    c.SwaggerEndpoint("/swagger/v2/swagger.yml", "HAJK .NET Backend v2");
+    c.SwaggerEndpoint("/swagger/v1/swagger.yml", "HAJK .NET Backend v1");
 });
 //}
+
+if (ConfigurationUtility.EnvironmentIsDevelopment())
+{
+    app.UseCors();
+}
 
 app.UseAuthorization();
 

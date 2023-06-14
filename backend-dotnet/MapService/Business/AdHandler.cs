@@ -56,6 +56,11 @@ namespace MapService.Business.Ad
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:Url"); }
         }
 
+        private static string TrustedHeader
+        {
+            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:TrustedHeader"); }
+        }
+
         private static string BaseDN
         {
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:BaseDN"); }
@@ -229,12 +234,14 @@ namespace MapService.Business.Ad
             return true;
         }
 
-        public string PickUserNameToUse(string? userName)
+        public string PickUserNameToUse(HttpRequest request, string? userName)
         {
             if (IdentifyUserWithWindowsAuthentication)
                 return GetWindowsAuthenticationUserName();
             else
-                return userName;
+            {
+                return GetValueFromTrustedHeader(request, userName);
+            }
         }
 
         public string GetWindowsAuthenticationUserName()
@@ -247,6 +254,16 @@ namespace MapService.Business.Ad
                 return activeUser.Name;
             }
             else return String.Empty;
+        }
+
+        public string GetValueFromTrustedHeader(HttpRequest request, string? userPrincipalName)
+        {
+            if (userPrincipalName == null)
+            {
+                request.Headers.TryGetValue(TrustedHeader, out var trustedHeaderValue);
+                userPrincipalName = trustedHeaderValue;
+            }
+            return userPrincipalName;
         }
 
         internal static bool UserHasAdAccess(string? userPrincipalName)

@@ -11,7 +11,9 @@ using System.Text.Json.Nodes;
 
 namespace MapService.Controllers
 {
-    [Route("config")]
+    [Route("api/v{version:apiVersion}/config")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("application/json")]
     [ApiController]
     public class ConfigController : ControllerBase
@@ -28,11 +30,12 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available layers. If AD authentication is active, filter by user's permission
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All layers were fetched successfully</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("layers")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
@@ -45,7 +48,7 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
                     {
@@ -65,12 +68,14 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, layerObject);
         }
 
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         [HttpGet]
         [Route("{map}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
-        [Obsolete]
         public ActionResult GetMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             JsonObject mapObject;
@@ -82,7 +87,7 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
                     {
@@ -107,17 +112,17 @@ namespace MapService.Controllers
         /// Delete an existing map configuration
         /// </remarks>
         /// <param name="name">Name of the map to be deleted</param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("delete/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult Delete(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -126,7 +131,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -148,11 +153,12 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available layers, do not apply any visibility restrictions (required for Admin UI)
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">All layers were fetched successfully</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("userspecificmaps")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
@@ -167,7 +173,7 @@ namespace MapService.Controllers
                 if (AdHandler.AdIsActive)
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
                     {
@@ -192,18 +198,18 @@ namespace MapService.Controllers
         /// <remarks>
         /// Gets all maps names.
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <returns>Return all map names. </returns>
         /// <response code="200">All map names were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("list")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetMaps([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             IEnumerable<string> maps;
@@ -214,7 +220,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -236,17 +242,17 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available images in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available images were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listimage")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListImage([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfImages = new List<string>();
@@ -257,7 +263,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -280,17 +286,17 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available videos in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available videos were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listvideo")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListVideo([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfVideos = new List<string>();
@@ -301,7 +307,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -324,17 +330,17 @@ namespace MapService.Controllers
         /// <remarks>
         /// List available audio files in the upload folder
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Available audio files were fetched successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet()]
         [Route("listaudio")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult<IEnumerable<string>> GetListAudio([FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             var listOfAudioFiles = new List<string>();
@@ -345,7 +351,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
@@ -369,17 +375,17 @@ namespace MapService.Controllers
         /// Create a new map configuration
         /// </summary>
         /// <param name="name">The name of the map to create </param>
-        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">The map configuration was created successfully</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("create/{name}")]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        [Obsolete]
         public ActionResult Create(string name, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
             try
@@ -388,7 +394,7 @@ namespace MapService.Controllers
                 {
                     var adHandler = new AdHandler(_memoryCache, _logger);
 
-                    userPrincipalName = adHandler.PickUserNameToUse(userPrincipalName);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
                     if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
                     {
