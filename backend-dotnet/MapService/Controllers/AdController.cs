@@ -1,4 +1,4 @@
-﻿using MapService.Business.Ad;
+using MapService.Business.Ad;
 using MapService.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -24,7 +24,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get a list of all available AD groups to make it easier for admins to set map and layer permissions
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -35,7 +35,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult GetAvailableADGroups([FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult GetAvailableADGroups([FromHeader(Name = "X-Control-Header")] string? userIdentity)
         {
             IEnumerable<string?> availableADGroups;
 
@@ -47,9 +47,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }
@@ -69,7 +81,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Find out which AD group membership is shared between specified users
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -80,7 +92,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult FindCommonGroupsForUsers([FromHeader(Name = "X-Control-Header")] string userPrincipalName, [FromQuery] IEnumerable<string> users)
+        public ActionResult FindCommonGroupsForUsers([FromHeader(Name = "X-Control-Header")] string userIdentity, [FromQuery] IEnumerable<string> users)
         {
             IEnumerable<string?> commonGroupsForUsers;
 
@@ -92,9 +104,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }
@@ -114,7 +138,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Users store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -125,7 +149,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult GetUsers([FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult GetUsers([FromHeader(Name = "X-Control-Header")] string userIdentity)
         {
             Dictionary<string, AdUser> users;
 
@@ -137,9 +161,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }
@@ -159,7 +195,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD Groups store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -170,7 +206,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult GetGroups([FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult GetGroups([FromHeader(Name = "X-Control-Header")] string userIdentity)
         {
             IEnumerable<string?> groups;
 
@@ -182,9 +218,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }
@@ -204,7 +252,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Get the current content of local AD groups per user store
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -215,7 +263,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult GetGroupsPerUser([FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult GetGroupsPerUser([FromHeader(Name = "X-Control-Header")] string userIdentity)
         {
             Dictionary<string, IEnumerable<string>> groupsPerUser;
 
@@ -227,9 +275,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }
@@ -249,7 +309,7 @@ namespace MapService.Controllers
         /// <remarks>
         /// Flush the contents of all local AD stores (removes the cached objects)
         /// </remarks>
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <param name="userIdentity">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Success</response>
         /// <response code="403">Forbidden</response>
         /// <response code="500">Internal Server Error</response>
@@ -260,7 +320,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - ActiveDirectory" })]
-        public ActionResult FlushStores([FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult FlushStores([FromHeader(Name = "X-Control-Header")] string userIdentity)
         {
             try
             {
@@ -270,9 +330,21 @@ namespace MapService.Controllers
                 }
 
                 var adHandler = new AdHandler(_memoryCache, _logger);
-                userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
 
-                if (!adHandler.UserIsValid(userPrincipalName) || !AdHandler.UserHasAdAccess(userPrincipalName))
+                string? remoteIpAddress = adHandler.GetRemoteIpAddress(HttpContext);
+                if (!adHandler.IpRangeRestrictionIsSet())
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active but no IP range restriction is set in appsettings.json file."
+                                           + " This means that you accept the value of X-Control-Header from any request, which is potentially a huge security risk!.");
+                }
+                if (!adHandler.RequestComesFromAcceptedIp(HttpContext))
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication does not allow requests from " + remoteIpAddress + ". Aborting.");
+                }
+
+                userIdentity = adHandler.PickUserNameToUse(Request, userIdentity);
+
+                if (!adHandler.UserIsValid(userIdentity) || !AdHandler.UserHasAdAccess(userIdentity))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, "Forbidden");
                 }

@@ -204,6 +204,10 @@ To be able to use the FB Proxy the "FbProxy" appsettings must be set, where "FbS
 
 The backend has support for Active Directory, to activate the support fo Active Directory the parameters under ActiveDirectory must be set.
 
+LDAP servers can have different configurations that determine whether they treat certain components of the connection as case-sensitive or case-insensitive. For example, some LDAP servers may treat the server name as case-insensitive, while others may require an exact case match.
+
+It's important to consult the documentation or specifications of the specific LDAP server you are working with to determine the case-sensitivity rules it follows for various components of the connection.
+
 ```json
 "ActiveDirectory": {
    "Active": true,
