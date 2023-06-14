@@ -32,8 +32,21 @@ namespace MapService.Business.Ad
 
         internal static bool IdentifyUserWithWindowsAuthentication
         {
-            get {
+            get
+            {
                 var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:IdentifyUserWithWindowsAuthentication");
+                if (value != null)
+                    return bool.Parse(value);
+                else
+                    return false;
+            }
+        }
+
+        internal static bool ExposeUserObject
+        {
+            get
+            {
+                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:ExposeUserObject");
                 if (value != null)
                     return bool.Parse(value);
                 else
@@ -81,7 +94,7 @@ namespace MapService.Business.Ad
             return directorySearcher;
         }
 
-        private AdUser? FindUser(string? userprincipalname)
+        public AdUser? FindUser(string? userprincipalname)
         {
             if (string.IsNullOrEmpty(userprincipalname)) { return null; }
 

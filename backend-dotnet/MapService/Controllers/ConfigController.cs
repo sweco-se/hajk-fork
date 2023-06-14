@@ -68,17 +68,85 @@ namespace MapService.Controllers
             return StatusCode(StatusCodes.Status200OK, layerObject);
         }
 
-        /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
+        /// <remarks>
+        /// Get the map config, together with all needed layers (depending on which layer id:s are found in the map config), a list of user specific maps
+        /// if the config map property "mapselector" is set to true, and user information if AD is acitve and the settings flag that user should be returned is set to true.
+        /// </remarks>
+        /// <param name="map">The map file to be retrieved</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <response code="200">All fetched successfully</response>
+        /// <response code="500">Internal Server Error</response>
+        [HttpGet]
+        [Route("{map}")]
+        [MapToApiVersion("2.0")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [SwaggerOperation(Tags = new[] { "Client-accessible" })]
+        public ActionResult GetMapWithLayers(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
+        {
+            JsonObject? mapWithLayers;
+
+            try
+            {
+                JsonObject? mapObject = MapConfigHandler.GetMapAsJsonObject(map);
+                var userSpecificMaps = ConfigHandler.GetUserSpecificMaps();
+                AdUser? adUser = null;
+
+                if (AdHandler.AdIsActive)
+                {
+                    var adHandler = new AdHandler(_memoryCache, _logger);
+                    userPrincipalName = adHandler.PickUserNameToUse(Request, userPrincipalName);
+
+                    if (userPrincipalName == null || !adHandler.UserIsValid(userPrincipalName))
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, "AD authentication is active, but supplied user name could not be validated.");
+                    }
+
+                    adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
+
+                    mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
+
+                    if (mapObject == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, String.Format("Access to {0} not allowed for user {1}.", map, userPrincipalName));
+                    }
+
+                    userSpecificMaps = ConfigFilter.FilterUserSpecificMaps(userSpecificMaps, adUserGroups);
+
+                    if (AdHandler.ExposeUserObject)
+                    {
+                        adUser = adHandler.FindUser(userPrincipalName);
+                    }
+                }
+
+                mapWithLayers = ConfigHandler.GetMapWithLayers(mapObject, userSpecificMaps, adUser);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Internal server error");
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+            }
+
+            return StatusCode(StatusCodes.Status200OK, mapWithLayers);
+        }
+
+        /// <remarks>
+        /// Get the map config.
+        /// </remarks>
+        /// <param name="map">The map file to be retrieved</param>
+        /// <param name="userPrincipalName">User name that will be supplied to AD</param>
+        /// <response code="200">All fetched successfully</response>
+        /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("{map}")]
         [MapToApiVersion("1.0")]
-        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Client-accessible" })]
         public ActionResult GetMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName = null)
         {
-            JsonObject mapObject;
+            JsonObject? mapObject;
 
             try
             {
@@ -97,6 +165,11 @@ namespace MapService.Controllers
                     adHandler.GetGroupsPerUser().TryGetValue(userPrincipalName, out var adUserGroups);
 
                     mapObject = ConfigFilter.FilterMaps(map, adUserGroups);
+
+                    if (mapObject == null)
+                    {
+                        return StatusCode(StatusCodes.Status500InternalServerError, String.Format("Access to {0} not allowed for user {1}.", map, userPrincipalName));
+                    }
                 }
             }
             catch (Exception ex)
@@ -407,7 +480,7 @@ namespace MapService.Controllers
             catch (IOException iex)
             {
                 _logger.LogError(iex, "Internal Server Error");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Kartan " + name + " finns redan. Ta bort kartan " + name + " innan du skapar om den på nytt. ");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Kartan " + name + " finns redan. Ta bort kartan " + name + " innan du skapar om den pï¿½ nytt. ");
             }
             catch (Exception ex)
             {
