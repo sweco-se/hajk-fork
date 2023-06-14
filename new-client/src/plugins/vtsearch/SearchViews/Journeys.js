@@ -9,44 +9,18 @@ import {
   DatePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-// import AccessTimeIcon from "@mui/icons-material/AccessTime";
-// import EventIcon from "@mui/icons-material/Event";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
-// import {
-//   MuiPickersUtilsProvider,
-//   KeyboardTimePicker,
-//   KeyboardDatePicker,
-// } from "@material-ui/pickers";
-
-// Define JSS styles that will be used in this component.
-// Examle below utilizes the very powerful "theme" object
-// that gives access to some constants, see: https://material-ui.com/customization/default-theme/
-// const styles = (theme) => ({
-//   journeysForm: { marginTop: 10 },
-//   dateForm: {
-//     marginTop: 0,
-//     marginBottom: -4,
-//     width: "100%",
-//     color: theme.palette.primary.main,
-//   },
-//   spaceToFromDate: { marginBottom: 40, width: "100%" },
-//   divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-//   errorMessage: { color: theme.palette.error.main },
-// });
-
 const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
-const StyledLocalizationProvider = styled(LocalizationProvider)(
-  ({ theme }) => ({
-    marginTop: 10,
-  })
-);
+const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
+  marginTop: 10,
+}));
 
 const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   marginTop: 0,
@@ -55,7 +29,7 @@ const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
-const StyledDatePicker = styled(DatePicker)(({ theme }) => ({
+const StyledDatePicker = styled(DatePicker)(() => ({
   marginBottom: 40,
   width: "100%",
 }));
@@ -516,45 +490,11 @@ class Journeys extends React.PureComponent {
             />
           </Grid>
         </Grid>
-        {/* <Grid item xs={12}>
-          <Typography variant="caption">FRÅN OCH MED</Typography>
-          <KeyboardTimePicker
-            format="HH:mm"
-            margin="normal"
-            id="time-picker"
-            ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
-            value={this.state.selectedFromTime}
-            onChange={this.handleFromTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
-            onOpen={this.disableDrag}
-            onClose={this.enableDrag}
-          />
-        </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
-          format="yyyy-MM-dd"
-          margin="normal"
-          keyboardIcon={<EventIcon></EventIcon>}
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
-          value={this.state.selectedFromDate}
-          onChange={this.handleFromDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-        /> */}
       </>
     );
   };
 
   renderEndDateSection = () => {
-    // const { classes } = this.props;
     return (
       <>
         <Grid item xs={12}>
@@ -590,38 +530,6 @@ class Journeys extends React.PureComponent {
           }}
         />
         {this.showErrorMessage()}
-        {/* <Grid item xs={12}>
-          <Typography variant="caption">TILL OCH MED</Typography>
-          <KeyboardTimePicker
-            format="HH:mm"
-            margin="normal"
-            ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
-            value={this.state.selectedEndTime}
-            onChange={this.handleEndTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
-            onOpen={this.disableDrag}
-            onClose={this.enableDrag}
-          />
-        </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
-          format="yyyy-MM-dd"
-          margin="normal"
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
-          value={this.state.selectedEndDate}
-          onChange={this.handleEndDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-        />
-        {this.showErrorMessage()} */}
       </>
     );
   };
@@ -717,17 +625,8 @@ class Journeys extends React.PureComponent {
   };
 
   render() {
-    // const { classes } = this.props;
-
     return (
       <div>
-        {/* <MuiPickersUtilsProvider
-          className={classes.journeysForm}
-          utils={DateFnsUtils}
-        >
-          {this.renderFromDateSection()}
-          {this.renderEndDateSection()}
-        </MuiPickersUtilsProvider> */}
         <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
           {this.renderFromDateSection()}
           {this.renderEndDateSection()}
@@ -742,5 +641,4 @@ class Journeys extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-// export default withStyles(styles)(Journeys);
 export default Journeys;
