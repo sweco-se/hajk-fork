@@ -22,7 +22,6 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("spec")]
-        [MapToApiVersion("1.0")]
         [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]

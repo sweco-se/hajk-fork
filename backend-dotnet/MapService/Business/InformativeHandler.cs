@@ -15,7 +15,7 @@ namespace MapService.Business.Informative
         /// <returns>List of all document paths</returns>
         public static IEnumerable<string> GetAllDocuments()
         {
-            string documentPath = PathUtility.GetPath("Documents:Path");
+            string documentPath = PathUtility.GetPath("Informative:Documents:Path");
             if (documentPath == null)
                 return new List<string>();
 
@@ -112,7 +112,7 @@ namespace MapService.Business.Informative
             string fileName = documentName;
             fileName = FileUtility.AddMissingEnding(fileName, ".json");
 
-            string documentPath = PathUtility.GetPath("Documents:Path");
+            string documentPath = PathUtility.GetPath("Informative:Documents:Path");
             if (documentPath == null)
                 throw new Exception("Internal server error, path settings to documents not found");
             string path = Path.Combine(documentPath, fileName);

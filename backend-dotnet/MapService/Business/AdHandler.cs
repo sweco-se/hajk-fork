@@ -22,7 +22,7 @@ namespace MapService.Business.Ad
         {
             get
             {
-                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:Active");
+                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:LookupActive");
                 if (value != null)
                     return bool.Parse(value);
                 else
@@ -86,12 +86,12 @@ namespace MapService.Business.Ad
 
         private static IEnumerable<string> Groups
         {
-            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:Groups"); }
+            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:AdminGroups"); }
         }
 
         private static string UserNameKey
         {
-            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:UserNameKey"); }
+            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:UsernameKey"); }
         }
 
         private static DirectorySearcher CreateDirectorySearcher()
@@ -268,6 +268,7 @@ namespace MapService.Business.Ad
         public string GetWindowsAuthenticationUserName()
         {
             var activeUser = WindowsIdentity.GetCurrent();
+
             _logger.LogInformation("Active user {0}", activeUser.Name);
 
             if (activeUser.ImpersonationLevel == TokenImpersonationLevel.Impersonation)
@@ -286,8 +287,9 @@ namespace MapService.Business.Ad
             }
             return userIdentity;
         }
+
         public string? GetRemoteIpAddress(HttpContext httpContext)
-        {            
+        {
             return httpContext.Connection.RemoteIpAddress?.ToString();
         }
 
@@ -304,12 +306,11 @@ namespace MapService.Business.Ad
         internal bool IpRangeRestrictionIsSet()
         {
             if (TrustedProxyIPs != null)
-            { 
-                return true; 
+            {
+                return true;
             }
             return false;
         }
-
 
         internal static bool UserHasAdAccess(string? userIdentity)
         {
