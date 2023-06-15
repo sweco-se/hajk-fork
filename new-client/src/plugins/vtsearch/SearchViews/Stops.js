@@ -1,34 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import withStyles from "@mui/styles/withStyles";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-// import FormControl from "@mui/material/FormControl";
-// import MenuItem from "@mui/material/MenuItem";
-// import Select from "@mui/material/Select";
-import {
-  // TextField,
-  // Button,
-  Typography,
-  // Divider,
-  Grid,
-  // ButtonGroup,
-} from "@mui/material";
-// import InactivePolygon from "../img/polygonmarkering.png";
-// import InactiveRectangle from "../img/rektangelmarkering.png";
-// import ActivePolygon from "../img/polygonmarkering-blue.png";
-// import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import FormControl from "@mui/material/FormControl";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { TextField, Button, Typography, Divider, Grid } from "@mui/material";
+import styled from "@emotion/styled";
+import InactivePolygon from "../img/polygonmarkering.png";
+import InactiveRectangle from "../img/rektangelmarkering.png";
+import ActivePolygon from "../img/polygonmarkering-blue.png";
+import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
-// Define JSS styles that will be used in this component.
-// Examle below utilizes the very powerful "theme" object
-// that gives access to some constants, see: https://material-ui.com/customization/default-theme/
-// const styles = (theme) => ({
-//   divider: { marginTop: theme.spacing(2), marginBottom: theme.spacing(2) },
-//   firstMenuItem: { minHeight: 36 },
-//   searchButtonColor: { borderColor: theme.palette.primary.main },
-//   searchButtonText: { color: theme.palette.primary.main },
-// });
+const StyledSearchButton = styled(Button)(({ theme }) => ({
+  borderColor: theme.palette.primary.main,
+}));
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledFirstMenuItem = styled(MenuItem)(({ theme }) => ({
+  minHeight: 36,
+}));
 
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -49,7 +45,6 @@ class Stops extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -224,18 +219,18 @@ class Stops extends React.PureComponent {
   };
 
   renderTextParameterSection = () => {
-    // const { municipalities } = this.state;
-    // const { classes } = this.props;
+    const { municipalities } = this.state;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="caption">HÅLLPLATSNAMN ELLER -NR</Typography>
           <TextField
             fullWidth
             id="standard-basic"
+            variant="standard"
             value={this.state.stopNameOrNr}
             onChange={this.handleStopNameOrNrChange}
           ></TextField>
@@ -245,6 +240,7 @@ class Stops extends React.PureComponent {
           <TextField
             fullWidth
             id="standard-basic"
+            variant="standard"
             value={this.state.publicLine}
             onChange={this.handlePublicLineChange}
           />
@@ -255,17 +251,14 @@ class Stops extends React.PureComponent {
             <Select
               value={this.state.municipality}
               onChange={this.handleMunicipalChange}
+              variant="standard"
             >
               {municipalities.map((municipality, index) => {
                 if (municipality.name === "") {
                   return (
-                    <MenuItem
-                      className={classes.firstMenuItem}
-                      key={index}
-                      value={municipality}
-                    >
+                    <StyledFirstMenuItem key={index} value={municipality}>
                       <Typography>{municipality.name}</Typography>
-                    </MenuItem>
+                    </StyledFirstMenuItem>
                   );
                 } else {
                   return (
@@ -277,35 +270,26 @@ class Stops extends React.PureComponent {
               })}
             </Select>
           </FormControl>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
 
   renderSearchButton = () => {
-    // const { classes } = this.props;
     return (
-      <></>
-      // <Grid item xs={12}>
-      //   <ButtonGroup className={classes.searchButtonColor}>
-      //     <Button
-      //       className={classes.searchButtonColor}
-      //       onClick={this.doSearch}
-      //       variant="outlined"
-      //     >
-      //       <Typography className={classes.searchButtonText}>SÖK</Typography>
-      //     </Button>
-      //   </ButtonGroup>
-      // </Grid>
+      <Grid item xs={12}>
+        <StyledSearchButton onClick={this.doSearch} variant="outlined">
+          <Typography>SÖK</Typography>
+        </StyledSearchButton>
+      </Grid>
     );
   };
 
   renderSpatialSearchSection = () => {
-    // const { classes } = this.props;
     return (
       <>
-        {/* <Grid item xs={12}>
-          <Divider className={classes.divider} />
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -343,7 +327,7 @@ class Stops extends React.PureComponent {
               <Typography variant="body2">REKTANGEL</Typography>
             </Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
       </>
     );
   };
@@ -371,5 +355,4 @@ class Stops extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-// export default withStyles(styles)(Stops);
 export default Stops;

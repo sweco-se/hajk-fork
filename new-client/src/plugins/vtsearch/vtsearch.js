@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 // but make sure to only create and import whatever you need.
 import SearchModel from "./SearchModel";
 import Journeys from "./SearchViews/Journeys";
-// import Stops from "./SearchViews/Stops";
+import Stops from "./SearchViews/Stops";
 import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
 import { Tooltip, Typography } from "@mui/material";
@@ -111,7 +111,7 @@ const searchTypes = {
   SEARCH: "Sök",
   JOURNEYS: "Sök Turer",
   LINES: "Sök Linjer",
-  // STOPS: "Sök Hållplatser",
+  STOPS: "Sök Hållplatser",
 };
 
 /**
@@ -275,15 +275,15 @@ class VTSearch extends React.PureComponent {
           ></Lines>
         );
       }
-      // case searchTypes.STOPS: {
-      //   return (
-      //     <Stops
-      //       model={this.searchModel}
-      //       app={app}
-      //       localObserver={this.localObserver}
-      //     ></Stops>
-      //   );
-      // }
+      case searchTypes.STOPS: {
+        return (
+          <Stops
+            model={this.searchModel}
+            app={app}
+            localObserver={this.localObserver}
+          ></Stops>
+        );
+      }
       default: {
       }
     }
