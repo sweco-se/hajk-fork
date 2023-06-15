@@ -10,7 +10,9 @@ using System.Net;
 
 namespace MapService.Controllers
 {
-    [Route("fmeproxy")]
+    [Route("api/v{version:apiVersion}/fmeproxy")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [ApiController]
     public class FmeProxyController : ControllerBase
     {
@@ -25,16 +27,14 @@ namespace MapService.Controllers
         /// <param query="query">Path corresponding to an endpoint on the FME-server REST API.</param>
         /// <response code="200">Result will vary depending on response from the API.</response>
         /// <response code="500">Internal Server Error</response>
+        [HttpGet]
         [Route("{*query}")]
+        [MapToApiVersion("1.0")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "FME-server Proxy" })]
-        [HttpGet]
-        [HttpPost]
-        [HttpPut]
-        [HttpDelete]
-        [HttpPatch]
         public async Task<IActionResult> SendQueryToFmeServerAPI(string query)
         {
             HttpResponseMessage response = new HttpResponseMessage();

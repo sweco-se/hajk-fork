@@ -4,7 +4,9 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace MapService.Controllers
 {
-    [Route("")]
+    [Route("api/v{version:apiVersion}")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     [Produces("text/plain")]
     [ApiController]
     public class SpecificationController : ControllerBase
@@ -20,6 +22,7 @@ namespace MapService.Controllers
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
         [Route("spec")]
+        [MapToApiVersion("2.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Specification" })]

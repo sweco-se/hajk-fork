@@ -10,6 +10,32 @@ namespace MapService.Utility
     public static class JsonUtility
     {
         /// <summary>
+        /// Serialize an anonymous object as a json string and then Deserialize the json string as an Json Array.
+        /// </summary>
+        /// <param name="anonymousObject">An anonomys object</param>
+        /// <returns>Returns a Json Array</returns>
+        public static JsonArray? ConvertToJsonArray(dynamic anonymousObject)
+        {
+            var jsonOptions = new JsonSerializerOptions()
+            {
+                WriteIndented = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+            };
+            string serializedJson = JsonSerializer.Serialize(anonymousObject, jsonOptions);
+            JsonArray? deserializedJson;
+            try
+            {
+                deserializedJson = JsonSerializer.Deserialize<JsonArray>(serializedJson);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return deserializedJson;
+        }
+
+        /// <summary>
         /// Serialize an anonymous object as a json string and then Deserialize the json string as an Json Object.
         /// </summary>
         /// <param name="anonymousObject">An anonomys object</param>

@@ -1,10 +1,9 @@
-﻿using MapService.Models;
-using System.Text.Json;
 using MapService.Business.Config;
-using MapService.Utility;
-using System.Text.Json.Nodes;
-using System.Linq;
 using MapService.Business.MapConfig;
+using MapService.Models;
+using MapService.Utility;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace MapService.Filters
 {
@@ -28,17 +27,19 @@ namespace MapService.Filters
             return filteredUserSpecificMaps;
         }
 
-        internal static JsonObject FilterMaps(string map, IEnumerable<string>? adUserGroups)
+        internal static JsonObject? FilterMaps(string map, IEnumerable<string>? adUserGroups)
         {
             JsonDocument mapDocument = MapConfigHandler.GetMapAsJsonDocument(map);
             JsonObject filteredMapObjects = MapConfigHandler.GetMapAsJsonObject(map);
 
-            if (adUserGroups == null || !adUserGroups.Any()) { return filteredMapObjects; }
-
             var visibleForGroups = ConfigHandler.GetVisibleForGroups(mapDocument);
 
-            if (visibleForGroups == null) { return filteredMapObjects; }
+            if (visibleForGroups == null || !visibleForGroups.Any()) { return filteredMapObjects; }
+
+            if (adUserGroups == null || !adUserGroups.Any()) { return null; }
+
             bool isGroupsMatched = false;
+
             foreach (var visibleForGroup in visibleForGroups)
             {
                 if (adUserGroups.Contains(visibleForGroup))
@@ -47,23 +48,25 @@ namespace MapService.Filters
                     break;
                 }
             }
-            //Return all map objects or throw exception
+
             if (!isGroupsMatched)
             {
-                throw new Exception("[getMapConfig] Access to that map not allowed for this user.");
+                return null;
             }
 
             #region filter baselayers
+
             var inputOptions = "$.tools[?(@.type == 'layerswitcher')].options";
             var resultOptions = JsonPathUtility.GetJsonElement(mapDocument, inputOptions);
             JsonElement baselayers = resultOptions.Value.GetProperty("baselayers");
             JsonArray filteredBaseLayers = JsonUtility.FilterLayers(adUserGroups, baselayers);
 
             JsonUtility.SetBaseLayersFromJsonObject(filteredMapObjects, filteredBaseLayers);
-            #endregion
 
+            #endregion filter baselayers
 
             #region filter groups
+
             var inputGroups = "$.tools[?(@.type == 'layerswitcher')].options.groups";
             var resultGroups = JsonPathUtility.GetJsonElement(mapDocument, inputGroups);
 
@@ -75,9 +78,117 @@ namespace MapService.Filters
 
                 JsonUtility.SetLayersInGroupFromJsonObject(filteredMapObjects, filteredLayersInGroup, idOfGroup);
             }
-            #endregion
+
+            #endregion filter groups
+
+            FilterToolsInMap(filteredMapObjects, adUserGroups);
 
             return filteredMapObjects;
+        }
+
+        internal static void FilterToolsInMap(JsonObject filteredMapObjects, IEnumerable<string>? adUserGroups)
+        {
+            if (adUserGroups is null || adUserGroups.Count() == 0)
+                return;
+
+            //Get array of all map config tools
+            var input = "$.tools[*].type";
+            JsonDocument filterMapDocument = JsonUtility.ConvertFromJsonObject<JsonDocument>(filteredMapObjects);
+            var mapTools = JsonPathUtility.GetJsonArray(filterMapDocument, input);
+
+            if (mapTools is null)
+                return;
+
+            JsonArray filteredToolsArray = new JsonArray();
+
+            //Check the adUserGroups against each tool's visibileForGroups array, and add tool to the filteredToolsArray if it should be visible for this user
+            foreach (var mapTool in mapTools)
+            {
+                var tool = JsonSerializer.Deserialize<string>(mapTool.Value.GetRawText());
+                if (tool is null)
+                    continue;
+
+                var inputVisibleForGroups = "$.tools[?(@.type == '" + tool + "')].options.visibleForGroups";
+                var resultVisibleForGroups = JsonPathUtility.GetJsonElement(filterMapDocument, inputVisibleForGroups);
+
+                if (resultVisibleForGroups is null || resultVisibleForGroups.Value.ValueKind != JsonValueKind.Array) //Value not set -> tool is visible for all users
+                {
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                    if (filteredTool is not null)
+                        filteredToolsArray.Add(filteredTool);
+                    continue;
+                }
+
+                var visibleForGroupsArray = resultVisibleForGroups.Value.EnumerateArray();
+                if (visibleForGroupsArray.Count() == 0) //No groups specified -> tool is visible for all users
+                {
+                    var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                    if (filteredTool is not null)
+                        filteredToolsArray.Add(filteredTool);
+                    continue;
+                }
+
+                // Check if the adgroup is in the visibleForGroups array
+                foreach (var group in visibleForGroupsArray)
+                {
+                    if (group.ValueKind != JsonValueKind.String)
+                        continue;
+
+                    if (adUserGroups.Contains(group.GetString()))
+                    {
+                        var filteredTool = ConfigHandler.GetToolFromMapConfiguration(filterMapDocument, tool);
+                        if (filteredTool is not null)
+                            filteredToolsArray.Add(filteredTool);
+                        break;
+                    }
+                }
+            }
+
+            // Overwrite the current map tools with the filtered tools
+            filteredMapObjects["tools"] = filteredToolsArray;
+        }
+
+        internal static JsonObject FilterLayersBasedOnMapConfig(JsonDocument mapConfiguration, JsonDocument layers)
+        {
+            JsonObject filteredLayers = new JsonObject();
+            JsonElement root = layers.RootElement;
+            var layerIds = ConfigHandler.GetLayerIdsFromMapConfiguration(mapConfiguration);
+
+            foreach (JsonProperty property in root.EnumerateObject())
+            {
+                string propertyName = property.Name;
+                JsonElement propertyValue = property.Value;
+
+                JsonArray layersArray = new JsonArray();
+                foreach (JsonElement jsonElement in propertyValue.EnumerateArray())
+                {
+                    JsonElement idOfLayer = jsonElement.GetProperty("id");
+                    if (layerIds.Contains(idOfLayer.ToString()))
+                    {
+                        layersArray.Add(jsonElement);
+                    }
+                }
+
+                // Check if key is already in the resulting JsonObject add the jsonArray it to the existing json node
+                if (filteredLayers.ContainsKey(propertyName))
+                {
+                    JsonArray existingLayersArray = filteredLayers[propertyName].AsArray();
+
+                    foreach (var node in layersArray)
+                    {
+                        var clonedNode = JsonUtility.CloneJsonNodeFromJsonNode(node);
+                        existingLayersArray.Add(clonedNode);
+                    }
+
+                    filteredLayers[propertyName] = existingLayersArray;
+                }
+                else // Create a new json node
+                {
+                    filteredLayers.Add(propertyName, layersArray);
+                }
+            }
+
+            return filteredLayers;
         }
     }
 }

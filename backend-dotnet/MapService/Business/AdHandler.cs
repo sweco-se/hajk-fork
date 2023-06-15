@@ -1,4 +1,4 @@
-﻿using MapService.Caches;
+using MapService.Caches;
 using MapService.Models;
 using MapService.Utility;
 using Microsoft.Extensions.Caching.Memory;
@@ -22,7 +22,7 @@ namespace MapService.Business.Ad
         {
             get
             {
-                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:Active");
+                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:LookupActive");
                 if (value != null)
                     return bool.Parse(value);
                 else
@@ -32,8 +32,21 @@ namespace MapService.Business.Ad
 
         internal static bool IdentifyUserWithWindowsAuthentication
         {
-            get {
+            get
+            {
                 var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:IdentifyUserWithWindowsAuthentication");
+                if (value != null)
+                    return bool.Parse(value);
+                else
+                    return false;
+            }
+        }
+
+        internal static bool ExposeUserObject
+        {
+            get
+            {
+                var value = ConfigurationUtility.GetSectionItem("ActiveDirectory:ExposeUserObject");
                 if (value != null)
                     return bool.Parse(value);
                 else
@@ -56,6 +69,16 @@ namespace MapService.Business.Ad
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:Url"); }
         }
 
+        private static string TrustedHeader
+        {
+            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:TrustedHeader"); }
+        }
+
+        private static IEnumerable<string> TrustedProxyIPs
+        {
+            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:TrustedProxyIPs"); }
+        }
+
         private static string BaseDN
         {
             get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:BaseDN"); }
@@ -63,7 +86,12 @@ namespace MapService.Business.Ad
 
         private static IEnumerable<string> Groups
         {
-            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:Groups"); }
+            get { return ConfigurationUtility.GetSectionArray("ActiveDirectory:AdminGroups"); }
+        }
+
+        private static string UserNameKey
+        {
+            get { return ConfigurationUtility.GetSectionItem("ActiveDirectory:UsernameKey"); }
         }
 
         private static DirectorySearcher CreateDirectorySearcher()
@@ -76,35 +104,35 @@ namespace MapService.Business.Ad
             return directorySearcher;
         }
 
-        private AdUser? FindUser(string? userprincipalname)
+        public AdUser? FindUser(string? userIdentity)
         {
-            if (string.IsNullOrEmpty(userprincipalname)) { return null; }
+            if (string.IsNullOrEmpty(userIdentity)) { return null; }
 
-            if (!_adCache.GetAdUsers().ContainsKey(userprincipalname))
+            if (!_adCache.GetAdUsers().ContainsKey(userIdentity))
             {
-                var adUser = GetUserFromAd(userprincipalname);
+                var adUser = GetUserFromAd(userIdentity);
 
-                _adCache.SetUser(userprincipalname, adUser);
+                _adCache.SetUser(userIdentity, adUser);
 
                 var adGroupsForUser = GetGroupsForUserFromAd(adUser.DistinguishedName);
 
-                _adCache.SetGroupsPerUser(userprincipalname, adGroupsForUser);
+                _adCache.SetGroupsPerUser(userIdentity, adGroupsForUser);
             }
 
-            _adCache.GetAdUsers().TryGetValue(userprincipalname, out var user);
+            _adCache.GetAdUsers().TryGetValue(userIdentity, out var user);
 
             return user;
         }
 
-        private static AdUser GetUserFromAd(string? userPrincipalName)
+        private static AdUser GetUserFromAd(string? userIdentity)
         {
             var user = new AdUser();
 
-            if (string.IsNullOrEmpty(userPrincipalName)) { return user; }
+            if (string.IsNullOrEmpty(userIdentity)) { return user; }
 
             var directorySearcher = CreateDirectorySearcher();
 
-            directorySearcher.Filter = string.Format("(&(objectClass=user)(userPrincipalName={0}))", userPrincipalName);
+            directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserNameKey + "={0}))", userIdentity);
 
             directorySearcher.PropertiesToLoad.Add("distinguishedname");
             directorySearcher.PropertiesToLoad.Add("userprincipalname");
@@ -218,9 +246,9 @@ namespace MapService.Business.Ad
             return groups;
         }
 
-        internal bool UserIsValid(string? userPrincipalName)
+        internal bool UserIsValid(string? userIdentity)
         {
-            var user = FindUser(userPrincipalName);
+            var user = FindUser(userIdentity);
 
             if (user == null) { return false; }
 
@@ -229,17 +257,18 @@ namespace MapService.Business.Ad
             return true;
         }
 
-        public string PickUserNameToUse(string? userName)
+        public string PickUserNameToUse(HttpRequest request, string? userName)
         {
             if (IdentifyUserWithWindowsAuthentication)
                 return GetWindowsAuthenticationUserName();
             else
-                return userName;
+                return GetValueFromTrustedHeader(request, userName);
         }
 
         public string GetWindowsAuthenticationUserName()
         {
             var activeUser = WindowsIdentity.GetCurrent();
+
             _logger.LogInformation("Active user {0}", activeUser.Name);
 
             if (activeUser.ImpersonationLevel == TokenImpersonationLevel.Impersonation)
@@ -249,9 +278,43 @@ namespace MapService.Business.Ad
             else return String.Empty;
         }
 
-        internal static bool UserHasAdAccess(string? userPrincipalName)
+        public string GetValueFromTrustedHeader(HttpRequest request, string? userIdentity)
         {
-            if (string.IsNullOrEmpty(userPrincipalName)) { return false; }
+            if (userIdentity == null)
+            {
+                request.Headers.TryGetValue(TrustedHeader, out var trustedHeaderValue);
+                userIdentity = trustedHeaderValue;
+            }
+            return userIdentity;
+        }
+
+        public string? GetRemoteIpAddress(HttpContext httpContext)
+        {
+            return httpContext.Connection.RemoteIpAddress?.ToString();
+        }
+
+        public bool RequestComesFromAcceptedIp(HttpContext httpContext)
+        {
+            string? remoteIpAddress = GetRemoteIpAddress(httpContext);
+            if (TrustedProxyIPs.Contains(remoteIpAddress))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        internal bool IpRangeRestrictionIsSet()
+        {
+            if (TrustedProxyIPs != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        internal static bool UserHasAdAccess(string? userIdentity)
+        {
+            if (string.IsNullOrEmpty(userIdentity)) { return false; }
 
             var directorySearcher = CreateDirectorySearcher();
 
@@ -267,14 +330,14 @@ namespace MapService.Business.Ad
                 {
                     var distinguishedGroupName = searchResultGroup.Properties["distinguishedname"][0].ToString();
 
-                    directorySearcher.Filter = string.Format("(&(objectClass=user)(userPrincipalName={0})(memberOf={1}))", userPrincipalName, distinguishedGroupName);
+                    directorySearcher.Filter = string.Format("(&(objectClass=user)(" + UserNameKey + "={0})(memberOf={1}))", userIdentity, distinguishedGroupName);
                     directorySearcher.PropertiesToLoad.Add("userprincipalname");
 
                     var searchResultUserInGroup = directorySearcher.FindOne();
 
                     if (searchResultUserInGroup != null)
                     {
-                        if (searchResultUserInGroup.Properties["userprincipalname"][0].ToString() == userPrincipalName)
+                        if (searchResultUserInGroup.Properties[UserNameKey][0].ToString() == userIdentity)
                         {
                             return true;
                         }
@@ -324,13 +387,13 @@ namespace MapService.Business.Ad
             {
                 bool allUserHasAdGroup = true;
 
-                foreach (string userPrincipalName in users)
+                foreach (string userIdentity in users)
                 {
-                    var user = FindUser(userPrincipalName);
+                    var user = FindUser(userIdentity);
 
                     if (user == null) { allUserHasAdGroup = false; }
 
-                    _adCache.GetAdGroupsPerUser().TryGetValue(userPrincipalName, out var adGroups);
+                    _adCache.GetAdGroupsPerUser().TryGetValue(userIdentity, out var adGroups);
 
                     if (adGroups == null || !adGroups.Contains(adGroup.Cn)) { allUserHasAdGroup = false; }
                 }
