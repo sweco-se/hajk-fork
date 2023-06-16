@@ -25,8 +25,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Updates the map configuration.
         /// </remarks>
+        /// <param name="mapFile">The name of the map to be updated including the file ending.</param>
+        /// <param name="requestBody">The content of the map settings to update with, as a JsonObject.</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
@@ -79,8 +81,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Updates the layer menu.
         /// </remarks>
+        /// <param name="mapFile">The name of the map to be updated including the file ending.</param>
+        /// <param name="requestBody">The content of the layer menu settings to update with, as a JsonObject.</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
@@ -133,8 +137,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Updates the tool settings.
         /// </remarks>
+        /// <param name="mapFile">The name of the map to be updated including the file ending.</param>
+        /// <param name="toolSettings">The content of the tool settings to update with, as a JsonObject. Layer switcher???</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
@@ -187,8 +193,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Creates or updates the layers.
         /// </remarks>
+        /// <param name="layerType">Type of the layers to create or update.</param>
+        /// <param name="requestBody">The content of the layer settings to update with, as a JsonObject.</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
@@ -241,8 +249,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Updates the layers.
         /// </remarks>
+        /// <param name="layerType">Type of the layers to update.</param>
+        /// <param name="requestBody">The content of the layer settings to update with, as a JsonObject.</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="204">All good</response>
         /// <response code="403">Forbidden</response>
@@ -295,8 +305,10 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Deletes the layers.
         /// </remarks>
+        /// <param name="layerId">Id of the layer to delete</param>
+        /// <param name="type">Type of the layer to delete</param>
         /// <param name="userPrincipalName">User name that will be supplied to AD. This header can be configured by the administrator to be named something other than X-Control-Header.</param>
         /// <response code="200">Layer deleted successfully</response>
         /// <response code="403">Forbidden</response>
@@ -349,7 +361,7 @@ namespace MapService.Controllers
         }
 
         /// <remarks>
-        ///
+        /// Updates the tools
         /// </remarks>
         /// <param name="map">Name of the map</param>
         /// <param name="tool">Name of the tool to be edited</param>

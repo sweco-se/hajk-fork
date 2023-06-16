@@ -56,7 +56,7 @@
                 /// <summary>
                 /// Creates a new LayerExportItem. 
                 /// </summary>
-                /// <param name="name">The "caption" propery from the layers.json file.</param>
+                /// <param name="name">The "caption" propery from the layers.json file. Hur gör vi med denna?</param>
                 /// <param name="subLayers">The "layers" propery from the layers.json file.</param>
                 public GroupLayerExportItem(LayerExportItem.LayerExportBaseItem layerExportItem)
                 {
