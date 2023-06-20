@@ -3,7 +3,6 @@ using MapService.Models;
 using MapService.Utility;
 using Microsoft.Extensions.Caching.Memory;
 using System.DirectoryServices;
-using System.Security.Principal;
 
 namespace MapService.Business.Ad
 {
@@ -260,22 +259,27 @@ namespace MapService.Business.Ad
         public string PickUserNameToUse(HttpRequest request, string? userName)
         {
             if (IdentifyUserWithWindowsAuthentication)
-                return GetWindowsAuthenticationUserName();
+                return GetWindowsAuthenticationUserName(request.HttpContext);
             else
                 return GetValueFromTrustedHeader(request, userName);
         }
 
-        public string GetWindowsAuthenticationUserName()
+        public string GetWindowsAuthenticationUserName(HttpContext? httpContext)
         {
-            var activeUser = WindowsIdentity.GetCurrent();
-
-            _logger.LogInformation("Active user {0}", activeUser.Name);
-
-            if (activeUser.ImpersonationLevel == TokenImpersonationLevel.Impersonation)
+            if (httpContext?.User?.Identity?.IsAuthenticated == true)
             {
-                return activeUser.Name;
+                var userName = httpContext.User.Identity.Name;
+                var userNameWithoutDomain = userName.Split('\\').Last();
+
+                _logger.LogInformation("Authenticated user: {0}", userNameWithoutDomain);
+
+                return userNameWithoutDomain;
             }
-            else return String.Empty;
+            else
+            {
+                _logger.LogInformation("User is not authenticated.");
+                return string.Empty;
+            }
         }
 
         public string GetValueFromTrustedHeader(HttpRequest request, string? userIdentity)
