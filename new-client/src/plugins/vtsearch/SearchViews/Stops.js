@@ -6,7 +6,14 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import { TextField, Button, Typography, Divider, Grid } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Divider,
+  Grid,
+  Tooltip,
+} from "@mui/material";
 import styled from "@emotion/styled";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
@@ -236,14 +243,48 @@ class Stops extends React.PureComponent {
           ></TextField>
         </Grid>
         <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Tooltip title="Sökning sker på ett eller flera läge via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-basic"
+              variant="standard"
+              value={this.state.stopNameOrNr}
+              onChange={this.handleStopNameOrNrChange}
+            ></TextField>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={6}>
           <Typography variant="caption">LÄNGS PUBLIK LINJE</Typography>
           <TextField
             fullWidth
             id="standard-basic"
             variant="standard"
-            value={this.state.publicLine}
-            onChange={this.handlePublicLineChange}
+            value={this.state.internalLineNumber}
+            // onChange={}
           />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="caption">LÄNGS TEKNISKT LINJENR</Typography>
+          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-basic"
+              variant="standard"
+              value={this.state.internalLineNumber}
+              // onChange={}
+            ></TextField>
+          </Tooltip>
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth>
+            <Typography variant="caption">TRAFIKFÖRETAG</Typography>
+            <Select
+              // value={}
+              // onChange={}
+              variant="standard"
+            ></Select>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>
