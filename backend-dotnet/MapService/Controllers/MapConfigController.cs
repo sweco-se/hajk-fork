@@ -99,7 +99,7 @@ namespace MapService.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [SwaggerOperation(Tags = new[] { "Admin - Maps and layers" })]
-        public ActionResult GetMap(string map, [FromHeader(Name = "X-Control-Header")] string userPrincipalName)
+        public ActionResult GetMap(string map, [FromHeader(Name = "X-Control-Header")] string? userPrincipalName)
         {
             JsonDocument mapDocument;
 
