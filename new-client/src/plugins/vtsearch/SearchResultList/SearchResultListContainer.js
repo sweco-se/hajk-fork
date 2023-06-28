@@ -121,7 +121,7 @@ class SearchResultListContainer extends React.Component {
     this.setState({ activeTabId: searchResultId });
   };
 
-  onSearchDone = (result, test) => {
+  onSearchDone = (result, zoomToSearchResult) => {
     const { localObserver } = this.props;
     var searchResultId = this.addResultToSearchResultList(result);
     localObserver.publish("add-search-result-to-map", {
@@ -129,7 +129,7 @@ class SearchResultListContainer extends React.Component {
       olFeatures: this.convertToGeoJson(
         result?.featureCollection || result?.value
       ),
-      test: test,
+      zoomToSearchResult: zoomToSearchResult,
     });
     this.setActiveTabId(searchResultId);
 
@@ -163,16 +163,17 @@ class SearchResultListContainer extends React.Component {
       this.sendToBackSearchResultContainer();
     });
 
-    localObserver.subscribe("vtsearch-result-done", ({ result, test }) => {
-      console.log("HERE: " + test);
-      console.log(result);
-      this.bringToFrontSearchResultContainer();
-      this.setState({
-        windowWidth: getWindowContainerWidth(),
-        windowHeight: getWindowContainerHeight(),
-      });
-      this.onSearchDone(result, test);
-    });
+    localObserver.subscribe(
+      "vtsearch-result-done",
+      ({ result, zoomToSearchResult }) => {
+        this.bringToFrontSearchResultContainer();
+        this.setState({
+          windowWidth: getWindowContainerWidth(),
+          windowHeight: getWindowContainerHeight(),
+        });
+        this.onSearchDone(result, zoomToSearchResult);
+      }
+    );
 
     localObserver.subscribe("attribute-table-row-clicked", (payload) => {
       localObserver.publish("highlight-search-result-feature", payload);

@@ -52,10 +52,13 @@ export default class MapViewModel {
 
     this.localObserver.subscribe(
       "add-search-result-to-map",
-      ({ searchResultId, olFeatures, test }) => {
-        console.log("ADD TO MAP: " + test);
+      ({ searchResultId, olFeatures, zoomToSearchResult }) => {
         var searchResultLayer = this.addSearchResultLayerToMap(searchResultId);
-        this.addFeatureToSearchResultLayer(olFeatures, searchResultLayer, test);
+        this.addFeatureToSearchResultLayer(
+          olFeatures,
+          searchResultLayer,
+          zoomToSearchResult
+        );
       }
     );
 
@@ -392,10 +395,14 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol.feature"}>}
    */
-  addFeatureToSearchResultLayer = (olFeatures, searchResultLayer, test) => {
+  addFeatureToSearchResultLayer = (
+    olFeatures,
+    searchResultLayer,
+    zoomToSearchResult
+  ) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
-    console.log("addFeatureToSearchResultLayer: " + test);
-    if (!test || test === "Box")
+    console.log("addFeatureToSearchResultLayer, ZOOM: " + zoomToSearchResult);
+    if (zoomToSearchResult)
       this.zoomToExtent(searchResultLayer.getSource().getExtent());
   };
 

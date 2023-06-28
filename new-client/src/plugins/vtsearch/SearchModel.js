@@ -885,7 +885,12 @@ export default class SearchModel {
             this.geoServer.journeys.attributesToDisplay
           );
 
-          this.localObserver.publish("vtsearch-result-done", journeys);
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: journeys,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         });
       })
       .catch((err) => {
@@ -992,7 +997,12 @@ export default class SearchModel {
             routes.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", routes);
+          let zoomToSearchResult = true;
+          if (polygonAsWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: routes,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         });
       })
       .catch((err) => {
@@ -1065,10 +1075,12 @@ export default class SearchModel {
           stopAreas.featureCollection = this.removeDuplicates(
             stopAreas.featureCollection
           );
-          console.log("PUBLISH: " + selectedFormType);
+
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
           this.localObserver.publish("vtsearch-result-done", {
             result: stopAreas,
-            test: selectedFormType,
+            zoomToSearchResult: zoomToSearchResult,
           });
         })
         .catch((err) => {
@@ -1143,12 +1155,12 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
-          console.log("PUBLISH");
-          this.localObserver.publish(
-            "vtsearch-result-done",
-            stopPoints,
-            selectedFormType
-          );
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: stopPoints,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         })
         .catch((err) => {
           console.log(err);
