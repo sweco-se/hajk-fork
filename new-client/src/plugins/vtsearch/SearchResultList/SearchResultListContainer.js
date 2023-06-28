@@ -121,7 +121,7 @@ class SearchResultListContainer extends React.Component {
     this.setState({ activeTabId: searchResultId });
   };
 
-  onSearchDone = (result) => {
+  onSearchDone = (result, test) => {
     const { localObserver } = this.props;
     var searchResultId = this.addResultToSearchResultList(result);
     localObserver.publish("add-search-result-to-map", {
@@ -129,6 +129,7 @@ class SearchResultListContainer extends React.Component {
       olFeatures: this.convertToGeoJson(
         result?.featureCollection || result?.value
       ),
+      test: test,
     });
     this.setActiveTabId(searchResultId);
 
@@ -162,13 +163,15 @@ class SearchResultListContainer extends React.Component {
       this.sendToBackSearchResultContainer();
     });
 
-    localObserver.subscribe("vtsearch-result-done", (result) => {
+    localObserver.subscribe("vtsearch-result-done", ({ result, test }) => {
+      console.log("HERE: " + test);
+      console.log(result);
       this.bringToFrontSearchResultContainer();
       this.setState({
         windowWidth: getWindowContainerWidth(),
         windowHeight: getWindowContainerHeight(),
       });
-      this.onSearchDone(result);
+      this.onSearchDone(result, test);
     });
 
     localObserver.subscribe("attribute-table-row-clicked", (payload) => {

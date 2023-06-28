@@ -52,9 +52,10 @@ export default class MapViewModel {
 
     this.localObserver.subscribe(
       "add-search-result-to-map",
-      ({ searchResultId, olFeatures }) => {
+      ({ searchResultId, olFeatures, test }) => {
+        console.log("ADD TO MAP: " + test);
         var searchResultLayer = this.addSearchResultLayerToMap(searchResultId);
-        this.addFeatureToSearchResultLayer(olFeatures, searchResultLayer);
+        this.addFeatureToSearchResultLayer(olFeatures, searchResultLayer, test);
       }
     );
 
@@ -221,14 +222,16 @@ export default class MapViewModel {
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            wktFeatureGeom,
+            selectedFormType
           );
         } else {
           this.model.getStopPoints(
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            wktFeatureGeom,
+            selectedFormType
           );
         }
       });
@@ -389,9 +392,11 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol.feature"}>}
    */
-  addFeatureToSearchResultLayer = (olFeatures, searchResultLayer) => {
+  addFeatureToSearchResultLayer = (olFeatures, searchResultLayer, test) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
-    this.zoomToExtent(searchResultLayer.getSource().getExtent());
+    console.log("addFeatureToSearchResultLayer: " + test);
+    if (!test || test === "Box")
+      this.zoomToExtent(searchResultLayer.getSource().getExtent());
   };
 
   /**
@@ -402,6 +407,7 @@ export default class MapViewModel {
    * @param {Array<{external:"ol/interaction/Extent"}>}
    */
   zoomToExtent = (extent) => {
+    console.log("zoomToExtent");
     this.map.getView().fit(extent, {
       size: this.map.getSize(),
       padding: [10, 10, 10, 10],
@@ -415,10 +421,11 @@ export default class MapViewModel {
    * @memberof MapViewModel
    */
   toggleLayerVisibility = (searchResultId) => {
+    console.log("toggleLayerVisibility");
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
-        this.zoomToExtent(layer.getSource().getExtent());
+        // this.zoomToExtent(layer.getSource().getExtent());
       }
     });
   };

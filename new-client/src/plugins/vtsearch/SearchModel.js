@@ -1013,7 +1013,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnWkt
+    filterOnWkt,
+    selectedFormType
   ) {
     this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopAreas.searchLabel,
@@ -1064,8 +1065,11 @@ export default class SearchModel {
           stopAreas.featureCollection = this.removeDuplicates(
             stopAreas.featureCollection
           );
-
-          this.localObserver.publish("vtsearch-result-done", stopAreas);
+          console.log("PUBLISH: " + selectedFormType);
+          this.localObserver.publish("vtsearch-result-done", {
+            result: stopAreas,
+            test: selectedFormType,
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -1086,7 +1090,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnWkt
+    filterOnWkt,
+    selectedFormType
   ) {
     this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopPoints.searchLabel,
@@ -1138,7 +1143,12 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", stopPoints);
+          console.log("PUBLISH");
+          this.localObserver.publish(
+            "vtsearch-result-done",
+            stopPoints,
+            selectedFormType
+          );
         })
         .catch((err) => {
           console.log(err);
