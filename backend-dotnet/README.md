@@ -33,15 +33,17 @@ The easiest way to set up this .NET backend is to use IIS on Windows. Follow thi
 - Serilog AspNetCore (https://github.com/serilog/serilog-aspnetcore)
 - Swashbuckle AspNetCore (https://learn.microsoft.com/en-us/aspnet/core/tutorials/web-api-help-pages-using-swagger?view=aspnetcore-6.0)
 
-### <a id="backend-settings"></a>Backend settings
+## <a id="backend-settings"></a>Backend settings
 
 There are several settings for this backend, described below.
 
-#### Logging
+All data paths are configurable and can be given as an absolute or a relative path.
+
+### Logging
 
 There are several different logging methods. A description of how to log a file is given below. For more information and other logging methods, visit https://serilog.net/.
 
-##### Log level
+#### Log level
 
 The log level set log information.
 
@@ -66,26 +68,44 @@ The log level set log information.
 }
 ```
 
-##### Write to file
+#### Write to file
 
 The path can either be an absolute or a relative path.
 
 ```json
 "WriteTo": [
-{
-   "Name": "File",
-   "Args": {
-      "path": "Logs\\log.txt"
+   {
+      "Name": "File",
+      "Args": {
+         "path": "Logs\\log.txt"
+      }
    }
-}
 ]
 ```
 
-#### Paths to data
+### Allowed Hosts
 
-All data paths are configurable and can be given as an absolute or a relative path.
+Specifies the allowed hosts for the application. Use "\*" to allow all hosts or provide a comma-separated list of allowed hosts.
 
-##### DataContent
+```json
+"AllowedHosts": "*"
+```
+
+### Environment
+
+The `Environment` configuration setting allows you to specify whether you are setting up the application in a development or production environment. The value can be set to "Development" or "Production".
+
+When the `Environment` is set to "Development", Cross-Origin Resource Sharing (CORS) will be disabled. This means that the application will allow requests from any host, without any restrictions.
+
+On the other hand, when the `Environment` is set to "Production", CORS will be enabled. This imposes stricter security measures and enforces the same-origin policy, meaning that the application will only allow requests from the same domain.
+
+It's important to configure the `Environment` setting correctly to ensure proper behavior and security for your application.
+
+```json
+"Environment": "Development"
+```
+
+### DataContent
 
 The path to the root folder.
 
@@ -95,70 +115,7 @@ The path to the root folder.
 }
 ```
 
-##### Documents
-
-The path to all documents for the informative plugin.
-
-```json
-"Documents": {
-   "Path": "App_Data\\documents"
-}
-```
-
-##### Media
-
-Three paths for the image, video and audio files for the informative plugin.
-_Please note that this example the same path is used for all three media resources._
-
-```json
-"Media": {
-   "Audio": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "mp3", "wav", "ogg" ]
-   },
-   "Image": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "jpg", "jpeg", "png" ]
-   },
-   "Video": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "mp4", "mov", "ogg" ]
-   }
-}
-```
-
-The allowed extensions can be set individually for each media resource.
-_Please note that this example the ogg extension can be both an audio or a video file._
-
-```json
-"Media": {
-   "Audio": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "mp3", "wav", "ogg" ]
-   },
-   "Image": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "jpg", "jpeg", "png" ]
-   },
-   "Video": {
-      "Path": "App_Data\\upload",
-      "AllowedExtensions": [ "mp4", "mov", "ogg" ]
-   }
-}
-```
-
-##### OpenAPISpecification
-
-The path and filename to the Open API specification of this backend.
-
-```json
-"OpenAPISpecification": {
-   "Path": "OpenAPISpecification",
-   "File": "api.yml"
-}
-```
-
-##### Templates
+### Templates
 
 The path and filename to the map file template. This template is used when a new map file is created.
 
@@ -169,9 +126,152 @@ The path and filename to the map file template. This template is used when a new
 }
 ```
 
-#### Proxy
+### Informative
 
-##### FMEProxy
+```json
+"Informative": {
+   "Documents": {
+      "Path": "App_Data\\documents"
+   },
+   "Audio": {
+      "Path": "App_Data\\upload",
+      "Extensions": [ "mp3", "wav", "ogg" ]
+   },
+   "Image": {
+      "Path": "App_Data\\upload",
+      "Extensions": [ "jpg", "jpeg", "png" ]
+   },
+   "Video": {
+      "Path": "App_Data\\upload",
+      "Extensions": [ "mp4", "mov", "ogg" ]
+   }
+}
+```
+
+The paths and allowed extensions can be set individually for each media resource.
+_Please note that this example the ogg extension can be both an audio or a video file._
+
+#### Documents
+
+##### Path
+
+The path to all documents for the informative plugin.
+
+#### Audio
+
+##### Path
+
+The path for audio files for the informative plugin.
+
+##### Extensions
+
+The supported extensions for audio files for the informative plugin.
+
+#### Image
+
+##### Path
+
+The path for image files for the informative plugin.
+
+##### Extensions
+
+The supported extensions for image files for the informative plugin.
+
+#### Video
+
+##### Path
+
+The path for video files for the informative plugin.
+
+##### Extensions
+
+The supported extensions for video files for the informative plugin.
+
+### Active Directory
+
+The backend has support for Active Directory, to activate the support fo Active Directory the parameters under ActiveDirectory must be set.
+
+LDAP servers can have different configurations that determine whether they treat certain components of the connection as case-sensitive or case-insensitive. For example, some LDAP servers may treat the server name as case-insensitive, while others may require an exact case match.
+
+It's important to consult the documentation or specifications of the specific LDAP server you are working with to determine the case-sensitivity rules it follows for various components of the connection.
+
+```json
+"ActiveDirectory": {
+   "LookupActive": true,
+   "IdentifyUserWithWindowsAuthentication": true,
+   "ExposeUserObject": true,
+   "AdminGroups": ["ADGroupsAllowedAccess"],
+   "TrustedProxyIPs": [ "::1" ],
+   "TrustedHeader": "X-Control-Header",
+   "Url": "ldap://",
+   "BaseDN": "OU=xxx,DC=xxx,DC=xx",
+   "UsernameKey": "userprincipalname",
+   "Username": "ADUserName",
+   "Password": "ADPassword"
+}
+```
+
+#### LookupActive
+
+This property specifies whether the Active Directory configuration is currently active or not.
+
+#### IdentifyUserWithWindowsAuthentication
+
+This property specifies whether users should be identified using Windows authentication through IIS (Internet Information Services).
+
+To enable this functionality, follow these steps:
+
+1. Set up the backend in IIS.
+2. Disable Anonymous Authentication in IIS.
+3. Enable Windows Authentication in IIS.
+
+Enabling Windows authentication will automatically provide the authenticated user to the trusted "X-Control-Header" header.
+
+#### ExposeUserObject
+
+This property specifies whether user information from the Active Directory will be included in the result obtained from the `config\{map}` endpoint.
+
+#### AdminGroups
+
+This property contains an array of Active Directory groups that are allowed to access AD supported endpoints.
+
+#### TrustedProxyIPs
+
+This property is a comma-separated list of IP addresses that we trust. These IP addresses represent the proxies through which requests pass, and we consider them safe and reliable.
+
+To include the localhost as a trusted proxy, make sure to add ::1 to the list of trusted IP addresses. This is necessary when your application is running locally and you want to trust requests originating from the localhost.
+
+#### TrustedHeader
+
+This property specifies the name of the HTTP header that will contain the trusted user name. By default, the value is set to `X-Control-Header`. This default header name is commonly used in the OpenAPI specification of the backend.
+
+It's important to note that changing the value of TrustedHeader does not impact the OpenAPI specification. The specification will continue to use `X-Control-Header` regardless of any changes made to TrustedHeader.
+
+#### Url
+
+This property specifies the URL of the LDAP server.
+
+#### BaseDN
+
+This property specifies the distinguished name (DN) of the Active Directory domain or organizational unit (OU) that will be used as the base for searches.
+
+#### UsernameKey
+
+This property specifies the key in the Active Directory against which the supplied username will be validated.
+
+Ensure that you set the UsernameKey property to the correct attribute in the Active Directory that corresponds to the username. This allows the authentication system to properly validate the username against the provided value.
+
+For example, if the username in the Active Directory is stored in the sAMAccountName attribute, you would configure the `UsernameKey` as sAMAccountName.
+
+#### Username
+
+This property specifies the username of the Active Directory user that will be used to connect to the LDAP server
+
+#### Password
+
+This property specifies the password of the Active Directory user that will be used to connect to the LDAP server
+
+### FMEProxy
 
 The FME Proxy endpoint will proxy the specified query to FME server REST API.
 
@@ -185,7 +285,7 @@ The FME Proxy endpoint will proxy the specified query to FME server REST API.
 
 To be able to use the FME Proxy the "FmeProxy" appsettings must be set, where "FmeServerBaseUrl" is the URL to the FME server instance, "FmeServerUser" is an FME server user and "FmeServerPassword" the password for the supplied user.
 
-##### FB Proxy
+### FB Proxy
 
 The FB Proxy endpoint will proxy the specified query to Sokigo's FB API.
 
@@ -200,53 +300,16 @@ The FB Proxy endpoint will proxy the specified query to Sokigo's FB API.
 
 To be able to use the FB Proxy the "FbProxy" appsettings must be set, where "FbServiceBaseUrl" is the URL to the FB service, "FbServiceDatabase" the name of the FB database, "FbServiceUser" is an FB user and "FbServicePassword" the password for the supplied user.
 
-#### Active Directory
+### OpenAPISpecification
 
-The backend has support for Active Directory, to activate the support fo Active Directory the parameters under ActiveDirectory must be set.
-
-LDAP servers can have different configurations that determine whether they treat certain components of the connection as case-sensitive or case-insensitive. For example, some LDAP servers may treat the server name as case-insensitive, while others may require an exact case match.
-
-It's important to consult the documentation or specifications of the specific LDAP server you are working with to determine the case-sensitivity rules it follows for various components of the connection.
+The path and filename to the Open API specification of this backend.
 
 ```json
-"ActiveDirectory": {
-   "Active": true,
-   "IdentifyUserWithWindowsAuthenticationX": true,
-   "Groups": ["ADGroupsAllowedAccess"],
-   "Url": "ldap://",
-   "BaseDN": "OU=xxx,DC=xxx,DC=xx",
-   "UserName": "ADUserName",
-   "Password": "ADPassword"
+"OpenAPISpecification": {
+   "Path": "OpenAPISpecification",
+   "File": "api.v2.yml"
 }
 ```
-
-##### Active
-
-This property indicates whether the Active Directory configuration is currently active or not.
-
-##### IdentifyUserWithWindowsAuthenticationX
-
-This property indicates whether users should be identified using Windows authentication.
-
-##### Groups
-
-This property contains an array of Active Directory groups that are allowed to access AD supported endpoints.
-
-##### Url
-
-This property contains the URL of the LDAP server.
-
-##### BaseDN
-
-This property contains the distinguished name (DN) of the Active Directory domain or organizational unit (OU) that will be used as the base for searches.
-
-##### UserName
-
-This property contains the username of the Active Directory user that will be used to connect to the LDAP server
-
-##### Password
-
-This property contains the password of the Active Directory user that will be used to connect to the LDAP server
 
 ## Deploy
 
@@ -276,6 +339,7 @@ The easiest way to set up the .NET backend is to use IIS on Windows. Follow this
    3.2 Point out the path to the deployed folder.
    3.2 Give a port number on which the web service will run, it is recommended to use port 3002.
 4. Make sure that the service is running.
+5. To utilize Windows Authentication via IIS, it is necessary to disable Anonymous Authentication and enable Windows Authentication within the Authentication settings of the website.
 
 ### <a id="Run-backend"></a>Run backend
 
