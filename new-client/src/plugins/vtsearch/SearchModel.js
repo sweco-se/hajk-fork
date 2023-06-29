@@ -885,7 +885,12 @@ export default class SearchModel {
             this.geoServer.journeys.attributesToDisplay
           );
 
-          this.localObserver.publish("vtsearch-result-done", journeys);
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: journeys,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         });
       })
       .catch((err) => {
@@ -992,7 +997,12 @@ export default class SearchModel {
             routes.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", routes);
+          let zoomToSearchResult = true;
+          if (polygonAsWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: routes,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         });
       })
       .catch((err) => {
@@ -1013,7 +1023,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnWkt
+    filterOnWkt,
+    selectedFormType
   ) {
     this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopAreas.searchLabel,
@@ -1065,7 +1076,12 @@ export default class SearchModel {
             stopAreas.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", stopAreas);
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: stopAreas,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -1086,7 +1102,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnWkt
+    filterOnWkt,
+    selectedFormType
   ) {
     this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopPoints.searchLabel,
@@ -1138,7 +1155,12 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
-          this.localObserver.publish("vtsearch-result-done", stopPoints);
+          let zoomToSearchResult = true;
+          if (filterOnWkt) zoomToSearchResult = false;
+          this.localObserver.publish("vtsearch-result-done", {
+            result: stopPoints,
+            zoomToSearchResult: zoomToSearchResult,
+          });
         })
         .catch((err) => {
           console.log(err);

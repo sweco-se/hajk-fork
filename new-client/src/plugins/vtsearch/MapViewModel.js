@@ -52,9 +52,13 @@ export default class MapViewModel {
 
     this.localObserver.subscribe(
       "add-search-result-to-map",
-      ({ searchResultId, olFeatures }) => {
+      ({ searchResultId, olFeatures, zoomToSearchResult }) => {
         var searchResultLayer = this.addSearchResultLayerToMap(searchResultId);
-        this.addFeatureToSearchResultLayer(olFeatures, searchResultLayer);
+        this.addFeatureToSearchResultLayer(
+          olFeatures,
+          searchResultLayer,
+          zoomToSearchResult
+        );
       }
     );
 
@@ -75,9 +79,12 @@ export default class MapViewModel {
       });
     });
 
-    this.localObserver.subscribe("toggle-visibility", (searchResultID) => {
-      this.toggleLayerVisibility(searchResultID);
-    });
+    this.localObserver.subscribe(
+      "toggle-visibility",
+      ({ setLayerIdVisible, zoomToSearchResult }) => {
+        this.toggleLayerVisibility(setLayerIdVisible, zoomToSearchResult);
+      }
+    );
 
     this.localObserver.subscribe("hide-current-layer", () => {
       this.hideCurrentLayer();
@@ -221,14 +228,16 @@ export default class MapViewModel {
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            wktFeatureGeom,
+            selectedFormType
           );
         } else {
           this.model.getStopPoints(
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            wktFeatureGeom,
+            selectedFormType
           );
         }
       });
@@ -389,9 +398,14 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol.feature"}>}
    */
-  addFeatureToSearchResultLayer = (olFeatures, searchResultLayer) => {
+  addFeatureToSearchResultLayer = (
+    olFeatures,
+    searchResultLayer,
+    zoomToSearchResult
+  ) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
-    this.zoomToExtent(searchResultLayer.getSource().getExtent());
+    if (zoomToSearchResult)
+      this.zoomToExtent(searchResultLayer.getSource().getExtent());
   };
 
   /**
@@ -414,11 +428,12 @@ export default class MapViewModel {
    * @param {integer : searchResultId}
    * @memberof MapViewModel
    */
-  toggleLayerVisibility = (searchResultId) => {
+  toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
-        this.zoomToExtent(layer.getSource().getExtent());
+        if (zoomToSearchResult)
+          this.zoomToExtent(layer.getSource().getExtent());
       }
     });
   };

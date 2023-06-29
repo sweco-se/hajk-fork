@@ -109,19 +109,22 @@ class SearchResultListContainer extends React.Component {
     localObserver.publish("search-result-list-normal");
   };
 
-  setActiveTabId = (searchResultId) => {
+  setActiveTabId = (searchResultId, zoomToSearchResult = true) => {
     const { localObserver } = this.props;
     if (searchResultId !== this.state.activeTabId) {
       localObserver.publish("clear-highlight");
     }
 
     localObserver.publish("hide-all-layers");
-    localObserver.publish("toggle-visibility", searchResultId);
+    localObserver.publish("toggle-visibility", {
+      setLayerIdVisible: searchResultId,
+      zoomToSearchResult: zoomToSearchResult,
+    });
 
     this.setState({ activeTabId: searchResultId });
   };
 
-  onSearchDone = (result) => {
+  onSearchDone = (result, zoomToSearchResult) => {
     const { localObserver } = this.props;
     var searchResultId = this.addResultToSearchResultList(result);
     localObserver.publish("add-search-result-to-map", {
@@ -129,8 +132,9 @@ class SearchResultListContainer extends React.Component {
       olFeatures: this.convertToGeoJson(
         result?.featureCollection || result?.value
       ),
+      zoomToSearchResult: zoomToSearchResult,
     });
-    this.setActiveTabId(searchResultId);
+    this.setActiveTabId(searchResultId, zoomToSearchResult);
 
     if (result.type === "journeys") {
       this.resetHeightOfResultList();
@@ -162,14 +166,17 @@ class SearchResultListContainer extends React.Component {
       this.sendToBackSearchResultContainer();
     });
 
-    localObserver.subscribe("vtsearch-result-done", (result) => {
-      this.bringToFrontSearchResultContainer();
-      this.setState({
-        windowWidth: getWindowContainerWidth(),
-        windowHeight: getWindowContainerHeight(),
-      });
-      this.onSearchDone(result);
-    });
+    localObserver.subscribe(
+      "vtsearch-result-done",
+      ({ result, zoomToSearchResult }) => {
+        this.bringToFrontSearchResultContainer();
+        this.setState({
+          windowWidth: getWindowContainerWidth(),
+          windowHeight: getWindowContainerHeight(),
+        });
+        this.onSearchDone(result, zoomToSearchResult);
+      }
+    );
 
     localObserver.subscribe("attribute-table-row-clicked", (payload) => {
       localObserver.publish("highlight-search-result-feature", payload);
@@ -251,7 +258,10 @@ class SearchResultListContainer extends React.Component {
     const nextactiveTabId = this.getNextTabActive(searchResultId);
     console.log(nextactiveTabId, "nextActiveTabId");
     this.setState({ activeTabId: nextactiveTabId });
-    localObserver.publish("toggle-visibility", nextactiveTabId);
+    localObserver.publish("toggle-visibility", {
+      setLayerIdVisible: nextactiveTabId,
+      zoomToSearchResult: true,
+    });
     this.removeSearchResult(searchResultId);
     localObserver.publish("resize-map", 0);
   };
