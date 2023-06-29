@@ -109,21 +109,28 @@ class SearchResultListContainer extends React.Component {
     localObserver.publish("search-result-list-normal");
   };
 
-  setActiveTabId = (searchResultId) => {
+  setActiveTabId = (searchResultId, zoomToSearchResult = true) => {
     const { localObserver } = this.props;
     if (searchResultId !== this.state.activeTabId) {
       localObserver.publish("clear-highlight");
     }
 
     localObserver.publish("hide-all-layers");
-    localObserver.publish("toggle-visibility", searchResultId);
+    console.log("publish toggle-visibiity: " + zoomToSearchResult);
+    localObserver.publish("toggle-visibility", {
+      setLayerIdVisible: searchResultId,
+      zoomToSearchResult: zoomToSearchResult,
+    });
 
     this.setState({ activeTabId: searchResultId });
   };
 
   onSearchDone = (result, zoomToSearchResult) => {
     const { localObserver } = this.props;
+    console.log("onSearchDone");
+    console.log(result);
     var searchResultId = this.addResultToSearchResultList(result);
+    console.log(searchResultId);
     localObserver.publish("add-search-result-to-map", {
       searchResultId: searchResultId,
       olFeatures: this.convertToGeoJson(
@@ -131,7 +138,8 @@ class SearchResultListContainer extends React.Component {
       ),
       zoomToSearchResult: zoomToSearchResult,
     });
-    this.setActiveTabId(searchResultId);
+    console.log("call setActiveTabId: " + zoomToSearchResult);
+    this.setActiveTabId(searchResultId, zoomToSearchResult);
 
     if (result.type === "journeys") {
       this.resetHeightOfResultList();
@@ -255,7 +263,10 @@ class SearchResultListContainer extends React.Component {
     const nextactiveTabId = this.getNextTabActive(searchResultId);
     console.log(nextactiveTabId, "nextActiveTabId");
     this.setState({ activeTabId: nextactiveTabId });
-    localObserver.publish("toggle-visibility", nextactiveTabId);
+    localObserver.publish("toggle-visibility", {
+      setLayerIdVisible: nextactiveTabId,
+      zoomToSearchResult: true,
+    });
     this.removeSearchResult(searchResultId);
     localObserver.publish("resize-map", 0);
   };

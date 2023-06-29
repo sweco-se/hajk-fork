@@ -79,9 +79,12 @@ export default class MapViewModel {
       });
     });
 
-    this.localObserver.subscribe("toggle-visibility", (searchResultID) => {
-      this.toggleLayerVisibility(searchResultID);
-    });
+    this.localObserver.subscribe(
+      "toggle-visibility",
+      ({ setLayerIdVisible, zoomToSearchResult }) => {
+        this.toggleLayerVisibility(setLayerIdVisible, zoomToSearchResult);
+      }
+    );
 
     this.localObserver.subscribe("hide-current-layer", () => {
       this.hideCurrentLayer();
@@ -427,12 +430,13 @@ export default class MapViewModel {
    * @param {integer : searchResultId}
    * @memberof MapViewModel
    */
-  toggleLayerVisibility = (searchResultId) => {
-    console.log("toggleLayerVisibility");
+  toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
+    console.log("toggleLayerVisibility: " + zoomToSearchResult);
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
-        // this.zoomToExtent(layer.getSource().getExtent());
+        if (zoomToSearchResult)
+          this.zoomToExtent(layer.getSource().getExtent());
       }
     });
   };
