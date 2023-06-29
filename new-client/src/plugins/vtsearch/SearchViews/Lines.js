@@ -281,7 +281,7 @@ class Lines extends React.PureComponent {
             {trafficTransports.map((name, index) => {
               if (name === "") {
                 return (
-                  <MenuItem key={index} value={name} minHeight={"36px"}>
+                  <MenuItem key={index} value={name}>
                     {name}
                   </MenuItem>
                 );
@@ -312,7 +312,7 @@ class Lines extends React.PureComponent {
             {municipalities.map((municipality, index) => {
               if (municipality.name === "") {
                 return (
-                  <MenuItem minHeight={"36px"} key={index} value={municipality}>
+                  <MenuItem key={index} value={municipality}>
                     <Typography>{municipality.name}</Typography>
                   </MenuItem>
                 );
