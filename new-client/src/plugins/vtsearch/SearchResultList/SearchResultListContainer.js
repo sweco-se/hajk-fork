@@ -116,7 +116,6 @@ class SearchResultListContainer extends React.Component {
     }
 
     localObserver.publish("hide-all-layers");
-    console.log("publish toggle-visibiity: " + zoomToSearchResult);
     localObserver.publish("toggle-visibility", {
       setLayerIdVisible: searchResultId,
       zoomToSearchResult: zoomToSearchResult,
@@ -127,10 +126,7 @@ class SearchResultListContainer extends React.Component {
 
   onSearchDone = (result, zoomToSearchResult) => {
     const { localObserver } = this.props;
-    console.log("onSearchDone");
-    console.log(result);
     var searchResultId = this.addResultToSearchResultList(result);
-    console.log(searchResultId);
     localObserver.publish("add-search-result-to-map", {
       searchResultId: searchResultId,
       olFeatures: this.convertToGeoJson(
@@ -138,7 +134,6 @@ class SearchResultListContainer extends React.Component {
       ),
       zoomToSearchResult: zoomToSearchResult,
     });
-    console.log("call setActiveTabId: " + zoomToSearchResult);
     this.setActiveTabId(searchResultId, zoomToSearchResult);
 
     if (result.type === "journeys") {

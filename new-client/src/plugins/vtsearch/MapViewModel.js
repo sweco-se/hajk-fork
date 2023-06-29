@@ -404,7 +404,6 @@ export default class MapViewModel {
     zoomToSearchResult
   ) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
-    console.log("addFeatureToSearchResultLayer, ZOOM: " + zoomToSearchResult);
     if (zoomToSearchResult)
       this.zoomToExtent(searchResultLayer.getSource().getExtent());
   };
@@ -417,7 +416,6 @@ export default class MapViewModel {
    * @param {Array<{external:"ol/interaction/Extent"}>}
    */
   zoomToExtent = (extent) => {
-    console.log("zoomToExtent");
     this.map.getView().fit(extent, {
       size: this.map.getSize(),
       padding: [10, 10, 10, 10],
@@ -431,7 +429,6 @@ export default class MapViewModel {
    * @memberof MapViewModel
    */
   toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
-    console.log("toggleLayerVisibility: " + zoomToSearchResult);
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
