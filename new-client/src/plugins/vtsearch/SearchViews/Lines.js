@@ -9,6 +9,7 @@ import {
   Divider,
   Grid,
   FormControl,
+  Tooltip,
 } from "@mui/material";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
@@ -46,7 +47,10 @@ class Lines extends React.PureComponent {
     municipality: "",
     trafficTransports: [],
     trafficTransport: "",
+    transportCompany: "",
+    transportCompanies: [],
     throughStopArea: "",
+    throughStopPoint: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -76,6 +80,12 @@ class Lines extends React.PureComponent {
       this.model.fetchAllPossibleTransportModeTypeNames().then((result) => {
         this.setState({
           trafficTransports: result.length > 0 ? result : [],
+        });
+        // Just for testing purposes. Should fetch all transport companies instead here
+        this.model.fetchAllPossibleTransportModeTypeNames().then((result) => {
+          this.setState({
+            transportCompanies: result.length > 0 ? result : [],
+          });
         });
       });
     });
@@ -215,9 +225,21 @@ class Lines extends React.PureComponent {
     });
   };
 
+  handleTransportCompanyChange = (e) => {
+    this.setState({
+      transportCompany: e.target.value,
+    });
+  };
+
   handleThroughStopAreaChange = (event) => {
     this.setState({
       throughStopArea: event.target.value,
+    });
+  };
+
+  handleThroughStopPointChange = (event) => {
+    this.setState({
+      throughStopPoint: event.target.value,
     });
   };
 
@@ -241,12 +263,14 @@ class Lines extends React.PureComponent {
         </Grid>
         <Grid item xs={6}>
           <Typography variant="caption">TEKNISKT NR</Typography>
-          <TextField
-            id="standard-helperText"
-            onChange={this.handleInternalLineNrChange}
-            value={this.state.internalLineNumber}
-            variant="standard"
-          />
+          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
+            <TextField
+              id="standard-helperText"
+              onChange={this.handleInternalLineNrChange}
+              value={this.state.internalLineNumber}
+              variant="standard"
+            />
+          </Tooltip>
         </Grid>
       </>
     );
@@ -254,15 +278,61 @@ class Lines extends React.PureComponent {
 
   renderInputValueSection = () => {
     return (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="caption">VIA HÅLLPLATSNAMN ELLER -NR</Typography>
+          <TextField
+            fullWidth
+            id="standard-helperText"
+            value={this.state.throughStopArea}
+            onChange={this.handleThroughStopAreaChange}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-helperText"
+              value={this.state.throughStopPoint}
+              onChange={this.handleThroughStopPointChange}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderTransportCompanySection = () => {
+    const { transportCompanies } = this.state;
+    return (
       <Grid item xs={12}>
-        <Typography variant="caption">VIA HÅLLPLATS</Typography>
-        <TextField
-          fullWidth
-          id="standard-helperText"
-          value={this.state.throughStopArea}
-          onChange={this.handleThroughStopAreaChange}
-          variant="standard"
-        />
+        <FormControl fullWidth>
+          <Typography variant="caption">TRAFIKFÖRETAG</Typography>
+          <Select
+            value={this.state.transportCompany}
+            onChange={this.handleTransportCompanyChange}
+            variant="standard"
+          >
+            {transportCompanies.map((name, index) => {
+              if (name === "") {
+                return (
+                  <MenuItem key={index} value={name}>
+                    {name}
+                  </MenuItem>
+                );
+              } else {
+                return (
+                  <MenuItem key={index} value={name}>
+                    <Typography>{name}</Typography>
+                  </MenuItem>
+                );
+              }
+            })}
+          </Select>
+        </FormControl>
       </Grid>
     );
   };
@@ -281,7 +351,7 @@ class Lines extends React.PureComponent {
             {trafficTransports.map((name, index) => {
               if (name === "") {
                 return (
-                  <MenuItem key={index} value={name} minHeight={"36px"}>
+                  <MenuItem key={index} value={name}>
                     {name}
                   </MenuItem>
                 );
@@ -312,7 +382,7 @@ class Lines extends React.PureComponent {
             {municipalities.map((municipality, index) => {
               if (municipality.name === "") {
                 return (
-                  <MenuItem minHeight={"36px"} key={index} value={municipality}>
+                  <MenuItem key={index} value={municipality}>
                     <Typography>{municipality.name}</Typography>
                   </MenuItem>
                 );
@@ -397,6 +467,7 @@ class Lines extends React.PureComponent {
         >
           {this.renderPublicAndTechnicalNrSection()}
           {this.renderInputValueSection()}
+          {this.renderTransportCompanySection()}
           {this.renderTrafficTypeSection()}
           {this.renderMunicipalitySection()}
           {this.renderSearchButtonSection()}
