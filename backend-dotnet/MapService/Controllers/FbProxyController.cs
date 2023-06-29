@@ -20,8 +20,8 @@ namespace MapService.Controllers
         }
 
         ///<remarks>Proxy the specified query to Sokigo's FB API</remarks>
-        /// <param query="query">The query to be proxied</param>
-        /// <response code="200">Result will vary depending on response from the API.</response>
+        ///<response code="200">Result will vary depending on response from the API.</response>
+        ///<param name="query">The query to be proxied.</param>
         [HttpGet]
         [Route("{*query}")]
         [MapToApiVersion("1.0")]

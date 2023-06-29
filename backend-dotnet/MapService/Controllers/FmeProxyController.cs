@@ -24,7 +24,7 @@ namespace MapService.Controllers
         }
 
         ///<remarks>Proxy the specified query to FME-server REST API. For information on available endpoints, checkout the FME-server API documentation. The proxy will forward all HTTP-methods, not only GET.</remarks>
-        /// <param query="query">Path corresponding to an endpoint on the FME-server REST API.</param>
+        /// <param name="query">Path corresponding to an endpoint on the FME-server REST API.</param>
         /// <response code="200">Result will vary depending on response from the API.</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]

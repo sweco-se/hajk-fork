@@ -18,6 +18,9 @@ namespace MapService.Controllers
             _logger = logger;
         }
 
+        /// <remarks>
+        /// Return the API specification
+        /// </remarks>
         /// <response code="200">Return the API specification</response>
         /// <response code="500">Internal Server Error</response>
         [HttpGet]
