@@ -38,6 +38,10 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -51,6 +55,7 @@ class Lines extends React.PureComponent {
     transportCompanies: [],
     throughStopArea: "",
     throughStopPoint: "",
+    searchErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -123,6 +128,8 @@ class Lines extends React.PureComponent {
       municipality: "",
       trafficTransport: "",
       throughStopArea: "",
+      throughStopPoint: "",
+      searchErrorMessage: "",
     });
   };
 
@@ -133,7 +140,20 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
+      throughStopPoint,
     } = this.state;
+
+    if (throughStopPoint && !throughStopArea) {
+      console.log(
+        "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER."
+      );
+      this.setState({
+        searchErrorMessage:
+          "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.",
+      });
+      return;
+    }
+
     this.localObserver.publish("routes-search", {
       publicLineName: publicLineName,
       internalLineNumber: internalLineNumber,
@@ -402,12 +422,51 @@ class Lines extends React.PureComponent {
 
   renderSearchButtonSection = () => {
     return (
+      <>
+        <Grid item xs={12}>
+          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+            <StyledTypography>SÖK</StyledTypography>
+          </StyledSearchButton>
+        </Grid>
+        <Grid item xs={12}>
+          {this.showErrorMessage()}
+        </Grid>
+      </>
+    );
+  };
+
+  renderErrorMessageStopPointButNoStopArea = () => {
+    return (
       <Grid item xs={12}>
-        <StyledSearchButton onClick={this.doSearch} variant="outlined">
-          <StyledTypography>SÖK</StyledTypography>
-        </StyledSearchButton>
+        <StyledErrorMessageTypography variant="body2">
+          DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I
+          HÅLLPLATSNAMN ELLER NUMMER.
+        </StyledErrorMessageTypography>
       </Grid>
     );
+  };
+
+  renderNoErrorMessage = () => {
+    return <Typography></Typography>;
+  };
+
+  validateSearchForm = (callbackStopPointButNoStopArea, callbackAllIsOK) => {
+    const { throughStopArea, throughStopPoint } = this.state;
+    if (throughStopPoint && !throughStopArea)
+      return callbackStopPointButNoStopArea();
+
+    if (callbackAllIsOK) return callbackAllIsOK();
+  };
+
+  showErrorMessage = () => {
+    const { throughStopArea, searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) {
+      if (throughStopArea) return this.renderNoErrorMessage();
+
+      return this.renderErrorMessageStopPointButNoStopArea();
+    }
+    return this.renderNoErrorMessage();
   };
 
   renderSpatialSearchSection = () => {
