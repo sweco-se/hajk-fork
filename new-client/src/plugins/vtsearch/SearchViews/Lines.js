@@ -38,6 +38,10 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -51,6 +55,7 @@ class Lines extends React.PureComponent {
     transportCompanies: [],
     throughStopArea: "",
     throughStopPoint: "",
+    searchErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -123,6 +128,8 @@ class Lines extends React.PureComponent {
       municipality: "",
       trafficTransport: "",
       throughStopArea: "",
+      throughStopPoint: "",
+      searchErrorMessage: "",
     });
   };
 
@@ -133,13 +140,25 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
+      throughStopPoint,
     } = this.state;
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      console.log(validationErrorMessage);
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+      });
+      return;
+    }
+
     this.localObserver.publish("routes-search", {
       publicLineName: publicLineName,
       internalLineNumber: internalLineNumber,
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
+      //throughStopPoint: throughStopPoint,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
@@ -234,6 +253,7 @@ class Lines extends React.PureComponent {
   handleThroughStopAreaChange = (event) => {
     this.setState({
       throughStopArea: event.target.value,
+      searchErrorMessage: "",
     });
   };
 
@@ -290,7 +310,7 @@ class Lines extends React.PureComponent {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Typography variant="caption">VIA HÅLLPLATSLÄGE</Typography>
           <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
             <TextField
               fullWidth
@@ -402,12 +422,47 @@ class Lines extends React.PureComponent {
 
   renderSearchButtonSection = () => {
     return (
+      <>
+        <Grid item xs={12}>
+          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+            <StyledTypography>SÖK</StyledTypography>
+          </StyledSearchButton>
+        </Grid>
+        <Grid item xs={12}>
+          {this.showErrorMessage()}
+        </Grid>
+      </>
+    );
+  };
+
+  renderErrorMessage = (errorMessage) => {
+    return (
       <Grid item xs={12}>
-        <StyledSearchButton onClick={this.doSearch} variant="outlined">
-          <StyledTypography>SÖK</StyledTypography>
-        </StyledSearchButton>
+        <StyledErrorMessageTypography variant="body2">
+          {errorMessage}
+        </StyledErrorMessageTypography>
       </Grid>
     );
+  };
+
+  renderNoErrorMessage = () => {
+    return <Typography></Typography>;
+  };
+
+  validateSearchForm = () => {
+    const { throughStopArea, throughStopPoint } = this.state;
+    if (throughStopPoint && !throughStopArea)
+      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
+    return "";
+  };
+
+  showErrorMessage = () => {
+    const { searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+
+    return this.renderNoErrorMessage();
   };
 
   renderSpatialSearchSection = () => {
