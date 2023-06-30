@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
-import { Typography, Divider, TextField } from "@mui/material";
+import { Typography, Divider, TextField, Tooltip, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
   LocalizationProvider,
@@ -25,18 +25,27 @@ const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
 const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   marginTop: 0,
   marginBottom: 10,
-  width: "100%",
+  width: "99%",
   color: theme.palette.primary.main,
 }));
 
 const StyledDatePicker = styled(DatePicker)(() => ({
   marginBottom: 40,
-  width: "100%",
+  width: "99%",
 }));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
   marginTop: theme.spacing(3),
   marginBottom: theme.spacing(3),
+}));
+
+const StyledSearchButton = styled(Button)(({ theme }) => ({
+  marginTop: 8,
+  borderColor: theme.palette.primary.main,
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
 }));
 
 class Journeys extends React.PureComponent {
@@ -63,6 +72,11 @@ class Journeys extends React.PureComponent {
     fromDateInputErrorMessage: "",
     endTimeInputErrorMessage: "",
     endDateInputErrorMessage: "",
+    publicLineName: "",
+    internalLineNumber: "",
+    stopArea: "",
+    stopPoint: "",
+    searchErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -210,6 +224,33 @@ class Journeys extends React.PureComponent {
         this.reactiveSelectSpatialTool();
       }
     );
+  };
+
+  handleStopAreaChange = (event) => {
+    this.setState({
+      stopArea: event.target.value,
+      searchErrorMessage: "",
+    });
+  };
+
+  handleStopPointChange = (event) => {
+    const { searchErrorMessage } = this.state;
+    this.setState({
+      stopPoint: event.target.value,
+      searchErrorMessage: event.target.value ? searchErrorMessage : "",
+    });
+  };
+
+  handleInternalLineNrChange = (event) => {
+    this.setState({
+      internalLineNumber: event.target.value,
+    });
+  };
+
+  handlePublicLineNameChange = (event) => {
+    this.setState({
+      publicLineName: event.target.value,
+    });
   };
 
   reactiveSelectSpatialTool = () => {
@@ -375,6 +416,12 @@ class Journeys extends React.PureComponent {
     }
   };
 
+  handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      this.doSearch();
+    }
+  };
+
   deactivateSearch = () => {
     this.localObserver.publish("deactivate-search");
   };
@@ -515,21 +562,22 @@ class Journeys extends React.PureComponent {
             }}
           />
         </Grid>
-        <StyledDatePicker
-          format="yyyy-MM-dd"
-          value={this.state.selectedEndDate}
-          onChange={this.handleEndDateChange}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-          onError={(newError) => this.setEndDateInputErrorMessage(newError)}
-          slotProps={{
-            textField: {
-              variant: "standard",
-              helperText: this.state.endDateInputErrorMessage,
-            },
-          }}
-        />
-        {this.showErrorMessage()}
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedEndDate}
+            onChange={this.handleEndDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setEndDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endDateInputErrorMessage,
+              },
+            }}
+          />
+        </Grid>
       </>
     );
   };
@@ -575,6 +623,74 @@ class Journeys extends React.PureComponent {
 
   renderNoErrorMessage = () => {
     return <Typography></Typography>;
+  };
+
+  renderStopAreaStopPointSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSNAMN ELLER -NR</Typography>
+          <TextField
+            fullWidth
+            id="standard-helperText"
+            value={this.state.stopArea}
+            onChange={this.handleStopAreaChange}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-helperText"
+              value={this.state.stopPoint}
+              onChange={this.handleStopPointChange}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderPublicAndTechnicalNrSection = () => {
+    return (
+      <>
+        <Grid item xs={6}>
+          <Typography variant="caption">PUBLIKT NR</Typography>
+          <TextField
+            id="standard-helperText"
+            onChange={this.handlePublicLineNameChange}
+            value={this.state.publicLineName}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="caption">TEKNISKT NR</Typography>
+          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
+            <TextField
+              id="standard-helperText"
+              onChange={this.handleInternalLineNrChange}
+              value={this.state.internalLineNumber}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderSearchButtonSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+            <StyledTypography>SÖK</StyledTypography>
+          </StyledSearchButton>
+        </Grid>
+      </>
+    );
   };
 
   renderSpatialSearchSection = () => {
@@ -627,11 +743,22 @@ class Journeys extends React.PureComponent {
   render() {
     return (
       <div>
-        <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
-          {this.renderFromDateSection()}
-          {this.renderEndDateSection()}
-        </StyledLocalizationProvider>
-        {this.renderSpatialSearchSection()}
+        <Grid
+          container
+          justifyContent="center"
+          spacing={2}
+          onKeyPress={this.handleKeyPress}
+        >
+          <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
+            {this.renderFromDateSection()}
+            {this.renderEndDateSection()}
+          </StyledLocalizationProvider>
+          {this.renderStopAreaStopPointSection()}
+          {this.renderPublicAndTechnicalNrSection()}
+          {this.renderSearchButtonSection()}
+          {this.showErrorMessage()}
+          {this.renderSpatialSearchSection()}
+        </Grid>
       </div>
     );
   }
