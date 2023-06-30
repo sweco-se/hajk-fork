@@ -86,8 +86,7 @@ class Lines extends React.PureComponent {
         this.setState({
           trafficTransports: result.length > 0 ? result : [],
         });
-        // Just for testing purposes. Should fetch all transport companies instead here
-        this.model.fetchAllPossibleTransportModeTypeNames().then((result) => {
+        this.model.fetchAllPossibleTransportCompanyNames().then((result) => {
           this.setState({
             transportCompanies: result.length > 0 ? result : [],
           });
