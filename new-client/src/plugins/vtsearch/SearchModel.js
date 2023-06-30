@@ -834,6 +834,32 @@ export default class SearchModel {
   }
 
   /**
+   * Function that fetch all transport company names and numbers.
+   * @param {boolean} addEmptyMunicipality <option value="true">Adds an empty transport company at the beginning of the array. </option>
+   * @returns {array(string, int)} Returns all transport company names as an array of tuples.
+   *
+   * @memberof SearchModel
+   */
+  fetchAllPossibleTransportCompanyNames(addEmptyTransportCompany = true) {
+    this.localObserver.publish("transportCompanyName-result-begin", {
+      label: this.geoServer.transportCompanyNames.searchLabel,
+    });
+
+    const url = this.geoServer.transportCompanyNames.url;
+    return fetch(url).then((res) => {
+      return res.json().then((jsonResult) => {
+        let transportCompanies = jsonResult.features.map((feature) => {
+          return feature.properties.Name;
+        });
+
+        if (addEmptyTransportCompany) transportCompanies.unshift("");
+
+        return transportCompanies;
+      });
+    });
+  }
+
+  /**
    * Gets requested journeys. Sends an event when the function is called and another one when it's promise is done.
    * @param {string} fromTime Start time, pass null if no start time is given.
    * @param {string} endTime End time, pass null of no end time is given.
