@@ -58,12 +58,12 @@ The log level set log information.
    }
    },
    "WriteTo": [
-   {
-      "Name": "File",
-      "Args": {
-         "path": "Logs\\log.txt"
+      {
+         "Name": "File",
+         "Args": {
+            "path": "Logs\\log.txt"
+         }
       }
-   }
    ]
 }
 ```
@@ -237,7 +237,7 @@ This property contains an array of Active Directory groups that are allowed to a
 
 #### TrustedProxyIPs
 
-This property is a comma-separated list of IP addresses that we trust. These IP addresses represent the proxies through which requests pass, and we consider them safe and reliable.
+This property is a comma-separated list of IP addresses that we trust, e.g. [ "10.0.1.1", "10.0.1.2" ]. These IP addresses represent the proxies through which requests pass, and we consider them safe and reliable.
 
 To include the localhost as a trusted proxy, make sure to add ::1 to the list of trusted IP addresses. This is necessary when your application is running locally and you want to trust requests originating from the localhost.
 
