@@ -257,8 +257,10 @@ class Lines extends React.PureComponent {
   };
 
   handleThroughStopPointChange = (event) => {
+    const { searchErrorMessage } = this.state;
     this.setState({
       throughStopPoint: event.target.value,
+      searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
   };
 
