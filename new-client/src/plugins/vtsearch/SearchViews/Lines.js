@@ -290,7 +290,7 @@ class Lines extends React.PureComponent {
           />
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Typography variant="caption">VIA HÅLLPLATSLÄGE</Typography>
           <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
             <TextField
               fullWidth
