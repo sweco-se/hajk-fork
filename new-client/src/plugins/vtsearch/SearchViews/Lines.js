@@ -144,7 +144,6 @@ class Lines extends React.PureComponent {
 
     let validationErrorMessage = this.validateSearchForm();
     if (validationErrorMessage) {
-      console.log(validationErrorMessage);
       this.setState({
         searchErrorMessage: validationErrorMessage,
       });
@@ -157,7 +156,7 @@ class Lines extends React.PureComponent {
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
-      //throughStopPoint: throughStopPoint,
+      throughStopPoint: throughStopPoint,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
