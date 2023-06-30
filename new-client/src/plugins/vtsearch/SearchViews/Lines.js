@@ -143,13 +143,11 @@ class Lines extends React.PureComponent {
       throughStopPoint,
     } = this.state;
 
-    if (throughStopPoint && !throughStopArea) {
-      console.log(
-        "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER."
-      );
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      console.log(validationErrorMessage);
       this.setState({
-        searchErrorMessage:
-          "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.",
+        searchErrorMessage: validationErrorMessage,
       });
       return;
     }
@@ -160,6 +158,7 @@ class Lines extends React.PureComponent {
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
+      //throughStopPoint: throughStopPoint,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
@@ -254,6 +253,7 @@ class Lines extends React.PureComponent {
   handleThroughStopAreaChange = (event) => {
     this.setState({
       throughStopArea: event.target.value,
+      searchErrorMessage: "",
     });
   };
 
@@ -435,12 +435,11 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderErrorMessageStopPointButNoStopArea = () => {
+  renderErrorMessage = (errorMessage) => {
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
-          DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I
-          HÅLLPLATSNAMN ELLER NUMMER.
+          {errorMessage}
         </StyledErrorMessageTypography>
       </Grid>
     );
@@ -450,22 +449,19 @@ class Lines extends React.PureComponent {
     return <Typography></Typography>;
   };
 
-  validateSearchForm = (callbackStopPointButNoStopArea, callbackAllIsOK) => {
+  validateSearchForm = () => {
     const { throughStopArea, throughStopPoint } = this.state;
     if (throughStopPoint && !throughStopArea)
-      return callbackStopPointButNoStopArea();
+      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
 
-    if (callbackAllIsOK) return callbackAllIsOK();
+    return "";
   };
 
   showErrorMessage = () => {
-    const { throughStopArea, searchErrorMessage } = this.state;
+    const { searchErrorMessage } = this.state;
 
-    if (searchErrorMessage) {
-      if (throughStopArea) return this.renderNoErrorMessage();
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
 
-      return this.renderErrorMessageStopPointButNoStopArea();
-    }
     return this.renderNoErrorMessage();
   };
 
