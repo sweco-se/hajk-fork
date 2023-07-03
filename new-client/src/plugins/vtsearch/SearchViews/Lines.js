@@ -140,11 +140,11 @@ class Lines extends React.PureComponent {
       trafficTransport,
       throughStopArea,
       throughStopPoint,
+      transportCompany,
     } = this.state;
 
     let validationErrorMessage = this.validateSearchForm();
     if (validationErrorMessage) {
-      console.log(validationErrorMessage);
       this.setState({
         searchErrorMessage: validationErrorMessage,
       });
@@ -157,7 +157,8 @@ class Lines extends React.PureComponent {
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
-      //throughStopPoint: throughStopPoint,
+      throughStopPoint: throughStopPoint,
+      transportCompanyName: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
@@ -170,6 +171,8 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
+      throughStopPoint,
+      transportCompany,
     } = this.state;
     if (!this.state.isPolygonActive) {
       this.localObserver.publish("activate-search", () => {});
@@ -179,12 +182,24 @@ class Lines extends React.PureComponent {
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
+      let validationErrorMessage = this.validateSearchForm();
+      if (validationErrorMessage) {
+        this.localObserver.publish("deactivate-search", () => {});
+        this.setState({
+          searchErrorMessage: validationErrorMessage,
+          isPolygonActive: false,
+        });
+        return;
+      }
+
       this.localObserver.publish("routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
         trafficTransport: trafficTransport,
         throughStopArea: throughStopArea,
+        throughStopPoint: throughStopPoint,
+        transportCompanyName: transportCompany,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
@@ -198,6 +213,8 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
+      throughStopPoint,
+      transportCompany,
     } = this.state;
     if (!this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
@@ -207,12 +224,24 @@ class Lines extends React.PureComponent {
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
+      let validationErrorMessage = this.validateSearchForm();
+      if (validationErrorMessage) {
+        this.localObserver.publish("deactivate-search", () => {});
+        this.setState({
+          searchErrorMessage: validationErrorMessage,
+          isRectangleActive: false,
+        });
+        return;
+      }
+
       this.localObserver.publish("routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
         trafficTransportName: trafficTransport,
         throughStopArea: throughStopArea,
+        throughStopPoint: throughStopPoint,
+        transportCompanyName: transportCompany,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
