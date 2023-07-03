@@ -19,28 +19,28 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
-  marginTop: 10,
+  marginTop: 2,
 }));
 
 const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   marginTop: 0,
-  marginBottom: 10,
+  marginBottom: 1,
   width: "99%",
   color: theme.palette.primary.main,
 }));
 
 const StyledDatePicker = styled(DatePicker)(() => ({
-  marginBottom: 40,
+  marginBottom: 5,
   width: "99%",
 }));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
-  marginTop: theme.spacing(3),
-  marginBottom: theme.spacing(3),
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
 }));
 
 const StyledSearchButton = styled(Button)(({ theme }) => ({
-  marginTop: 8,
+  marginTop: theme.spacing(1),
   borderColor: theme.palette.primary.main,
 }));
 
@@ -627,24 +627,22 @@ class Journeys extends React.PureComponent {
               },
             }}
           />
-          <Grid>
-            <StyledDatePicker
-              format="yyyy-MM-dd"
-              value={this.state.selectedFromDate}
-              onChange={this.handleFromDateChange}
-              onOpen={this.disableDrag}
-              onClose={this.enableDrag}
-              onError={(newError) =>
-                this.setFromDateInputErrorMessage(newError)
-              }
-              slotProps={{
-                textField: {
-                  variant: "standard",
-                  helperText: this.state.fromDateInputErrorMessage,
-                },
-              }}
-            />
-          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedFromDate}
+            onChange={this.handleFromDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setFromDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromDateInputErrorMessage,
+              },
+            }}
+          />
         </Grid>
       </>
     );
