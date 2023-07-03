@@ -101,6 +101,41 @@ class Journeys extends React.PureComponent {
     this.globalObserver = this.props.app.globalObserver;
   }
 
+  clearSearchInputAndButtons = () => {
+    this.setState({
+      publicLineName: "",
+      internalLineNumber: "",
+      stopArea: "",
+      stopPoint: "",
+      searchErrorMessage: "",
+    });
+  };
+
+  doSearch = () => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
+    const { formatFromDate, formatEndDate } = this.getFormattedDate();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+      });
+      return;
+    }
+
+    this.localObserver.publish("journeys-search", {
+      selectedFromDate: formatFromDate,
+      selectedEndDate: formatEndDate,
+      publicLineName: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
+      selectedFormType: "",
+      searchCallback: this.clearSearchInputAndButtons,
+    });
+  };
+
   handleFromTimeChange = (fromTime) => {
     this.updateStateForTimeOrDateChange(fromTime);
 
