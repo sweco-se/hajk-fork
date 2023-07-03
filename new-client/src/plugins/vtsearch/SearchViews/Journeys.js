@@ -770,6 +770,7 @@ class Journeys extends React.PureComponent {
             id="standard-helperText"
             value={this.state.stopArea}
             onChange={this.handleStopAreaChange}
+            error={!(this.state.searchErrorMessage === "")}
             variant="standard"
           />
         </Grid>
