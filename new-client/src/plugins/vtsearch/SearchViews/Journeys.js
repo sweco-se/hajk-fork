@@ -77,6 +77,7 @@ class Journeys extends React.PureComponent {
     stopArea: "",
     stopPoint: "",
     searchErrorMessage: "",
+    searchButtonEnabled: true,
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -292,33 +293,44 @@ class Journeys extends React.PureComponent {
   };
 
   handleStopAreaChange = (event) => {
-    const { stopPoint, isPolygonActive, isRectangleActive } = this.state;
+    const { stopPoint } = this.state;
 
     let spatialSearchAllowed = true;
     if (stopPoint && !event.target.value) spatialSearchAllowed = false;
 
-    if (!spatialSearchAllowed) this.deactivateSearch();
+    if (!spatialSearchAllowed) {
+      this.setState(
+        {
+          isRectangleActive: false,
+          isPolygonActive: false,
+        },
+        this.deactivateSearch
+      );
+    }
 
     this.setState({
       stopArea: event.target.value,
       searchErrorMessage: "",
-      isRectangleActive: spatialSearchAllowed ? isRectangleActive : false,
-      isPolygonActive: spatialSearchAllowed ? isPolygonActive : false,
     });
   };
 
   handleStopPointChange = (event) => {
-    const { searchErrorMessage, stopArea, isPolygonActive, isRectangleActive } =
-      this.state;
+    const { searchErrorMessage, stopArea } = this.state;
     let spatialSearchAllowed = event.target.value && stopArea;
 
-    if (!spatialSearchAllowed) this.deactivateSearch();
+    if (!spatialSearchAllowed) {
+      this.setState(
+        {
+          isRectangleActive: false,
+          isPolygonActive: false,
+        },
+        this.deactivateSearch
+      );
+    }
 
     this.setState({
       stopPoint: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
-      isRectangleActive: spatialSearchAllowed ? isRectangleActive : false,
-      isPolygonActive: spatialSearchAllowed ? isPolygonActive : false,
     });
   };
 
@@ -370,11 +382,14 @@ class Journeys extends React.PureComponent {
   };
 
   disablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: false }, this.deactivateSearch);
+    this.setState(
+      { spatialToolsEnabled: false, searchButtonEnabled: false },
+      this.deactivateSearch
+    );
   };
 
   enablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: true });
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
   validateDateAndTime = (
@@ -819,7 +834,11 @@ class Journeys extends React.PureComponent {
     return (
       <>
         <Grid item xs={12}>
-          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+          <StyledSearchButton
+            onClick={this.doSearch}
+            variant="outlined"
+            disabled={!this.state.searchButtonEnabled}
+          >
             <StyledTypography>SÖK</StyledTypography>
           </StyledSearchButton>
         </Grid>
