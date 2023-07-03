@@ -153,31 +153,17 @@ class Journeys extends React.PureComponent {
       return;
     }
 
-    console.log(
-      "SEARCH: " +
-        publicLineName +
-        ", " +
-        internalLineNumber +
-        ", " +
-        stopArea +
-        ", " +
-        stopPoint +
-        ", " +
-        formatFromDate +
-        ", " +
-        formatEndDate
-    );
     this.clearSearchInputAndButtons();
-    // this.localObserver.publish("journeys-search", {
-    //   selectedFromDate: formatFromDate,
-    //   selectedEndDate: formatEndDate,
-    //   publicLineName: publicLineName,
-    //   internalLineNumber: internalLineNumber,
-    //   stopArea: stopArea,
-    //   stopPoint: stopPoint,
-    //   selectedFormType: "",
-    //   searchCallback: this.clearSearchInputAndButtons,
-    // });
+    this.localObserver.publish("journeys-search", {
+      selectedFromDate: formatFromDate,
+      selectedEndDate: formatEndDate,
+      publicLineName: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
+      selectedFormType: "",
+      searchCallback: this.clearSearchInputAndButtons,
+    });
   };
 
   handleFromTimeChange = (fromTime) => {
@@ -306,45 +292,34 @@ class Journeys extends React.PureComponent {
   };
 
   handleStopAreaChange = (event) => {
-    const { stopPoint } = this.state;
+    const { stopPoint, isPolygonActive, isRectangleActive } = this.state;
 
-    // if (stopPoint && !event.target.value) {
-    //   this.inactivateSpatialSearchButtons();
-    //   this.deactivateSearch();
-    //   this.setState({
-    //     isPolygonActive: false,
-    //     isRectangleActive: false,
-    //   });
-    // }
+    let spatialSearchAllowed = true;
+    if (stopPoint && !event.target.value) spatialSearchAllowed = false;
+
+    if (!spatialSearchAllowed) this.deactivateSearch();
+
     this.setState({
       stopArea: event.target.value,
       searchErrorMessage: "",
+      isRectangleActive: spatialSearchAllowed ? isRectangleActive : false,
+      isPolygonActive: spatialSearchAllowed ? isPolygonActive : false,
     });
   };
 
   handleStopPointChange = (event) => {
-    const { searchErrorMessage, stopArea } = this.state;
+    const { searchErrorMessage, stopArea, isPolygonActive, isRectangleActive } =
+      this.state;
     let spatialSearchAllowed = event.target.value && stopArea;
 
-    // if (!spatialSearchAllowed) {
-    //   console.log("HANLDE STOPPOINT, ALLOWED: FALSE");
-    //   this.inactivateSpatialSearchButtons();
-    //   this.deactivateSearch();
-    // }
-    // if (event.target.value && !stopArea) {
-    //   this.inactivateSpatialSearchButtons();
-    //   this.deactivateSearch();
-    //   this.setState({
-    //     isPolygonActive: false,
-    //     isRectangleActive: false,
-    //   });
-    // }
+    if (!spatialSearchAllowed) this.deactivateSearch();
+
     this.setState({
       stopPoint: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
+      isRectangleActive: spatialSearchAllowed ? isRectangleActive : false,
+      isPolygonActive: spatialSearchAllowed ? isPolygonActive : false,
     });
-
-    
   };
 
   handleInternalLineNrChange = (event) => {
@@ -487,9 +462,6 @@ class Journeys extends React.PureComponent {
 
   handlePolygonClick = () => {
     if (!this.state.spatialToolsEnabled) return;
-    console.log("--------------------");
-    console.log("POLYGON: " + this.state.isPolygonActive);
-    console.log("RECTANGLE: " + this.state.isRectangleActive);
     this.deactivateSearch();
     this.setState(
       {
@@ -497,15 +469,6 @@ class Journeys extends React.PureComponent {
         isRectangleActive: false,
       },
       () => {
-        
-
-          this.activateSearch("Polygon");
-        }
-      }
-    );
-    if (this.state.isPolygonActive) {
-      console.log("POLYGON: " + this.state.isPolygonActive);
-        console.log("RECTANGLE: " + this.state.isRectangleActive);
         if (this.state.isPolygonActive) {
           let validationErrorMessage = this.validateSearchForm();
           if (validationErrorMessage) {
@@ -516,6 +479,12 @@ class Journeys extends React.PureComponent {
             });
             return;
           }
+
+          this.activateSearch("Polygon");
+        }
+      }
+    );
+    if (this.state.isPolygonActive) {
       this.localObserver.publish("activate-search", () => {});
     }
   };
