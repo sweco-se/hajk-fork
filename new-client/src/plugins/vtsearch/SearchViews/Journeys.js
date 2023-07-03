@@ -101,13 +101,42 @@ class Journeys extends React.PureComponent {
     this.globalObserver = this.props.app.globalObserver;
   }
 
+  bindSubscriptions() {
+    const { localObserver } = this.props;
+    localObserver.subscribe("vtsearch-result-done", () => {
+      this.clearSearchInputAndButtons();
+    });
+  }
+
   clearSearchInputAndButtons = () => {
     this.setState({
+      selectedFromDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedFromTime: new Date(
+        new Date().setHours(
+          new Date().getHours(),
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
+      selectedEndDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedEndTime: new Date(
+        new Date().setHours(
+          new Date().getHours() + 1,
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
       publicLineName: "",
       internalLineNumber: "",
       stopArea: "",
       stopPoint: "",
       searchErrorMessage: "",
+      fromTimeInputErrorMessage: "",
+      fromDateInputErrorMessage: "",
+      endTimeInputErrorMessage: "",
+      endDateInputErrorMessage: "",
     });
   };
 
@@ -124,16 +153,31 @@ class Journeys extends React.PureComponent {
       return;
     }
 
-    this.localObserver.publish("journeys-search", {
-      selectedFromDate: formatFromDate,
-      selectedEndDate: formatEndDate,
-      publicLineName: publicLineName,
-      internalLineNumber: internalLineNumber,
-      stopArea: stopArea,
-      stopPoint: stopPoint,
-      selectedFormType: "",
-      searchCallback: this.clearSearchInputAndButtons,
-    });
+    console.log(
+      "SEARCH: " +
+        publicLineName +
+        ", " +
+        internalLineNumber +
+        ", " +
+        stopArea +
+        ", " +
+        stopPoint +
+        ", " +
+        formatFromDate +
+        ", " +
+        formatEndDate
+    );
+    this.clearSearchInputAndButtons();
+    // this.localObserver.publish("journeys-search", {
+    //   selectedFromDate: formatFromDate,
+    //   selectedEndDate: formatEndDate,
+    //   publicLineName: publicLineName,
+    //   internalLineNumber: internalLineNumber,
+    //   stopArea: stopArea,
+    //   stopPoint: stopPoint,
+    //   selectedFormType: "",
+    //   searchCallback: this.clearSearchInputAndButtons,
+    // });
   };
 
   handleFromTimeChange = (fromTime) => {
@@ -445,7 +489,6 @@ class Journeys extends React.PureComponent {
         if (this.state.isRectangleActive) this.activateSearch("Box");
       }
     );
-    console.log(this.state.isRectangleActive);
     if (this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -462,9 +505,15 @@ class Journeys extends React.PureComponent {
   };
 
   activateSearch = (spatialType) => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
     this.localObserver.publish("journeys-search", {
+      publicLineName: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       selectedFormType: spatialType,
@@ -617,12 +666,38 @@ class Journeys extends React.PureComponent {
     );
   };
 
+  validateSearchForm = () => {
+    const { stopArea, stopPoint } = this.state;
+    if (stopPoint && !stopArea)
+      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
+    return "";
+  };
+
+  showSearchErrorMessage = () => {
+    const { searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+
+    return this.renderNoErrorMessage();
+  };
+
   showErrorMessage = () => {
     return this.validateDateAndTime(
       this.renderErrorMessageInvalidDate,
       this.renderErrorMessageInvalidTime,
       this.renderErrorMessageStartTimeBiggerThanEndTime,
       this.renderNoErrorMessage
+    );
+  };
+
+  renderErrorMessage = (errorMessage) => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          {errorMessage}
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
@@ -792,6 +867,7 @@ class Journeys extends React.PureComponent {
           {this.renderPublicAndTechnicalNrSection()}
           {this.renderSearchButtonSection()}
           {this.showErrorMessage()}
+          {this.showSearchErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
       </div>
