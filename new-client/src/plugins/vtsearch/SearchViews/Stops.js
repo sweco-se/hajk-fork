@@ -38,11 +38,12 @@ class Stops extends React.PureComponent {
   state = {
     busStopValue: "stopAreas",
     stopNameOrNr: "",
-    publicLine: "",
+    publicLineName: "",
     municipalities: [],
     municipality: "",
     selectedFormType: "",
     stopPoint: "",
+    internalLineNumber: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -101,9 +102,15 @@ class Stops extends React.PureComponent {
     });
   };
 
-  handlePublicLineChange = (event) => {
+  handleInternalLineNrChange = (event) => {
     this.setState({
-      publicLine: event.target.value,
+      internalLineNumber: event.target.value,
+    });
+  };
+
+  handlePublicLineNameChange = (event) => {
+    this.setState({
+      publicLineName: event.target.value,
     });
   };
 
@@ -267,8 +274,8 @@ class Stops extends React.PureComponent {
             fullWidth
             id="standard-basic"
             variant="standard"
-            value={this.state.internalLineNumber}
-            // onChange={}
+            value={this.state.publicLineName}
+            onChange={this.handlePublicLineNameChange}
           />
         </Grid>
         <Grid item xs={6}>
@@ -279,7 +286,7 @@ class Stops extends React.PureComponent {
               id="standard-basic"
               variant="standard"
               value={this.state.internalLineNumber}
-              // onChange={}
+              onChange={this.handleInternalLineNrChange}
             ></TextField>
           </Tooltip>
         </Grid>
