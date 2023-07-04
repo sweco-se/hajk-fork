@@ -484,6 +484,16 @@ class Journeys extends React.PureComponent {
   handlePolygonClick = () => {
     if (!this.state.spatialToolsEnabled) return;
     this.deactivateSearch();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+        isPolygonActive: false,
+      });
+      return;
+    }
+
     this.setState(
       {
         isPolygonActive: !this.state.isPolygonActive,
@@ -491,16 +501,6 @@ class Journeys extends React.PureComponent {
       },
       () => {
         if (this.state.isPolygonActive) {
-          let validationErrorMessage = this.validateSearchForm();
-          if (validationErrorMessage) {
-            this.deactivateSearch();
-            this.setState({
-              searchErrorMessage: validationErrorMessage,
-              isPolygonActive: false,
-            });
-            return;
-          }
-
           this.activateSearch("Polygon");
         }
       }
@@ -514,6 +514,16 @@ class Journeys extends React.PureComponent {
     if (!this.state.spatialToolsEnabled) return;
 
     this.deactivateSearch();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+        isRectangleActive: false,
+      });
+      return;
+    }
+
     this.setState(
       {
         isRectangleActive: !this.state.isRectangleActive,
@@ -521,16 +531,6 @@ class Journeys extends React.PureComponent {
       },
       () => {
         if (this.state.isRectangleActive) {
-          let validationErrorMessage = this.validateSearchForm();
-          if (validationErrorMessage) {
-            this.deactivateSearch();
-            this.setState({
-              searchErrorMessage: validationErrorMessage,
-              isRectangleActive: false,
-            });
-            return;
-          }
-
           this.activateSearch("Box");
         }
       }
@@ -547,7 +547,7 @@ class Journeys extends React.PureComponent {
   };
 
   deactivateSearch = () => {
-    this.localObserver.publish("deactivate-search");
+    this.localObserver.publish("activate-search", () => {});
   };
 
   activateSearch = (spatialType) => {

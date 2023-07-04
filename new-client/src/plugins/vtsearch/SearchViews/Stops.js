@@ -272,6 +272,9 @@ class Stops extends React.PureComponent {
       internalLineNumber,
       transportCompany,
     } = this.state;
+    if (this.state.isRectangleActive) {
+      this.localObserver.publish("activate-search", () => {});
+    }
     if (!this.state.isPolygonActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -282,7 +285,7 @@ class Stops extends React.PureComponent {
     if (this.state.isPolygonActive) {
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("deactivate-search", () => {});
+        this.localObserver.publish("activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isPolygonActive: false,
@@ -304,6 +307,9 @@ class Stops extends React.PureComponent {
     }
   };
   handleRectangleClick = () => {
+    if (this.state.isPolygonActive) {
+      this.localObserver.publish("activate-search", () => {});
+    }
     if (!this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -324,7 +330,7 @@ class Stops extends React.PureComponent {
 
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("deactivate-search", () => {});
+        this.localObserver.publish("activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isRectangleActive: false,

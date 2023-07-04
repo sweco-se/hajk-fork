@@ -177,6 +177,10 @@ class Lines extends React.PureComponent {
       throughStopPoint,
       transportCompany,
     } = this.state;
+
+    if (this.state.isRectangleActive) {
+      this.localObserver.publish("activate-search", () => {});
+    }
     if (!this.state.isPolygonActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -187,7 +191,7 @@ class Lines extends React.PureComponent {
     if (this.state.isPolygonActive) {
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("deactivate-search", () => {});
+        this.localObserver.publish("activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isPolygonActive: false,
@@ -219,6 +223,10 @@ class Lines extends React.PureComponent {
       throughStopPoint,
       transportCompany,
     } = this.state;
+
+    if (this.state.isPolygonActive) {
+      this.localObserver.publish("activate-search", () => {});
+    }
     if (!this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -229,7 +237,7 @@ class Lines extends React.PureComponent {
     if (this.state.isRectangleActive) {
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("deactivate-search", () => {});
+        this.localObserver.publish("activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isRectangleActive: false,
