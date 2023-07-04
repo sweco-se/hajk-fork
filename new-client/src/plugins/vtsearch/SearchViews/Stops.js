@@ -33,6 +33,10 @@ const StyledFirstMenuItem = styled(MenuItem)(({ theme }) => ({
   minHeight: 36,
 }));
 
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
+
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -46,6 +50,7 @@ class Stops extends React.PureComponent {
     internalLineNumber: "",
     transportCompany: "",
     transportCompanies: [],
+    searchErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -100,12 +105,15 @@ class Stops extends React.PureComponent {
   handleStopNameOrNrChange = (event) => {
     this.setState({
       stopNameOrNr: event.target.value,
+      searchErrorMessage: "",
     });
   };
 
   handleStopPointChange = (event) => {
+    const { searchErrorMessage } = this.state;
     this.setState({
       stopPoint: event.target.value,
+      searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
   };
 
@@ -165,6 +173,15 @@ class Stops extends React.PureComponent {
 
   doSearch = () => {
     const { busStopValue, stopNameOrNr, publicLine, municipality } = this.state;
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+      });
+      return;
+    }
+
     this.localObserver.publish("stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
@@ -267,6 +284,7 @@ class Stops extends React.PureComponent {
             variant="standard"
             value={this.state.stopNameOrNr}
             onChange={this.handleStopNameOrNrChange}
+            error={!(this.state.searchErrorMessage === "")}
           ></TextField>
         </Grid>
         <Grid item xs={12}>
@@ -416,6 +434,37 @@ class Stops extends React.PureComponent {
     );
   };
 
+  renderErrorMessage = (errorMessage) => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          {errorMessage}
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
+  };
+
+  renderNoErrorMessage = () => {
+    return <Typography></Typography>;
+  };
+
+  validateSearchForm = () => {
+    const { stopNameOrNr, stopPoint } = this.state;
+
+    if (stopPoint && !stopNameOrNr)
+      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
+    return "";
+  };
+
+  showErrorMessage = () => {
+    const { searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+
+    return this.renderNoErrorMessage();
+  };
+
   render() {
     return (
       <div>
@@ -428,6 +477,7 @@ class Stops extends React.PureComponent {
           {this.renderRadioButtonSection()}
           {this.renderTextParameterSection()}
           {this.renderSearchButton()}
+          {this.showErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
       </div>
