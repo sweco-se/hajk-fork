@@ -202,6 +202,16 @@ class Stops extends React.PureComponent {
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
+      let validationErrorMessage = this.validateSearchForm();
+      if (validationErrorMessage) {
+        this.localObserver.publish("deactivate-search", () => {});
+        this.setState({
+          searchErrorMessage: validationErrorMessage,
+          isPolygonActive: false,
+        });
+        return;
+      }
+
       this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
@@ -223,6 +233,16 @@ class Stops extends React.PureComponent {
     if (this.state.isRectangleActive) {
       const { busStopValue, stopNameOrNr, publicLine, municipality } =
         this.state;
+
+      let validationErrorMessage = this.validateSearchForm();
+      if (validationErrorMessage) {
+        this.localObserver.publish("deactivate-search", () => {});
+        this.setState({
+          searchErrorMessage: validationErrorMessage,
+          isRectangleActive: false,
+        });
+        return;
+      }
       this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
