@@ -44,6 +44,8 @@ class Stops extends React.PureComponent {
     selectedFormType: "",
     stopPoint: "",
     internalLineNumber: "",
+    transportCompany: "",
+    transportCompanies: [],
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -69,6 +71,11 @@ class Stops extends React.PureComponent {
     this.model.fetchAllPossibleMunicipalityZoneNames().then((result) => {
       this.setState({
         municipalities: result?.length > 0 ? result : [],
+      });
+      this.model.fetchAllPossibleTransportCompanyNames().then((result) => {
+        this.setState({
+          transportCompanies: result.length > 0 ? result : [],
+        });
       });
     });
   }
@@ -117,6 +124,12 @@ class Stops extends React.PureComponent {
   handleMunicipalChange = (event) => {
     this.setState({
       municipality: event.target.value,
+    });
+  };
+
+  handleTransportCompanyChange = (e) => {
+    this.setState({
+      transportCompany: e.target.value,
     });
   };
 
@@ -240,7 +253,7 @@ class Stops extends React.PureComponent {
   };
 
   renderTextParameterSection = () => {
-    const { municipalities } = this.state;
+    const { municipalities, transportCompanies } = this.state;
     return (
       <>
         <Grid item xs={12}>
@@ -294,10 +307,26 @@ class Stops extends React.PureComponent {
           <FormControl fullWidth>
             <Typography variant="caption">TRAFIKFÖRETAG</Typography>
             <Select
-              // value={}
-              // onChange={}
+              value={this.state.transportCompany}
+              onChange={this.handleTransportCompanyChange}
               variant="standard"
-            ></Select>
+            >
+              {transportCompanies.map((name, index) => {
+                if (name === "") {
+                  return (
+                    <MenuItem key={index} value={name}>
+                      {name}
+                    </MenuItem>
+                  );
+                } else {
+                  return (
+                    <MenuItem key={index} value={name}>
+                      <Typography>{name}</Typography>
+                    </MenuItem>
+                  );
+                }
+              })}
+            </Select>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
