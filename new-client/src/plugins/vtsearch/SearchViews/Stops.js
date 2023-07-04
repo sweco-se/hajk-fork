@@ -97,8 +97,12 @@ class Stops extends React.PureComponent {
   };
 
   handleChange = (event) => {
+    const { searchErrorMessage } = this.state;
+
     this.setState({
       busStopValue: event.target.value,
+      searchErrorMessage:
+        event.target.value === "busStops" ? searchErrorMessage : "",
     });
   };
 
@@ -289,6 +293,23 @@ class Stops extends React.PureComponent {
     );
   };
 
+  renderStopPointSection = () => {
+    if (this.state.busStopValue !== "stopPoints") return <></>;
+    return (
+      <Grid item xs={12}>
+        <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+        <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
+          <TextField
+            fullWidth
+            id="standard-basic"
+            variant="standard"
+            value={this.state.stopPoint}
+            onChange={this.handleStopPointChange}
+          ></TextField>
+        </Tooltip>
+      </Grid>
+    );
+  };
   renderTextParameterSection = () => {
     const { municipalities, transportCompanies } = this.state;
     return (
@@ -307,18 +328,7 @@ class Stops extends React.PureComponent {
             error={!(this.state.searchErrorMessage === "")}
           ></TextField>
         </Grid>
-        <Grid item xs={12}>
-          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
-          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
-            <TextField
-              fullWidth
-              id="standard-basic"
-              variant="standard"
-              value={this.state.stopPoint}
-              onChange={this.handleStopPointChange}
-            ></TextField>
-          </Tooltip>
-        </Grid>
+        {this.renderStopPointSection()}
         <Grid item xs={6}>
           <Typography variant="caption">LÄNGS PUBLIK LINJE</Typography>
           <TextField
@@ -469,9 +479,9 @@ class Stops extends React.PureComponent {
   };
 
   validateSearchForm = () => {
-    const { stopNameOrNr, stopPoint } = this.state;
+    const { stopNameOrNr, stopPoint, busStopValue } = this.state;
 
-    if (stopPoint && !stopNameOrNr)
+    if (stopPoint && !stopNameOrNr && busStopValue === "stopPoints")
       return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
 
     return "";
