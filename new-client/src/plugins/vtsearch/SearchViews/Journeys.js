@@ -192,7 +192,6 @@ class Journeys extends React.PureComponent {
           this.disablePolygonAndRectangleSearch,
           this.enablePolygonAndRectangleSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
     this.addOneHourTime(fromTime);
@@ -236,7 +235,6 @@ class Journeys extends React.PureComponent {
           this.disablePolygonAndRectangleSearch,
           this.enablePolygonAndRectangleSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
   };
@@ -263,7 +261,6 @@ class Journeys extends React.PureComponent {
           this.disablePolygonAndRectangleSearch,
           this.enablePolygonAndRectangleSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
   };
@@ -290,7 +287,6 @@ class Journeys extends React.PureComponent {
           this.disablePolygonAndRectangleSearch,
           this.enablePolygonAndRectangleSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
   };
