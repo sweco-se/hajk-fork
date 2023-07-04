@@ -336,6 +336,7 @@ class Lines extends React.PureComponent {
             id="standard-helperText"
             value={this.state.throughStopArea}
             onChange={this.handleThroughStopAreaChange}
+            error={!(this.state.searchErrorMessage === "")}
             variant="standard"
           />
         </Grid>
@@ -458,9 +459,6 @@ class Lines extends React.PureComponent {
             <StyledTypography>SÖK</StyledTypography>
           </StyledSearchButton>
         </Grid>
-        <Grid item xs={12}>
-          {this.showErrorMessage()}
-        </Grid>
       </>
     );
   };
@@ -556,6 +554,7 @@ class Lines extends React.PureComponent {
           {this.renderTrafficTypeSection()}
           {this.renderMunicipalitySection()}
           {this.renderSearchButtonSection()}
+          {this.showErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
       </div>
