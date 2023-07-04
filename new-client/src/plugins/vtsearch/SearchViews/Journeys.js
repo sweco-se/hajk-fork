@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { styled } from "@mui/material/styles";
-import { Typography, Divider, TextField } from "@mui/material";
+import { Typography, Divider, TextField, Tooltip, Button } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import {
   LocalizationProvider,
@@ -19,24 +19,33 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
-  marginTop: 10,
+  marginTop: 2,
 }));
 
 const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
   marginTop: 0,
-  marginBottom: 10,
-  width: "100%",
+  marginBottom: 1,
+  width: "99%",
   color: theme.palette.primary.main,
 }));
 
 const StyledDatePicker = styled(DatePicker)(() => ({
-  marginBottom: 40,
-  width: "100%",
+  marginBottom: 5,
+  width: "99%",
 }));
 
 const StyledDivider = styled(Divider)(({ theme }) => ({
-  marginTop: theme.spacing(3),
-  marginBottom: theme.spacing(3),
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledSearchButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  borderColor: theme.palette.primary.main,
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.main,
 }));
 
 class Journeys extends React.PureComponent {
@@ -63,6 +72,12 @@ class Journeys extends React.PureComponent {
     fromDateInputErrorMessage: "",
     endTimeInputErrorMessage: "",
     endDateInputErrorMessage: "",
+    publicLineName: "",
+    internalLineNumber: "",
+    stopArea: "",
+    stopPoint: "",
+    searchErrorMessage: "",
+    searchButtonEnabled: true,
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -86,6 +101,71 @@ class Journeys extends React.PureComponent {
     this.localObserver = this.props.localObserver;
     this.globalObserver = this.props.app.globalObserver;
   }
+
+  bindSubscriptions() {
+    const { localObserver } = this.props;
+    localObserver.subscribe("vtsearch-result-done", () => {
+      this.clearSearchInputAndButtons();
+    });
+  }
+
+  clearSearchInputAndButtons = () => {
+    this.setState({
+      selectedFromDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedFromTime: new Date(
+        new Date().setHours(
+          new Date().getHours(),
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
+      selectedEndDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedEndTime: new Date(
+        new Date().setHours(
+          new Date().getHours() + 1,
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
+      publicLineName: "",
+      internalLineNumber: "",
+      stopArea: "",
+      stopPoint: "",
+      searchErrorMessage: "",
+      fromTimeInputErrorMessage: "",
+      fromDateInputErrorMessage: "",
+      endTimeInputErrorMessage: "",
+      endDateInputErrorMessage: "",
+    });
+  };
+
+  doSearch = () => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
+    const { formatFromDate, formatEndDate } = this.getFormattedDate();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+      });
+      return;
+    }
+
+    this.clearSearchInputAndButtons();
+    this.localObserver.publish("journeys-search", {
+      selectedFromDate: formatFromDate,
+      selectedEndDate: formatEndDate,
+      publicLineName: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
+      selectedFormType: "",
+      searchCallback: this.clearSearchInputAndButtons,
+    });
+  };
 
   handleFromTimeChange = (fromTime) => {
     this.updateStateForTimeOrDateChange(fromTime);
@@ -212,6 +292,60 @@ class Journeys extends React.PureComponent {
     );
   };
 
+  handleStopAreaChange = (event) => {
+    const { stopPoint } = this.state;
+
+    let spatialSearchAllowed = true;
+    if (stopPoint && !event.target.value) spatialSearchAllowed = false;
+
+    if (!spatialSearchAllowed) {
+      this.setState(
+        {
+          isRectangleActive: false,
+          isPolygonActive: false,
+        },
+        this.deactivateSearch
+      );
+    }
+
+    this.setState({
+      stopArea: event.target.value,
+      searchErrorMessage: "",
+    });
+  };
+
+  handleStopPointChange = (event) => {
+    const { searchErrorMessage, stopArea } = this.state;
+    let spatialSearchAllowed = event.target.value && stopArea;
+
+    if (!spatialSearchAllowed) {
+      this.setState(
+        {
+          isRectangleActive: false,
+          isPolygonActive: false,
+        },
+        this.deactivateSearch
+      );
+    }
+
+    this.setState({
+      stopPoint: event.target.value,
+      searchErrorMessage: event.target.value ? searchErrorMessage : "",
+    });
+  };
+
+  handleInternalLineNrChange = (event) => {
+    this.setState({
+      internalLineNumber: event.target.value,
+    });
+  };
+
+  handlePublicLineNameChange = (event) => {
+    this.setState({
+      publicLineName: event.target.value,
+    });
+  };
+
   reactiveSelectSpatialTool = () => {
     if (this.state.spatialToolsEnabled && this.state.isPolygonActive)
       this.activateSearch("Polygon");
@@ -248,11 +382,14 @@ class Journeys extends React.PureComponent {
   };
 
   disablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: false }, this.deactivateSearch);
+    this.setState(
+      { spatialToolsEnabled: false, searchButtonEnabled: false },
+      this.deactivateSearch
+    );
   };
 
   enablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: true });
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
   validateDateAndTime = (
@@ -340,7 +477,6 @@ class Journeys extends React.PureComponent {
 
   handlePolygonClick = () => {
     if (!this.state.spatialToolsEnabled) return;
-
     this.deactivateSearch();
     this.setState(
       {
@@ -348,7 +484,19 @@ class Journeys extends React.PureComponent {
         isRectangleActive: false,
       },
       () => {
-        if (this.state.isPolygonActive) this.activateSearch("Polygon");
+        if (this.state.isPolygonActive) {
+          let validationErrorMessage = this.validateSearchForm();
+          if (validationErrorMessage) {
+            this.deactivateSearch();
+            this.setState({
+              searchErrorMessage: validationErrorMessage,
+              isPolygonActive: false,
+            });
+            return;
+          }
+
+          this.activateSearch("Polygon");
+        }
       }
     );
     if (this.state.isPolygonActive) {
@@ -366,12 +514,29 @@ class Journeys extends React.PureComponent {
         isPolygonActive: false,
       },
       () => {
-        if (this.state.isRectangleActive) this.activateSearch("Box");
+        if (this.state.isRectangleActive) {
+          let validationErrorMessage = this.validateSearchForm();
+          if (validationErrorMessage) {
+            this.deactivateSearch();
+            this.setState({
+              searchErrorMessage: validationErrorMessage,
+              isRectangleActive: false,
+            });
+            return;
+          }
+
+          this.activateSearch("Box");
+        }
       }
     );
-    console.log(this.state.isRectangleActive);
     if (this.state.isRectangleActive) {
       this.localObserver.publish("activate-search", () => {});
+    }
+  };
+
+  handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      this.doSearch();
     }
   };
 
@@ -380,9 +545,15 @@ class Journeys extends React.PureComponent {
   };
 
   activateSearch = (spatialType) => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
     this.localObserver.publish("journeys-search", {
+      publicLineName: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       selectedFormType: spatialType,
@@ -471,24 +642,22 @@ class Journeys extends React.PureComponent {
               },
             }}
           />
-          <Grid>
-            <StyledDatePicker
-              format="yyyy-MM-dd"
-              value={this.state.selectedFromDate}
-              onChange={this.handleFromDateChange}
-              onOpen={this.disableDrag}
-              onClose={this.enableDrag}
-              onError={(newError) =>
-                this.setFromDateInputErrorMessage(newError)
-              }
-              slotProps={{
-                textField: {
-                  variant: "standard",
-                  helperText: this.state.fromDateInputErrorMessage,
-                },
-              }}
-            />
-          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedFromDate}
+            onChange={this.handleFromDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setFromDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromDateInputErrorMessage,
+              },
+            }}
+          />
         </Grid>
       </>
     );
@@ -515,23 +684,40 @@ class Journeys extends React.PureComponent {
             }}
           />
         </Grid>
-        <StyledDatePicker
-          format="yyyy-MM-dd"
-          value={this.state.selectedEndDate}
-          onChange={this.handleEndDateChange}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-          onError={(newError) => this.setEndDateInputErrorMessage(newError)}
-          slotProps={{
-            textField: {
-              variant: "standard",
-              helperText: this.state.endDateInputErrorMessage,
-            },
-          }}
-        />
-        {this.showErrorMessage()}
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedEndDate}
+            onChange={this.handleEndDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setEndDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endDateInputErrorMessage,
+              },
+            }}
+          />
+        </Grid>
       </>
     );
+  };
+
+  validateSearchForm = () => {
+    const { stopArea, stopPoint } = this.state;
+    if (stopPoint && !stopArea)
+      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
+    return "";
+  };
+
+  showSearchErrorMessage = () => {
+    const { searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+
+    return this.renderNoErrorMessage();
   };
 
   showErrorMessage = () => {
@@ -540,6 +726,16 @@ class Journeys extends React.PureComponent {
       this.renderErrorMessageInvalidTime,
       this.renderErrorMessageStartTimeBiggerThanEndTime,
       this.renderNoErrorMessage
+    );
+  };
+
+  renderErrorMessage = (errorMessage) => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          {errorMessage}
+        </StyledErrorMessageTypography>
+      </Grid>
     );
   };
 
@@ -575,6 +771,79 @@ class Journeys extends React.PureComponent {
 
   renderNoErrorMessage = () => {
     return <Typography></Typography>;
+  };
+
+  renderStopAreaStopPointSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSNAMN ELLER -NR</Typography>
+          <TextField
+            fullWidth
+            id="standard-helperText"
+            value={this.state.stopArea}
+            onChange={this.handleStopAreaChange}
+            error={!(this.state.searchErrorMessage === "")}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-helperText"
+              value={this.state.stopPoint}
+              onChange={this.handleStopPointChange}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderPublicAndTechnicalNrSection = () => {
+    return (
+      <>
+        <Grid item xs={6}>
+          <Typography variant="caption">PUBLIKT NR</Typography>
+          <TextField
+            id="standard-helperText"
+            onChange={this.handlePublicLineNameChange}
+            value={this.state.publicLineName}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="caption">TEKNISKT NR</Typography>
+          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
+            <TextField
+              id="standard-helperText"
+              onChange={this.handleInternalLineNrChange}
+              value={this.state.internalLineNumber}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderSearchButtonSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <StyledSearchButton
+            onClick={this.doSearch}
+            variant="outlined"
+            disabled={!this.state.searchButtonEnabled}
+          >
+            <StyledTypography>SÖK</StyledTypography>
+          </StyledSearchButton>
+        </Grid>
+      </>
+    );
   };
 
   renderSpatialSearchSection = () => {
@@ -627,11 +896,23 @@ class Journeys extends React.PureComponent {
   render() {
     return (
       <div>
-        <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
-          {this.renderFromDateSection()}
-          {this.renderEndDateSection()}
-        </StyledLocalizationProvider>
-        {this.renderSpatialSearchSection()}
+        <Grid
+          container
+          justifyContent="center"
+          spacing={2}
+          onKeyPress={this.handleKeyPress}
+        >
+          <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
+            {this.renderFromDateSection()}
+            {this.renderEndDateSection()}
+          </StyledLocalizationProvider>
+          {this.renderStopAreaStopPointSection()}
+          {this.renderPublicAndTechnicalNrSection()}
+          {this.renderSearchButtonSection()}
+          {this.showErrorMessage()}
+          {this.showSearchErrorMessage()}
+          {this.renderSpatialSearchSection()}
+        </Grid>
       </div>
     );
   }
