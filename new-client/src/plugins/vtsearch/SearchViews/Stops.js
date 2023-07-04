@@ -42,6 +42,7 @@ class Stops extends React.PureComponent {
     municipalities: [],
     municipality: "",
     selectedFormType: "",
+    stopPoint: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -91,6 +92,12 @@ class Stops extends React.PureComponent {
   handleStopNameOrNrChange = (event) => {
     this.setState({
       stopNameOrNr: event.target.value,
+    });
+  };
+
+  handleStopPointChange = (event) => {
+    this.setState({
+      stopPoint: event.target.value,
     });
   };
 
@@ -244,13 +251,13 @@ class Stops extends React.PureComponent {
         </Grid>
         <Grid item xs={12}>
           <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
-          <Tooltip title="Sökning sker på ett eller flera läge via kommaseparerad lista">
+          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
             <TextField
               fullWidth
               id="standard-basic"
               variant="standard"
-              value={this.state.stopNameOrNr}
-              onChange={this.handleStopNameOrNrChange}
+              value={this.state.stopPoint}
+              onChange={this.handleStopPointChange}
             ></TextField>
           </Tooltip>
         </Grid>
