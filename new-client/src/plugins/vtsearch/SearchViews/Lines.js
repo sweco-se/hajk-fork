@@ -140,6 +140,7 @@ class Lines extends React.PureComponent {
       trafficTransport,
       throughStopArea,
       throughStopPoint,
+      transportCompany,
     } = this.state;
 
     let validationErrorMessage = this.validateSearchForm();
@@ -157,6 +158,7 @@ class Lines extends React.PureComponent {
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
       throughStopPoint: throughStopPoint,
+      transportCompanyName: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
