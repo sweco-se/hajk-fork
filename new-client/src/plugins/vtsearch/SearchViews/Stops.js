@@ -37,6 +37,9 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
+const SEARCH_ERROR_MESSAGE =
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -97,28 +100,80 @@ class Stops extends React.PureComponent {
   };
 
   handleChange = (event) => {
-    const { searchErrorMessage } = this.state;
+    const { stopPoint, stopNameOrNr, isPolygonActive, isRectangleActive } =
+      this.state;
 
     this.setState({
       busStopValue: event.target.value,
-      searchErrorMessage:
-        event.target.value === "busStops" ? searchErrorMessage : "",
+      searchErrorMessage: "",
     });
+
+    if (
+      event.target.value === "stopPoints" &&
+      (isPolygonActive || isRectangleActive) &&
+      stopPoint &&
+      !stopNameOrNr
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleStopNameOrNrChange = (event) => {
+    const { stopPoint, isPolygonActive, isRectangleActive, busStopValue } =
+      this.state;
+
     this.setState({
       stopNameOrNr: event.target.value,
       searchErrorMessage: "",
     });
+
+    if (
+      busStopValue === "stopPoints" &&
+      (isPolygonActive || isRectangleActive) &&
+      stopPoint &&
+      !event.target.value
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleStopPointChange = (event) => {
-    const { searchErrorMessage } = this.state;
+    const {
+      searchErrorMessage,
+      stopNameOrNr,
+      busStopValue,
+      isPolygonActive,
+      isRectangleActive,
+    } = this.state;
+
     this.setState({
       stopPoint: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
+
+    if (
+      busStopValue === "stopPoints" &&
+      (isPolygonActive || isRectangleActive) &&
+      event.target.value &&
+      !stopNameOrNr
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleInternalLineNrChange = (event) => {
