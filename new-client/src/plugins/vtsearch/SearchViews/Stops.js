@@ -176,7 +176,15 @@ class Stops extends React.PureComponent {
   };
 
   doSearch = () => {
-    const { busStopValue, stopNameOrNr, publicLine, municipality } = this.state;
+    const {
+      busStopValue,
+      stopNameOrNr,
+      publicLineName,
+      municipality,
+      stopPoint,
+      internalLineNumber,
+      transportCompany,
+    } = this.state;
 
     let validationErrorMessage = this.validateSearchForm();
     if (validationErrorMessage) {
@@ -189,15 +197,26 @@ class Stops extends React.PureComponent {
     this.localObserver.publish("stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
-      publicLine: publicLine,
+      publicLine: publicLineName,
       municipality: municipality.gid,
+      stopPoint: stopPoint,
+      internalLineNumber: internalLineNumber,
+      transportCompany: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
   };
 
   handlePolygonClick = () => {
-    const { busStopValue, stopNameOrNr, publicLine, municipality } = this.state;
+    const {
+      busStopValue,
+      stopNameOrNr,
+      publicLineName,
+      municipality,
+      stopPoint,
+      internalLineNumber,
+      transportCompany,
+    } = this.state;
     if (!this.state.isPolygonActive) {
       this.localObserver.publish("activate-search", () => {});
     }
@@ -219,8 +238,11 @@ class Stops extends React.PureComponent {
       this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
-        publicLine: publicLine,
+        publicLine: publicLineName,
         municipality: municipality.name,
+        stopPoint: stopPoint,
+        internalLineNumber: internalLineNumber,
+        transportCompany: transportCompany,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
@@ -235,8 +257,15 @@ class Stops extends React.PureComponent {
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
-      const { busStopValue, stopNameOrNr, publicLine, municipality } =
-        this.state;
+      const {
+        busStopValue,
+        stopNameOrNr,
+        publicLineName,
+        municipality,
+        stopPoint,
+        internalLineNumber,
+        transportCompany,
+      } = this.state;
 
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
@@ -250,8 +279,11 @@ class Stops extends React.PureComponent {
       this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
-        publicLine: publicLine,
+        publicLine: publicLineName,
         municipality: municipality.name,
+        stopPoint: stopPoint,
+        internalLineNumber: internalLineNumber,
+        transportCompany: transportCompany,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
