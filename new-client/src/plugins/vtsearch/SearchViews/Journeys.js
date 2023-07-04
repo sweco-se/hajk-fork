@@ -48,6 +48,9 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.primary.main,
 }));
 
+const SEARCH_ERROR_MESSAGE =
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
 class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -293,45 +296,48 @@ class Journeys extends React.PureComponent {
   };
 
   handleStopAreaChange = (event) => {
-    const { stopPoint } = this.state;
-
-    let spatialSearchAllowed = true;
-    if (stopPoint && !event.target.value) spatialSearchAllowed = false;
-
-    if (!spatialSearchAllowed) {
-      this.setState(
-        {
-          isRectangleActive: false,
-          isPolygonActive: false,
-        },
-        this.deactivateSearch
-      );
-    }
+    const { stopPoint, isPolygonActive, isRectangleActive } = this.state;
 
     this.setState({
       stopArea: event.target.value,
       searchErrorMessage: "",
     });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      stopPoint &&
+      !event.target.value
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleStopPointChange = (event) => {
-    const { searchErrorMessage, stopArea } = this.state;
-    let spatialSearchAllowed = event.target.value && stopArea;
-
-    if (!spatialSearchAllowed) {
-      this.setState(
-        {
-          isRectangleActive: false,
-          isPolygonActive: false,
-        },
-        this.deactivateSearch
-      );
-    }
+    const { searchErrorMessage, stopArea, isPolygonActive, isRectangleActive } =
+      this.state;
 
     this.setState({
       stopPoint: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      event.target.value &&
+      !stopArea
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleInternalLineNrChange = (event) => {

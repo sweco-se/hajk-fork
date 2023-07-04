@@ -42,6 +42,9 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
 }));
 
+const SEARCH_ERROR_MESSAGE =
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
@@ -279,18 +282,52 @@ class Lines extends React.PureComponent {
   };
 
   handleThroughStopAreaChange = (event) => {
+    const { throughStopPoint, isPolygonActive, isRectangleActive } = this.state;
+
     this.setState({
       throughStopArea: event.target.value,
       searchErrorMessage: "",
     });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      throughStopPoint &&
+      !event.target.value
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleThroughStopPointChange = (event) => {
-    const { searchErrorMessage } = this.state;
+    const {
+      searchErrorMessage,
+      throughStopArea,
+      isPolygonActive,
+      isRectangleActive,
+    } = this.state;
+
     this.setState({
       throughStopPoint: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      event.target.value &&
+      !throughStopArea
+    ) {
+      this.localObserver.publish("activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
   };
 
   handleKeyPress = (event) => {
@@ -479,8 +516,7 @@ class Lines extends React.PureComponent {
 
   validateSearchForm = () => {
     const { throughStopArea, throughStopPoint } = this.state;
-    if (throughStopPoint && !throughStopArea)
-      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+    if (throughStopPoint && !throughStopArea) return SEARCH_ERROR_MESSAGE;
 
     return "";
   };
