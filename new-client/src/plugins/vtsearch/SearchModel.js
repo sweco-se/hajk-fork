@@ -1049,6 +1049,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
+    filterOnInternalLine,
+    filterOnTransportCompany,
     filterOnWkt,
     selectedFormType
   ) {
@@ -1071,16 +1073,30 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
+    if (filterOnInternalLine) {
+      //Should instead check/format numbers in comma separated list for geoserver
+      if (this.containsOnlyNumbers(filterOnInternalLine))
+        viewParams =
+          viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+    }
+    if (filterOnTransportCompany)
+      viewParams =
+        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
+      filterOnInternalLine ||
+      filterOnTransportCompany ||
       filterOnWkt
     )
       url = url + viewParams;
+
+    console.log("SEARCH: " + url);
     url = this.encodeUrlForGeoServer(url);
+    console.log("ENCODED: " + url);
 
     fetch(url).then((res) => {
       res
@@ -1128,6 +1144,9 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
+    filterOnDesignation,
+    filterOnInternalLine,
+    filterOnTransportCompany,
     filterOnWkt,
     selectedFormType
   ) {
@@ -1150,6 +1169,19 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
+    if (filterOnDesignation) {
+      //Should first format comma separated list for geoserver
+      viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
+    }
+    if (filterOnInternalLine) {
+      //Should instead check/format numbers in comma separated list for geoserver
+      if (this.containsOnlyNumbers(filterOnInternalLine))
+        viewParams =
+          viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+    }
+    if (filterOnTransportCompany)
+      viewParams =
+        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
@@ -1159,7 +1191,9 @@ export default class SearchModel {
       filterOnWkt
     )
       url = url + viewParams;
+    console.log("SEARCH: " + url);
     url = this.encodeUrlForGeoServer(url);
+    console.log("ENCODED: " + url);
 
     fetch(url).then((res) => {
       res
