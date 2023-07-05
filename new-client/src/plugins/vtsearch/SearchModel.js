@@ -1103,10 +1103,7 @@ export default class SearchModel {
       filterOnWkt
     )
       url = url + viewParams;
-
-    console.log("SEARCH: " + url);
     url = this.encodeUrlForGeoServer(url);
-    console.log("ENCODED: " + url);
 
     fetch(url).then((res) => {
       res
@@ -1203,9 +1200,7 @@ export default class SearchModel {
       filterOnWkt
     )
       url = url + viewParams;
-    console.log("SEARCH: " + url);
     url = this.encodeUrlForGeoServer(url);
-    console.log("ENCODED: " + url);
 
     fetch(url).then((res) => {
       res

@@ -211,20 +211,6 @@ export default class MapViewModel {
     selectedFormType,
     searchCallback,
   }) => {
-    console.log(
-      "search stopAreas: " +
-        stopNameOrNr +
-        " " +
-        publicLine +
-        " " +
-        municipality +
-        " " +
-        stopPoint +
-        " " +
-        internalLineNumber +
-        " " +
-        transportCompany
-    );
     var value = selectedFormType;
     var geometryFunction = undefined;
     if (selectedFormType === "Box") {
