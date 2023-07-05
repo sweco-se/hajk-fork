@@ -221,11 +221,16 @@ class Stops extends React.PureComponent {
   clearSearchInputAndButtons = () => {
     this.setState({
       stopNameOrNr: "",
-      publicLine: "",
+      publicLineName: "",
       municipality: "",
       selectedFormType: "",
+      stopPoint: "",
+      internalLineNumber: "",
+      transportCompany: "",
+      searchErrorMessage: "",
     });
   };
+
   inactivateSpatialSearchButtons = () => {
     this.setState({ isPolygonActive: false, isRectangleActive: false });
   };
