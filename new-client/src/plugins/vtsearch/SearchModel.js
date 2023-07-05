@@ -863,6 +863,8 @@ export default class SearchModel {
           return feature.properties.Name;
         });
 
+        transportCompanies.sort();
+
         if (addEmptyTransportCompany) transportCompanies.unshift("");
 
         return transportCompanies;
