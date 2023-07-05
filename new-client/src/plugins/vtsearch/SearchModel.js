@@ -66,6 +66,17 @@ export default class SearchModel {
   };
 
   /**
+   * Private method that adjusts a comma-separated string so that it's supported for a web browser and GeoServer.
+   * @param {string} commaSeparatedString The comma-separated list that needs to be adjusted.
+   * @returns {string} Returns a supported string for GeoServer.
+   *
+   * @memberof SearchModel
+   */
+  encodeCommaSeparatedStringForGeoServer = (commaSeparatedString) => {
+    return commaSeparatedString.replace(/,/g, "%5C,");
+  };
+
+  /**
    * Private method that encodes the swedish characters å, ä and ö.
    * @param {string} url The url that needs to be encoded.
    * @returns {string} Returns an encoded url.
@@ -1074,10 +1085,9 @@ export default class SearchModel {
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
     if (filterOnInternalLine) {
-      //Should instead check/format numbers in comma separated list for geoserver
-      if (this.containsOnlyNumbers(filterOnInternalLine))
-        viewParams =
-          viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+      filterOnInternalLine =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
+      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
     if (filterOnTransportCompany)
       viewParams =
@@ -1170,14 +1180,14 @@ export default class SearchModel {
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
     if (filterOnDesignation) {
-      //Should first format comma separated list for geoserver
+      filterOnDesignation =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
       viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
     }
     if (filterOnInternalLine) {
-      //Should instead check/format numbers in comma separated list for geoserver
-      if (this.containsOnlyNumbers(filterOnInternalLine))
-        viewParams =
-          viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+      filterOnInternalLine =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
+      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
     if (filterOnTransportCompany)
       viewParams =
@@ -1188,6 +1198,8 @@ export default class SearchModel {
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
+      filterOnInternalLine ||
+      filterOnTransportCompany ||
       filterOnWkt
     )
       url = url + viewParams;
