@@ -66,6 +66,17 @@ export default class SearchModel {
   };
 
   /**
+   * Private method that adjusts a comma-separated string so that it's supported for a web browser and GeoServer.
+   * @param {string} commaSeparatedString The comma-separated list that needs to be adjusted.
+   * @returns {string} Returns a supported string for GeoServer.
+   *
+   * @memberof SearchModel
+   */
+  encodeCommaSeparatedStringForGeoServer = (commaSeparatedString) => {
+    return commaSeparatedString.replace(/,/g, "%5C,");
+  };
+
+  /**
    * Private method that encodes the swedish characters å, ä and ö.
    * @param {string} url The url that needs to be encoded.
    * @returns {string} Returns an encoded url.
@@ -1049,6 +1060,8 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
+    filterOnInternalLine,
+    filterOnTransportCompany,
     filterOnWkt,
     selectedFormType
   ) {
@@ -1071,12 +1084,22 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
+    if (filterOnInternalLine) {
+      filterOnInternalLine =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
+      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+    }
+    if (filterOnTransportCompany)
+      viewParams =
+        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
+      filterOnInternalLine ||
+      filterOnTransportCompany ||
       filterOnWkt
     )
       url = url + viewParams;
@@ -1128,6 +1151,9 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
+    filterOnDesignation,
+    filterOnInternalLine,
+    filterOnTransportCompany,
     filterOnWkt,
     selectedFormType
   ) {
@@ -1150,12 +1176,27 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
+    if (filterOnDesignation) {
+      filterOnDesignation =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
+      viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
+    }
+    if (filterOnInternalLine) {
+      filterOnInternalLine =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
+      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+    }
+    if (filterOnTransportCompany)
+      viewParams =
+        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
+      filterOnInternalLine ||
+      filterOnTransportCompany ||
       filterOnWkt
     )
       url = url + viewParams;

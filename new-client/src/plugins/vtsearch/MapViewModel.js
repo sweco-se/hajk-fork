@@ -205,6 +205,9 @@ export default class MapViewModel {
     stopNameOrNr,
     publicLine,
     municipality,
+    stopPoint,
+    internalLineNumber,
+    transportCompany,
     selectedFormType,
     searchCallback,
   }) => {
@@ -216,9 +219,22 @@ export default class MapViewModel {
     }
     if (selectedFormType === "") {
       if (busStopValue === "stopAreas") {
-        this.model.getStopAreas(stopNameOrNr, publicLine, municipality);
+        this.model.getStopAreas(
+          stopNameOrNr,
+          publicLine,
+          municipality,
+          internalLineNumber,
+          transportCompany
+        );
       } else {
-        this.model.getStopPoints(stopNameOrNr, publicLine, municipality);
+        this.model.getStopPoints(
+          stopNameOrNr,
+          publicLine,
+          municipality,
+          stopPoint,
+          internalLineNumber,
+          transportCompany
+        );
       }
     } else {
       this.getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
@@ -228,6 +244,8 @@ export default class MapViewModel {
             stopNameOrNr,
             publicLine,
             municipality,
+            internalLineNumber,
+            transportCompany,
             wktFeatureGeom,
             selectedFormType
           );
@@ -236,6 +254,9 @@ export default class MapViewModel {
             stopNameOrNr,
             publicLine,
             municipality,
+            stopPoint,
+            internalLineNumber,
+            transportCompany,
             wktFeatureGeom,
             selectedFormType
           );

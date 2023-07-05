@@ -221,11 +221,16 @@ class Stops extends React.PureComponent {
   clearSearchInputAndButtons = () => {
     this.setState({
       stopNameOrNr: "",
-      publicLine: "",
+      publicLineName: "",
       municipality: "",
       selectedFormType: "",
+      stopPoint: "",
+      internalLineNumber: "",
+      transportCompany: "",
+      searchErrorMessage: "",
     });
   };
+
   inactivateSpatialSearchButtons = () => {
     this.setState({ isPolygonActive: false, isRectangleActive: false });
   };
@@ -297,7 +302,7 @@ class Stops extends React.PureComponent {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
-        municipality: municipality.name,
+        municipality: municipality.gid,
         stopPoint: stopPoint,
         internalLineNumber: internalLineNumber,
         transportCompany: transportCompany,
@@ -341,7 +346,7 @@ class Stops extends React.PureComponent {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
-        municipality: municipality.name,
+        municipality: municipality.gid,
         stopPoint: stopPoint,
         internalLineNumber: internalLineNumber,
         transportCompany: transportCompany,
