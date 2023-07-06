@@ -1,10 +1,7 @@
 import React from "react";
 import Paper from "@mui/material/Paper";
 import VirtualizedTable from "./VirtualizedTable";
-//import withStyles from "@mui/styles/withStyles";
 import { SortDirection } from "react-virtualized";
-
-//const styles = (theme) => ({});
 
 /**
  * @summary Attribute table for objects in the map
@@ -52,7 +49,11 @@ class AttributeTable extends React.Component {
 
   getFeaturePropertiesKeys(searchResult) {
     const features = this.getFeaturesFromSearchResult(searchResult);
-    return Object.keys(features[0].properties);
+    return Object.keys(
+      features[0].properties
+        ? features[0].properties
+        : features[0].getProperties()
+    ).filter((key) => key);
   }
 
   getRowIndexFromOlFeatureId = (olFeatureId) => {
@@ -119,6 +120,9 @@ class AttributeTable extends React.Component {
       attributeDisplayOrder,
       propertyKeys
     );
+    propertyKeys = propertyKeys.filter((propertyKey) => {
+      return propertyKey !== null;
+    });
 
     return propertyKeys.map((key) => {
       var displayName = this.getDisplayName(key);
@@ -135,9 +139,16 @@ class AttributeTable extends React.Component {
     const { searchResult } = this.props;
     const features = this.getFeaturesFromSearchResult(searchResult);
     return features.map((feature, index) => {
-      return Object.keys(feature.properties).reduce(
+      return Object.keys(
+        feature.properties ? feature.properties : feature.getProperties()
+      ).reduce(
         (acc, key) => {
-          return { ...acc, [key]: feature.properties[key] };
+          return {
+            ...acc,
+            [key]: feature.properties
+              ? feature.properties[key]
+              : feature.getProperties()[key],
+          };
         },
         { olFeatureId: feature.id, searchResultId: searchResult.id }
       );
@@ -174,6 +185,9 @@ class AttributeTable extends React.Component {
     var regex = /(\.\d+)|(\d+(\.\d+)?)|([^\d.]+)|(\.\D+)|(\.$)/g;
 
     if (compareOne === compareTwo) return 0;
+    if (compareOne === undefined && compareTwo === undefined) return 0;
+    if (compareOne === undefined && compareTwo !== undefined) return 1;
+    if (compareOne !== undefined && compareTwo === undefined) return -1;
 
     compareOneString = compareOne.toString().toLowerCase().match(regex);
 
@@ -279,5 +293,4 @@ class AttributeTable extends React.Component {
   }
 }
 
-//export default withStyles(styles)(AttributeTable);
 export default AttributeTable;

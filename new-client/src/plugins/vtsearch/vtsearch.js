@@ -9,7 +9,7 @@ import Journeys from "./SearchViews/Journeys";
 import Stops from "./SearchViews/Stops";
 import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
-import { Tooltip, Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -95,8 +95,8 @@ import Search from "./../../components/Search/Search";
 
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   marginTop: theme.spacing(1),
-  marginLeft: 0,
-  marginBottom: "24px",
+  marginLeft: theme.spacing(0),
+  marginBottom: theme.spacing(3),
   minWidth: 200,
 }));
 
@@ -104,6 +104,15 @@ const LoaderContainer = styled("div")(() => ({
   flexBasis: "100%",
   minHeight: "5px",
   marginTop: "10px",
+}));
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  padding: 7,
+  transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
+  transition: (theme) =>
+    theme.transitions.create("transform", {
+      duration: (theme) => theme.transitions.duration.shortest,
+    }),
 }));
 
 const searchTypes = {
@@ -363,21 +372,14 @@ class VTSearch extends React.PureComponent {
     //   </IconButton>
     // );
     return (
-      <IconButton
-        sx={{
-          transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
-          transition: (theme) =>
-            theme.transitions.create("transform", {
-              duration: (theme) => theme.transitions.duration.shortest,
-            }),
-        }}
+      <StyledIconButton
         onClick={this.handleExpandClick}
         aria-expanded={this.state.expanded}
         aria-label="show more"
         size="large"
       >
         <ExpandMoreIcon />
-      </IconButton>
+      </StyledIconButton>
     );
   }
 
@@ -425,7 +427,7 @@ class VTSearch extends React.PureComponent {
 
   render() {
     const { app, options } = this.props;
-    const { classes, children, ...baseWindowProps } = this.props; // BaseWindowPlugin can't handle content in classes.
+    const { classes, ...baseWindowProps } = this.props; // BaseWindowPlugin can't handle content in classes.
 
     //OBS We need to keep the tooltip and IconButton to render menu!! //Tobias
     return (
