@@ -107,7 +107,7 @@ const LoaderContainer = styled("div")(() => ({
 }));
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  padding: 7,
+  padding: 7, // ???
   transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
   transition: (theme) =>
     theme.transitions.create("transform", {
@@ -174,6 +174,7 @@ class VTSearch extends React.PureComponent {
       app: props.app,
       map: props.map,
       localObserver: this.localObserver,
+      globalObserver: this.globalObserver,
       model: this.searchModel,
     });
     this.bindSubscriptions();
@@ -181,16 +182,16 @@ class VTSearch extends React.PureComponent {
 
   bindSubscriptions = () => {
     // Subscribes for an event when the vt-search has begun.
-    this.localObserver.subscribe("vtsearch-result-begin", (label) => {
+    this.localObserver.subscribe("vt-result-begin", (label) => {
       this.setState({ loading: true });
     });
 
-    this.localObserver.subscribe("vtsearch-result-done", (ans) => {
+    this.localObserver.subscribe("vt-result-done", (ans) => {
       this.setState({ loading: false });
     });
 
     this.localObserver.subscribe("vtsearch-chosen", (typeOfSearch) => {
-      this.localObserver.publish("deactivate-search");
+      this.localObserver.publish("vt-deactivate-search");
       this.setState({
         activeSearchTool: typeOfSearch,
         expanded: typeOfSearch === searchTypes.DEFAULT ? false : true,
@@ -214,7 +215,7 @@ class VTSearch extends React.PureComponent {
           attributesToDisplay
         );
 
-        this.localObserver.publish("vtsearch-result-done", {
+        this.localObserver.publish("vt-result-done", {
           result: searchResult,
           zoomToSearchResult: true,
         });
@@ -240,7 +241,7 @@ class VTSearch extends React.PureComponent {
 
   handleChange = (e) => {
     var typeOfSearch = searchTypes[e.target.value];
-    this.localObserver.publish("deactivate-search");
+    this.localObserver.publish("vt-deactivate-search");
     this.setState({
       activeSearchTool: typeOfSearch,
       expanded: typeOfSearch === searchTypes.DEFAULT ? false : true,
@@ -425,7 +426,7 @@ class VTSearch extends React.PureComponent {
   }
 
   onClickSearchContainer = () => {
-    this.localObserver.publish("vtsearch-clicked");
+    this.localObserver.publish("vt-clicked");
   };
 
   render() {

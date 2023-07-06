@@ -5,6 +5,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { Tooltip } from "@mui/material";
 
 /**
  * @summary Window size handling
@@ -13,7 +15,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
  * @class PanelToolbox
  * @extends {React.PureComponent}
  */
-
 // const styles = (theme) => {
 //   return {
 //     iconButtonRoot: {
@@ -57,7 +58,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: false,
       normalVisible: true,
     });
-    localObserver.publish("search-result-list-minimized");
+    localObserver.publish("vt-search-result-list-minimized");
   };
 
   maximize = () => {
@@ -67,7 +68,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: true,
       normalVisible: true,
     });
-    localObserver.publish("search-result-list-maximized");
+    localObserver.publish("vt-search-result-list-maximized");
   };
 
   normalize = () => {
@@ -77,7 +78,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: true,
       normalVisible: false,
     });
-    localObserver.publish("search-result-list-normal");
+    localObserver.publish("vt-search-result-list-normal");
   };
 
   close = () => {
@@ -87,20 +88,37 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: false,
       normalVisible: true,
     });
-    localObserver.publish("search-result-list-close");
+    localObserver.publish("vt-search-result-list-close");
+  };
+
+  #export = () => {
+    const { localObserver } = this.props;
+    localObserver.publish("vt-export-search-result-clicked");
   };
 
   renderButton = (onClickCallback, iconElement) => {
     return (
       <StyledIconButton onClick={onClickCallback} size="large">
         {iconElement === "minimize" ? (
-          <ExpandMoreIcon />
+          <Tooltip title="Minimera">
+            <ExpandMoreIcon />
+          </Tooltip>
         ) : iconElement === "maximize" ? (
-          <StyledExpandMoreIconTransformed />
+          <Tooltip title="Maximera">
+            <StyledExpandMoreIconTransformed />
+          </Tooltip>
         ) : iconElement === "normalize" ? (
-          <NormalIcon />
+          <Tooltip title="Återställ">
+            <NormalIcon />
+          </Tooltip>
         ) : iconElement === "close" ? (
-          <CloseIcon />
+          <Tooltip title="Stäng">
+            <CloseIcon />
+          </Tooltip>
+        ) : iconElement === "export" ? (
+          <Tooltip title="Exportera">
+            <SaveAltIcon />
+          </Tooltip>
         ) : null}
       </StyledIconButton>
     );
@@ -109,9 +127,9 @@ class PanelToolbox extends React.PureComponent {
   render() {
     return (
       <div>
+        {this.renderButton(this.#export, "export")}
         {this.state.minimizeVisible &&
           this.renderButton(this.minimize, "minimize")}
-
         {this.state.maximizeVisible &&
           this.renderButton(this.maximize, "maximize")}
         {this.state.normalVisible &&

@@ -110,7 +110,7 @@ class Lines extends React.PureComponent {
   };
   bindSubscriptions() {
     const { localObserver } = this.props;
-    localObserver.subscribe("vtsearch-result-done", () => {
+    localObserver.subscribe("vt-result-done", () => {
       this.clearSearchInputAndButtons();
     });
   }
@@ -146,7 +146,7 @@ class Lines extends React.PureComponent {
       transportCompany,
     } = this.state;
 
-    let validationErrorMessage = this.validateSearchForm();
+    let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
       this.setState({
         searchErrorMessage: validationErrorMessage,
@@ -154,7 +154,7 @@ class Lines extends React.PureComponent {
       return;
     }
 
-    this.localObserver.publish("routes-search", {
+    this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
       internalLineNumber: internalLineNumber,
       municipality: municipality.gid,
@@ -179,19 +179,19 @@ class Lines extends React.PureComponent {
     } = this.state;
 
     if (this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (!this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
-      let validationErrorMessage = this.validateSearchForm();
+      let validationErrorMessage = this.#validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("activate-search", () => {});
+        this.localObserver.publish("vt-activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isPolygonActive: false,
@@ -199,7 +199,7 @@ class Lines extends React.PureComponent {
         return;
       }
 
-      this.localObserver.publish("routes-search", {
+      this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
@@ -225,19 +225,19 @@ class Lines extends React.PureComponent {
     } = this.state;
 
     if (this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (!this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isRectangleActive || this.state.isPolygonActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
-      let validationErrorMessage = this.validateSearchForm();
+      let validationErrorMessage = this.#validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("activate-search", () => {});
+        this.localObserver.publish("vt-activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isRectangleActive: false,
@@ -245,7 +245,7 @@ class Lines extends React.PureComponent {
         return;
       }
 
-      this.localObserver.publish("routes-search", {
+      this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
         internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
@@ -302,7 +302,7 @@ class Lines extends React.PureComponent {
       throughStopPoint &&
       !event.target.value
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -329,7 +329,7 @@ class Lines extends React.PureComponent {
       event.target.value &&
       !throughStopArea
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -338,13 +338,13 @@ class Lines extends React.PureComponent {
     }
   };
 
-  handleKeyPress = (event) => {
+  #handleKeyPress = (event) => {
     if (event.key === "Enter") {
       this.doSearch();
     }
   };
 
-  renderPublicAndTechnicalNrSection = () => {
+  #renderPublicAndTechnicalNrSection = () => {
     return (
       <>
         <Grid item xs={6}>
@@ -371,7 +371,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderInputValueSection = () => {
+  #renderInputValueSection = () => {
     return (
       <>
         <Grid item xs={12}>
@@ -401,7 +401,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderTransportCompanySection = () => {
+  #renderTransportCompanySection = () => {
     const { transportCompanies } = this.state;
     return (
       <Grid item xs={12}>
@@ -433,7 +433,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderTrafficTypeSection = () => {
+  #renderTrafficTypeSection = () => {
     const { trafficTransports } = this.state;
     return (
       <Grid item xs={12}>
@@ -464,7 +464,7 @@ class Lines extends React.PureComponent {
       </Grid>
     );
   };
-  renderMunicipalitySection = () => {
+  #renderMunicipalitySection = () => {
     const { municipalities } = this.state;
     return (
       <Grid item xs={12}>
@@ -496,7 +496,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderSearchButtonSection = () => {
+  #renderSearchButtonSection = () => {
     return (
       <>
         <Grid item xs={12}>
@@ -508,7 +508,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderErrorMessage = (errorMessage) => {
+  #renderErrorMessage = (errorMessage) => {
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
@@ -518,26 +518,26 @@ class Lines extends React.PureComponent {
     );
   };
 
-  renderNoErrorMessage = () => {
+  #renderNoErrorMessage = () => {
     return <Typography></Typography>;
   };
 
-  validateSearchForm = () => {
+  #validateSearchForm = () => {
     const { throughStopArea, throughStopPoint } = this.state;
     if (throughStopPoint && !throughStopArea) return SEARCH_ERROR_MESSAGE;
 
     return "";
   };
 
-  showErrorMessage = () => {
+  #showErrorMessage = () => {
     const { searchErrorMessage } = this.state;
 
-    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+    if (searchErrorMessage) return this.#renderErrorMessage(searchErrorMessage);
 
-    return this.renderNoErrorMessage();
+    return this.#renderNoErrorMessage();
   };
 
-  renderSpatialSearchSection = () => {
+  #renderSpatialSearchSection = () => {
     return (
       <>
         <Grid item xs={12}>
@@ -590,16 +590,16 @@ class Lines extends React.PureComponent {
           container
           justifyContent="center"
           spacing={2}
-          onKeyPress={this.handleKeyPress}
+          onKeyPress={this.#handleKeyPress}
         >
-          {this.renderPublicAndTechnicalNrSection()}
-          {this.renderInputValueSection()}
-          {this.renderTransportCompanySection()}
-          {this.renderTrafficTypeSection()}
-          {this.renderMunicipalitySection()}
-          {this.renderSearchButtonSection()}
-          {this.showErrorMessage()}
-          {this.renderSpatialSearchSection()}
+          {this.#renderPublicAndTechnicalNrSection()}
+          {this.#renderInputValueSection()}
+          {this.#renderTransportCompanySection()}
+          {this.#renderTrafficTypeSection()}
+          {this.#renderMunicipalitySection()}
+          {this.#renderSearchButtonSection()}
+          {this.#showErrorMessage()}
+          {this.#renderSpatialSearchSection()}
         </Grid>
       </div>
     );
