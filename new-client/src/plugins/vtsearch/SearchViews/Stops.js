@@ -114,7 +114,7 @@ class Stops extends React.PureComponent {
       stopPoint &&
       !stopNameOrNr
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -138,7 +138,7 @@ class Stops extends React.PureComponent {
       stopPoint &&
       !event.target.value
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -167,7 +167,7 @@ class Stops extends React.PureComponent {
       event.target.value &&
       !stopNameOrNr
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -208,7 +208,7 @@ class Stops extends React.PureComponent {
 
   bindSubscriptions() {
     const { localObserver } = this.props;
-    localObserver.subscribe("vtsearch-result-done", () => {
+    localObserver.subscribe("vt-result-done", () => {
       this.clearSearchInputAndButtons();
     });
   }
@@ -254,7 +254,7 @@ class Stops extends React.PureComponent {
       return;
     }
 
-    this.localObserver.publish("stops-search", {
+    this.localObserver.publish("vt-stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
       publicLine: publicLineName,
@@ -278,19 +278,19 @@ class Stops extends React.PureComponent {
       transportCompany,
     } = this.state;
     if (this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (!this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("activate-search", () => {});
+        this.localObserver.publish("vt-activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isPolygonActive: false,
@@ -298,7 +298,7 @@ class Stops extends React.PureComponent {
         return;
       }
 
-      this.localObserver.publish("stops-search", {
+      this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
@@ -313,13 +313,13 @@ class Stops extends React.PureComponent {
   };
   handleRectangleClick = () => {
     if (this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (!this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("deactivate-search", () => {});
+      this.localObserver.publish("vt-deactivate-search", () => {});
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
@@ -335,14 +335,14 @@ class Stops extends React.PureComponent {
 
       let validationErrorMessage = this.validateSearchForm();
       if (validationErrorMessage) {
-        this.localObserver.publish("activate-search", () => {});
+        this.localObserver.publish("vt-activate-search", () => {});
         this.setState({
           searchErrorMessage: validationErrorMessage,
           isRectangleActive: false,
         });
         return;
       }
-      this.localObserver.publish("stops-search", {
+      this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,

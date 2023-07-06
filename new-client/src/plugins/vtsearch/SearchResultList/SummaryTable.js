@@ -1,11 +1,16 @@
 import React from "react";
-// import withStyles from "@mui/styles/withStyles";
-// import Paper from "@mui/material/Paper";
-// import VirtualizedTable from "./VirtualizedTable";
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import VirtualizedTable from "./VirtualizedTable";
 
 // const styles = (theme) => ({
 //   paper: { height: 240, boxShadow: "none" },
 // });
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  height: 240,
+  boxShadow: "none",
+}));
 
 /**
  * @summary Table used to show summary for journeys
@@ -20,22 +25,20 @@ class SummaryTable extends React.Component {
   };
 
   render = () => {
-    // const { classes, rowHeight, columns, height } = this.props;
+    const { rowHeight, columns, height } = this.props;
 
     return (
-      <></>
-      // <Paper className={classes.paper} style={{ height: `${height}px` }}>
-      //   <VirtualizedTable
-      //     rowCount={this.state.rows.length}
-      //     rowHeight={rowHeight}
-      //     rowGetter={({ index }) => this.state.rows[index]}
-      //     columns={columns}
-      //     sortable={false}
-      //   />
-      // </Paper>
+      <StyledPaper style={{ height: `${height}px` }}>
+        <VirtualizedTable
+          rowCount={this.state.rows.length}
+          rowHeight={rowHeight}
+          rowGetter={({ index }) => this.state.rows[index]}
+          columns={columns}
+          sortable={false}
+        />
+      </StyledPaper>
     );
   };
 }
 
-// export default withStyles(styles)(SummaryTable);
 export default SummaryTable;

@@ -1,11 +1,13 @@
 import PropTypes from "prop-types";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
-import { Fill, Stroke, Style, Circle } from "ol/style";
+import { Fill, Stroke, Style, Circle, Text } from "ol/style";
 import "ol/ol.css";
 import Draw from "ol/interaction/Draw.js";
 import WKT from "ol/format/WKT";
 import { createBox } from "ol/interaction/Draw";
+import Point from "ol/geom/Point";
+import Feature from "ol/Feature";
 
 /**
  * @summary ViewModel to handle interactions with map
@@ -22,10 +24,12 @@ export default class MapViewModel {
     this.app = settings.app;
     this.model = settings.model;
     this.localObserver = settings.localObserver;
+    this.globalObserver = settings.globalObserver;
 
-    this.bindSubscriptions();
-    this.addHighlightLayerToMap();
-    this.addDrawSearch();
+    this.#bindSubscriptions();
+    this.#addShowStopPointsLayerToMap();
+    this.#addHighlightLayerToMap();
+    this.#addDrawSearch();
   }
   static propTypes = {
     app: PropTypes.object.isRequired,
@@ -39,22 +43,22 @@ export default class MapViewModel {
    * @returns {null}
    * @memberof MapViewModel
    */
-  bindSubscriptions = () => {
+  #bindSubscriptions = () => {
     this.localObserver.subscribe(
-      "highlight-search-result-feature",
+      "vt-highlight-search-result-feature",
       (payload) => {
-        var olFeature = this.getSearchResultLayerFromId(payload.searchResultId)
+        var olFeature = this.#getSearchResultLayerFromId(payload.searchResultId)
           .getSource()
           .getFeatureById(payload.olFeatureId);
-        this.highlightFeature(olFeature);
+        this.#highlightFeature(olFeature);
       }
     );
 
     this.localObserver.subscribe(
-      "add-search-result-to-map",
+      "vt-add-search-result-to-map",
       ({ searchResultId, olFeatures, zoomToSearchResult }) => {
-        var searchResultLayer = this.addSearchResultLayerToMap(searchResultId);
-        this.addFeatureToSearchResultLayer(
+        var searchResultLayer = this.#addSearchResultLayerToMap(searchResultId);
+        this.#addFeatureToSearchResultLayer(
           olFeatures,
           searchResultLayer,
           zoomToSearchResult
@@ -62,57 +66,88 @@ export default class MapViewModel {
       }
     );
 
-    this.localObserver.subscribe("clear-search-result", (searchResultId) => {
-      this.map.removeLayer(this.getSearchResultLayerFromId(searchResultId));
+    this.localObserver.subscribe("vt-clear-search-result", (searchResultId) => {
+      this.map.removeLayer(this.#getSearchResultLayerFromId(searchResultId));
     });
-    this.localObserver.subscribe("deactivate-search", this.deactivateSearch);
-    this.localObserver.subscribe("activate-search", this.activateSearch);
+    this.localObserver.subscribe(
+      "vt-deactivate-search",
+      this.#deactivateSearch
+    );
+    this.localObserver.subscribe("vt-activate-search", this.#activateSearch);
 
-    this.localObserver.subscribe("hide-all-layers", () => {
-      this.hideAllLayers();
+    this.localObserver.subscribe("vt-hide-all-layers", () => {
+      this.#hideAllLayers();
     });
 
-    this.localObserver.subscribe("close-all-vt-searchLayer", () => {
-      this.map.getLayers().forEach((layer) => {
-        if (layer.get("name") === "vt-search-result-layer")
-          this.map.removeLayer(layer);
+    this.localObserver.subscribe("vt-close-all-vt-searchLayer", () => {
+      const layersToRemove = this.map
+        .getLayers()
+        .getArray()
+        .filter((layer) => {
+          if (layer.get("type") === "vt-search-result-layer") return layer;
+          return null;
+        });
+      layersToRemove.forEach((layer) => {
+        this.map.removeLayer(layer);
       });
     });
 
     this.localObserver.subscribe(
-      "toggle-visibility",
+      "vt-toggle-visibility",
       ({ setLayerIdVisible, zoomToSearchResult }) => {
-        this.toggleLayerVisibility(setLayerIdVisible, zoomToSearchResult);
+        this.#toggleLayerVisibility(setLayerIdVisible, zoomToSearchResult);
       }
     );
 
-    this.localObserver.subscribe("hide-current-layer", () => {
-      this.hideCurrentLayer();
+    this.localObserver.subscribe("vt-hide-current-layer", () => {
+      this.#hideCurrentLayer();
     });
 
-    this.map.on("singleclick", this.onFeaturesClickedInMap);
+    this.map.on("singleclick", this.#onFeaturesClickedInMap);
 
     this.localObserver.subscribe("add-search-result", (olFeatures) => {
-      this.addFeatureToSearchResultLayer(olFeatures);
+      this.#addFeatureToSearchResultLayer(olFeatures);
     });
 
-    this.localObserver.subscribe("clear-highlight", () => {
+    this.localObserver.subscribe("vt-clear-highlight", () => {
       this.highlightLayer.getSource().clear();
     });
 
-    this.localObserver.subscribe("resize-map", (heightFromBottom) => {
-      this.resizeMap(heightFromBottom);
+    this.localObserver.subscribe("vt-resize-map", (heightFromBottom) => {
+      this.#resizeMap(heightFromBottom);
     });
 
-    this.localObserver.subscribe("journeys-search", this.journeySearch);
+    this.localObserver.subscribe("vt-journeys-search", this.#journeySearch);
 
-    this.localObserver.subscribe("stops-search", this.stopSearch);
+    this.localObserver.subscribe("vt-stops-search", this.#stopSearch);
 
-    this.localObserver.subscribe("routes-search", this.routesSearch);
+    this.localObserver.subscribe("vt-routes-search", this.#routesSearch);
 
-    this.localObserver.subscribe("vtsearch-result-done", (result) => {
-      this.clearDrawLayer();
-      this.map.on("singleclick", this.onFeaturesClickedInMap);
+    this.localObserver.subscribe("vt-result-done", (result) => {
+      this.#clearDrawLayer();
+      this.map.on("singleclick", this.#onFeaturesClickedInMap);
+    });
+
+    this.localObserver.subscribe(
+      "vt-search-show-stop-points-by-line",
+      (parameters) => {
+        this.model.getStopPointsByLine(
+          parameters.internalLineNumber,
+          parameters.direction
+        );
+      }
+    );
+
+    this.localObserver.subscribe("vt-search-hide-stop-points-by-line", () => {
+      this.#hideStopPoints();
+    });
+
+    this.localObserver.subscribe("vt-stop-point-showed", (stopPoints) => {
+      this.#showStopPoints(stopPoints);
+    });
+
+    this.globalObserver.subscribe("core.zoomEnd", () => {
+      this.#adjustStopPointsZoomThreshold();
     });
   };
 
@@ -121,11 +156,11 @@ export default class MapViewModel {
    *
    * @memberof MapViewModel
    */
-  clearDrawLayer = () => {
+  #clearDrawLayer = () => {
     this.drawlayer.getSource().clear();
   };
 
-  resizeMap = (heightFromBottom) => {
+  #resizeMap = (heightFromBottom) => {
     //Not so "reacty" but no other solution possible because if we don't want to rewrite core functionality in Hajk3
     [appContainer, mapContainer].forEach((container) => {
       container.style.bottom = `${heightFromBottom}px`;
@@ -134,7 +169,7 @@ export default class MapViewModel {
     this.map.updateSize();
   };
 
-  getSearchResultLayerFromId = (searchResultId) => {
+  #getSearchResultLayerFromId = (searchResultId) => {
     return this.map
       .getLayers()
       .getArray()
@@ -146,18 +181,18 @@ export default class MapViewModel {
       })[0];
   };
 
-  activateSearch = () => {
-    this.clearDrawLayer();
+  #activateSearch = () => {
+    this.#clearDrawLayer();
     this.map.removeInteraction(this.draw);
-    this.map.on("singleclick", this.onFeaturesClickedInMap);
+    this.map.on("singleclick", this.#onFeaturesClickedInMap);
   };
 
-  deactivateSearch = () => {
-    this.map.un("singleclick", this.onFeaturesClickedInMap);
+  #deactivateSearch = () => {
+    this.map.un("singleclick", this.#onFeaturesClickedInMap);
   };
 
-  getWktFromUser = (value, geometryFunction) => {
-    this.clearDrawLayer();
+  #getWktFromUser = (value, geometryFunction) => {
+    this.#clearDrawLayer();
     this.draw = new Draw({
       source: this.drawlayer.getSource(),
       type: value,
@@ -176,7 +211,7 @@ export default class MapViewModel {
     });
   };
 
-  journeySearch = ({
+  #journeySearch = ({
     selectedFromDate,
     selectedEndDate,
     selectedFormType,
@@ -188,7 +223,7 @@ export default class MapViewModel {
       value = "Circle";
       geometryFunction = createBox();
     }
-    this.getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
+    this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
       searchCallback();
       if (wktFeatureGeom != null) {
         this.model.getJourneys(
@@ -200,7 +235,7 @@ export default class MapViewModel {
     });
   };
 
-  stopSearch = ({
+  #stopSearch = ({
     busStopValue,
     stopNameOrNr,
     publicLine,
@@ -237,7 +272,7 @@ export default class MapViewModel {
         );
       }
     } else {
-      this.getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
+      this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
         searchCallback();
         if (busStopValue === "stopAreas") {
           this.model.getStopAreas(
@@ -265,7 +300,7 @@ export default class MapViewModel {
     }
   };
 
-  routesSearch = ({
+  #routesSearch = ({
     publicLineName,
     internalLineNumber,
     municipality,
@@ -290,7 +325,7 @@ export default class MapViewModel {
         throughStopArea
       );
     } else {
-      this.getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
+      this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
         searchCallback();
         this.model.getRoutes(
           publicLineName,
@@ -304,7 +339,7 @@ export default class MapViewModel {
     }
   };
 
-  addDrawSearch = () => {
+  #addDrawSearch = () => {
     this.drawlayer = new VectorLayer({
       layerType: "system",
       zIndex: 5000,
@@ -320,7 +355,7 @@ export default class MapViewModel {
    * @returns {null}
    * @memberof MapViewModel
    */
-  addSearchResultLayerToMap = (searchResultId) => {
+  #addSearchResultLayerToMap = (searchResultId) => {
     var fill = new Fill({
       color: `rgba(${this.model.mapColors.searchFillColor.r},
         ${this.model.mapColors.searchFillColor.g},
@@ -358,6 +393,41 @@ export default class MapViewModel {
     return searchResultLayer;
   };
 
+  #addShowStopPointsLayerToMap = () => {
+    this.showStopPointsSource = new VectorSource();
+    this.showStopPointsLayer = new VectorLayer({
+      style: null,
+      source: this.showStopPointsSource,
+    });
+    this.showStopPointsLayer.setZIndex(500);
+    this.map.addLayer(this.showStopPointsLayer);
+  };
+
+  #getStopPointStyle = () => {
+    const fill = new Fill({
+      color: `rgba(${this.model.mapColors.searchFillColor.r},
+        ${this.model.mapColors.searchFillColor.g},
+        ${this.model.mapColors.searchFillColor.b},
+        ${this.model.mapColors.searchFillColor.a})`,
+    });
+    const stroke = new Stroke({
+      color: `rgba(${this.model.mapColors.searchFillColor.r},
+        ${this.model.mapColors.searchFillColor.g},
+        ${this.model.mapColors.searchFillColor.b},
+        ${this.model.mapColors.searchFillColor.a})`,
+      width: this.model.mapColors.searchStrokeLineWidth,
+    });
+    return new Style({
+      image: new Circle({
+        fill: fill,
+        stroke: stroke,
+        radius: this.model.geoServer.ShowStopPoints.radius,
+      }),
+      fill: fill,
+      stroke: stroke,
+    });
+  };
+
   /**
    * Init method to add a highlight layer in the map
    * to use for temporary storing of features that are highlighted
@@ -365,7 +435,7 @@ export default class MapViewModel {
    * @returns {null}
    * @memberof MapViewModel
    */
-  addHighlightLayerToMap = () => {
+  #addHighlightLayerToMap = () => {
     var fill = new Fill({
       color: `rgba(${this.model.mapColors.highlightFillColor.r},
         ${this.model.mapColors.highlightFillColor.g},
@@ -406,7 +476,7 @@ export default class MapViewModel {
    * @param {external:"ol.Feature"}
    */
 
-  highlightFeature = (olFeature) => {
+  #highlightFeature = (olFeature) => {
     if (olFeature != null) {
       this.highlightLayer.getSource().clear();
       this.highlightLayer.getSource().addFeature(olFeature);
@@ -419,14 +489,14 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol.feature"}>}
    */
-  addFeatureToSearchResultLayer = (
+  #addFeatureToSearchResultLayer = (
     olFeatures,
     searchResultLayer,
     zoomToSearchResult
   ) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
     if (zoomToSearchResult)
-      this.zoomToExtent(searchResultLayer.getSource().getExtent());
+      this.#zoomToExtent(searchResultLayer.getSource().getExtent());
   };
 
   /**
@@ -436,7 +506,7 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol/interaction/Extent"}>}
    */
-  zoomToExtent = (extent) => {
+  #zoomToExtent = (extent) => {
     this.map.getView().fit(extent, {
       size: this.map.getSize(),
       padding: [10, 10, 10, 10],
@@ -449,16 +519,16 @@ export default class MapViewModel {
    * @param {integer : searchResultId}
    * @memberof MapViewModel
    */
-  toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
+  #toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
         if (zoomToSearchResult)
-          this.zoomToExtent(layer.getSource().getExtent());
+          this.#zoomToExtent(layer.getSource().getExtent());
       }
     });
   };
-  hideCurrentLayer = (searchResultId) => {
+  #hideCurrentLayer = (searchResultId) => {
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", false);
@@ -471,12 +541,13 @@ export default class MapViewModel {
    * @returns {null}
    * @memberof MapViewModel
    */
-  hideAllLayers = () => {
+  #hideAllLayers = () => {
     this.map.getLayers().forEach((layer) => {
       if (layer.get("name") === "vt-search-result-layer") {
         layer.set("visible", false);
       }
     });
+    this.showStopPointsSource.clear();
   };
 
   /**
@@ -486,11 +557,11 @@ export default class MapViewModel {
    * @param {*} event
    */
 
-  onFeaturesClickedInMap = (e) => {
-    var featuresClicked = this.getFeaturesAtClickedPixel(e);
+  #onFeaturesClickedInMap = (e) => {
+    var featuresClicked = this.#getFeaturesAtClickedPixel(e);
     if (featuresClicked.length > 0) {
-      this.highlightFeature(featuresClicked[0]);
-      this.localObserver.publish("features-clicked-in-map", featuresClicked);
+      this.#highlightFeature(featuresClicked[0]);
+      this.localObserver.publish("vt-features-clicked-in-map", featuresClicked);
     }
   };
 
@@ -501,12 +572,12 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {*} event
    */
-  getFeaturesAtClickedPixel = (evt) => {
+  #getFeaturesAtClickedPixel = (evt) => {
     var features = [];
     this.map.forEachFeatureAtPixel(
       evt.pixel,
       (feature, layer) => {
-        if (layer.get("name") === "vt-search-result-layer") {
+        if (layer.get("type") === "vt-search-result-layer") {
           features.push(feature);
         }
       },
@@ -515,5 +586,85 @@ export default class MapViewModel {
       }
     );
     return features;
+  };
+
+  #showStopPoints = (stopPoints) => {
+    this.showStopPointsSource.clear();
+    const stopPointFeatures = stopPoints.featureCollection.features.map(
+      (geoServerFeature) => {
+        let stopPointFeature = new Feature({
+          geometry: new Point(geoServerFeature.geometry.coordinates),
+        });
+        stopPointFeature.labelText =
+          geoServerFeature.properties.Name +
+          " " +
+          geoServerFeature.properties.Designation;
+        this.#setAdjustThreshold(stopPointFeature);
+
+        return stopPointFeature;
+      },
+      this
+    );
+    this.showStopPointsSource.addFeatures(stopPointFeatures);
+  };
+
+  #hideStopPoints = () => {
+    this.showStopPointsSource.clear();
+  };
+
+  #setAdjustThreshold = (feature) => {
+    const resolution = this.map.getView().getResolution();
+    if (
+      resolution <
+      this.model.geoServer.ShowStopPoints.visibleStopPointsThresholdResolution
+    )
+      feature.setStyle(this.#createFeatureStyleStopPoint(feature));
+    else feature.setStyle(null);
+  };
+
+  #createFeatureStyleStopPoint = (stopPointFeature) => {
+    const baseStyle = this.#getStopPointStyle();
+    const textStyle = this.#getStopPointFeatureTextStyle(stopPointFeature);
+    baseStyle.setText(textStyle);
+    return baseStyle;
+  };
+
+  #getStopPointFeatureTextStyle = (stopPointFeature) => {
+    return new Text({
+      textAlign: this.model.geoServer.ShowStopPoints.textHorizontalAlign,
+      textBaseline: this.model.geoServer.ShowStopPoints.textVerticalAlign,
+      font: this.model.geoServer.ShowStopPoints.textFont,
+      text: this.#getText(stopPointFeature),
+      fill: new Fill({
+        color: `rgba(${this.model.geoServer.ShowStopPoints.textFillColor.r},
+        ${this.model.geoServer.ShowStopPoints.textFillColor.g},
+        ${this.model.geoServer.ShowStopPoints.textFillColor.b},
+        ${this.model.geoServer.ShowStopPoints.textFillColor.a})`,
+      }),
+      stroke: new Stroke({
+        color: `rgba(${this.model.geoServer.ShowStopPoints.textStrokeColor.r},
+        ${this.model.geoServer.ShowStopPoints.textStrokeColor.g},
+        ${this.model.geoServer.ShowStopPoints.textStrokeColor.b},
+        ${this.model.geoServer.ShowStopPoints.textStrokeColor.a})`,
+        width: this.model.geoServer.ShowStopPoints.textStrokeWidth,
+      }),
+      offsetX: this.model.geoServer.ShowStopPoints.textOffsetX,
+      offsetY: this.model.geoServer.ShowStopPoints.textOffsetY,
+      rotation: this.model.geoServer.ShowStopPoints.textRotation,
+      scale: 1,
+    });
+  };
+
+  #getText = (stopPointFeature) => {
+    return stopPointFeature.labelText;
+  };
+
+  #adjustStopPointsZoomThreshold = () => {
+    const stopPointsFeatures = this.showStopPointsSource.getFeatures();
+    if (stopPointsFeatures.length === 0) return;
+
+    stopPointsFeatures.forEach((stopPointsFeature) => {
+      this.#setAdjustThreshold(stopPointsFeature);
+    }, this);
   };
 }

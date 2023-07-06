@@ -1,3 +1,5 @@
+import { MockdataSearchModel } from "./Mockdata/MockdataSearchModel";
+
 /**
  * @summary SearchModel used for VT specific searches.
  * @description NEED TO ADD A DESCRIPTION
@@ -796,6 +798,9 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleMunicipalityZoneNames(addEmptyMunicipality = true) {
+    if (!this?.geoServer?.municipalityZoneNames?.url)
+      return this.#returnMockDataMunicipalityZoneNames();
+
     const url = this.geoServer.municipalityZoneNames.url;
     return fetch(url)
       .then((res) => {
@@ -822,6 +827,12 @@ export default class SearchModel {
       });
   }
 
+  #returnMockDataMunicipalityZoneNames = () => {
+    return new Promise((resolve) => {
+      resolve(MockdataSearchModel().municipalities);
+    });
+  };
+
   /**
    * Function that fetch all transport mode type names and numbers.
    * @param {boolean} addEmptyMunicipality <option value="true">Adds an empty transport mode at the beginning of the array. </option>
@@ -830,7 +841,10 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleTransportModeTypeNames(addEmptyTransportMode = true) {
-    this.localObserver.publish("transportModeTypeNames-result-begin", {
+    if (!this?.geoServer?.transportModeTypeNames?.url)
+      return this.#returnMockDataTransportModeTypeNames();
+
+    this.localObserver.publish("vt-transportModeTypeNames-result-begin", {
       label: this.geoServer.transportModeTypeNames.searchLabel,
     });
 
@@ -847,6 +861,12 @@ export default class SearchModel {
       });
     });
   }
+
+  #returnMockDataTransportModeTypeNames = () => {
+    return new Promise((resolve) => {
+      resolve(MockdataSearchModel().modeTypeNames);
+    });
+  };
 
   /**
    * Function that fetch all transport company names and numbers.
@@ -885,7 +905,7 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   getJourneys(filterOnFromDate, filterOnToDate, filterOnWkt) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.journeys.searchLabel,
     });
 
@@ -922,7 +942,13 @@ export default class SearchModel {
           journeys.featureCollection = this.removeDuplicates(
             journeys.featureCollection
           );
-          /*journeys.featureCollection = */
+
+          journeys.searchParams = {
+            filterOnFromDate: filterOnFromDate,
+            filterOnToDate: filterOnToDate,
+            filterOnWkt: filterOnWkt,
+          };
+
           this.updateDisplayFormat(
             journeys.featureCollection,
             this.geoServer.journeys.attributesToDisplay
@@ -930,7 +956,7 @@ export default class SearchModel {
 
           let zoomToSearchResult = true;
           if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vtsearch-result-done", {
+          this.localObserver.publish("vt-result-done", {
             result: journeys,
             zoomToSearchResult: zoomToSearchResult,
           });
@@ -960,7 +986,7 @@ export default class SearchModel {
     stopAreaNameOrNumber,
     polygonAsWkt
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.routes.searchLabel,
     });
 
@@ -1040,9 +1066,18 @@ export default class SearchModel {
             routes.featureCollection
           );
 
+          routes.searchParams = {
+            publicLineName: publicLineName,
+            internalLineNumber: internalLineNumber,
+            isInMunicipalityZoneGid: isInMunicipalityZoneGid,
+            transportModeType: transportModeType,
+            stopAreaNameOrNumber: stopAreaNameOrNumber,
+            polygonAsWkt: polygonAsWkt,
+          };
+
           let zoomToSearchResult = true;
           if (polygonAsWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vtsearch-result-done", {
+          this.localObserver.publish("vt-result-done", {
             result: routes,
             zoomToSearchResult: zoomToSearchResult,
           });
@@ -1071,7 +1106,7 @@ export default class SearchModel {
     filterOnWkt,
     selectedFormType
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.stopAreas.searchLabel,
     });
 
@@ -1131,9 +1166,19 @@ export default class SearchModel {
             stopAreas.featureCollection
           );
 
+          stopAreas.searchParams = {
+            filterOnNameOrNumber: filterOnNameOrNumber,
+            filterOnPublicLine: filterOnPublicLine,
+            filterOnMunicipalGid: filterOnMunicipalGid,
+            filterOnInternalLine: filterOnInternalLine,
+            filterOnTransportCompany: filterOnTransportCompany,
+            selectedFormType: selectedFormType,
+            filterOnWkt: filterOnWkt,
+          };
+
           let zoomToSearchResult = true;
           if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vtsearch-result-done", {
+          this.localObserver.publish("vt-result-done", {
             result: stopAreas,
             zoomToSearchResult: zoomToSearchResult,
           });
@@ -1163,7 +1208,7 @@ export default class SearchModel {
     filterOnWkt,
     selectedFormType
   ) {
-    this.localObserver.publish("vtsearch-result-begin", {
+    this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.stopPoints.searchLabel,
     });
 
@@ -1228,12 +1273,66 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
+          stopPoints.searchParams = {
+            filterOnNameOrNumber: filterOnNameOrNumber,
+            filterOnPublicLine: filterOnPublicLine,
+            filterOnMunicipalGid: filterOnMunicipalGid,
+            filterOnDesignation: filterOnDesignation,
+            filterOnInternalLine: filterOnInternalLine,
+            filterOnTransportCompany: filterOnTransportCompany,
+            selectedFormType: selectedFormType,
+            filterOnWkt: filterOnWkt,
+          };
+
           let zoomToSearchResult = true;
           if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vtsearch-result-done", {
+          this.localObserver.publish("vt-result-done", {
             result: stopPoints,
             zoomToSearchResult: zoomToSearchResult,
           });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  }
+
+  /**
+   * Get all stop points. Sends an event when the function is called and another one when it's promise is done.
+   * @param {int} filterOnInternalLineNumber The internal number of the stop point, pass null of no number is given.
+   * @param {int} filterOnDirection The direction of line, pass null of no direction is given.
+   *
+   * @memberof SearchModel
+   */
+  getStopPointsByLine(filterOnInternalLineNumber, filterOnDirection) {
+    // Build up the url with viewparams.
+    let url = this.geoServer.ShowStopPoints.url;
+    let viewParams = "&viewparams=";
+    if (filterOnInternalLineNumber) {
+      viewParams =
+        viewParams + `filterOnLineNumber:${filterOnInternalLineNumber};`;
+    }
+    if (filterOnDirection) {
+      viewParams = viewParams + `filterOnDirection:${filterOnDirection};`;
+    }
+
+    if (filterOnInternalLineNumber || filterOnDirection) url = url + viewParams;
+    url = this.encodeUrlForGeoServer(url);
+
+    fetch(url).then((res) => {
+      res
+        .json()
+        .then((jsonResult) => {
+          let stopPoints = {
+            featureCollection: jsonResult,
+          };
+
+          stopPoints.searchParams = {
+            filterOnInternalLineNumber: filterOnInternalLineNumber,
+            filterOnDirection: filterOnDirection,
+          };
+
+          this.localObserver.publish("vt-stop-point-showed", stopPoints);
         })
         .catch((err) => {
           console.log(err);

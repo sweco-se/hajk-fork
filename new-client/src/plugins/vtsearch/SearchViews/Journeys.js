@@ -107,7 +107,7 @@ class Journeys extends React.PureComponent {
 
   bindSubscriptions() {
     const { localObserver } = this.props;
-    localObserver.subscribe("vtsearch-result-done", () => {
+    localObserver.subscribe("vt-result-done", () => {
       this.clearSearchInputAndButtons();
     });
   }
@@ -158,7 +158,7 @@ class Journeys extends React.PureComponent {
     }
 
     this.clearSearchInputAndButtons();
-    this.localObserver.publish("journeys-search", {
+    this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       publicLineName: publicLineName,
@@ -304,7 +304,7 @@ class Journeys extends React.PureComponent {
       stopPoint &&
       !event.target.value
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -327,7 +327,7 @@ class Journeys extends React.PureComponent {
       event.target.value &&
       !stopArea
     ) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
       this.setState({
         searchErrorMessage: SEARCH_ERROR_MESSAGE,
         isPolygonActive: false,
@@ -502,7 +502,7 @@ class Journeys extends React.PureComponent {
       }
     );
     if (this.state.isPolygonActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
   };
 
@@ -532,7 +532,7 @@ class Journeys extends React.PureComponent {
       }
     );
     if (this.state.isRectangleActive) {
-      this.localObserver.publish("activate-search", () => {});
+      this.localObserver.publish("vt-activate-search", () => {});
     }
   };
 
@@ -543,7 +543,7 @@ class Journeys extends React.PureComponent {
   };
 
   deactivateSearch = () => {
-    this.localObserver.publish("activate-search", () => {});
+    this.localObserver.publish("vt-activate-search", () => {});
   };
 
   activateSearch = (spatialType) => {
@@ -551,7 +551,7 @@ class Journeys extends React.PureComponent {
       this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
-    this.localObserver.publish("journeys-search", {
+    this.localObserver.publish("vt-journeys-search", {
       publicLineName: publicLineName,
       internalLineNumber: internalLineNumber,
       stopArea: stopArea,
