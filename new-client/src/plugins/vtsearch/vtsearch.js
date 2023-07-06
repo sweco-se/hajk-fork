@@ -214,7 +214,10 @@ class VTSearch extends React.PureComponent {
           attributesToDisplay
         );
 
-        this.localObserver.publish("vtsearch-result-done", searchResult);
+        this.localObserver.publish("vtsearch-result-done", {
+          result: searchResult,
+          zoomToSearchResult: true,
+        });
       }
     );
 
