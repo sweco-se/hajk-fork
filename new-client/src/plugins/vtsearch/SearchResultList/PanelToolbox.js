@@ -1,10 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-
 import NormalIcon from "@mui/icons-material/FlipToFront";
-
 import CloseIcon from "@mui/icons-material/Close";
-//import withStyles from "@mui/styles/withStyles";
+import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -27,6 +25,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 //     },
 //   };
 // };
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.common.white,
+  padding: 0,
+}));
+
+const StyledExpandMoreIconTransformed = styled(ExpandMoreIcon)(({ theme }) => ({
+  transform: "rotate(180deg)",
+}));
 
 class PanelToolbox extends React.PureComponent {
   state = {
@@ -84,23 +91,18 @@ class PanelToolbox extends React.PureComponent {
   };
 
   renderButton = (onClickCallback, iconElement) => {
-    const { classes } = this.props;
     return (
-      <IconButton
-        classes={{ root: classes.iconButtonRoot }}
-        onClick={onClickCallback}
-        size="large"
-      >
+      <StyledIconButton onClick={onClickCallback} size="large">
         {iconElement === "minimize" ? (
           <ExpandMoreIcon />
         ) : iconElement === "maximize" ? (
-          <ExpandMoreIcon className={classes.expandOpen} />
+          <StyledExpandMoreIconTransformed />
         ) : iconElement === "normalize" ? (
           <NormalIcon />
         ) : iconElement === "close" ? (
           <CloseIcon />
         ) : null}
-      </IconButton>
+      </StyledIconButton>
     );
   };
 
@@ -120,5 +122,4 @@ class PanelToolbox extends React.PureComponent {
   }
 }
 
-//export default withStyles(styles)(PanelToolbox);
 export default PanelToolbox;

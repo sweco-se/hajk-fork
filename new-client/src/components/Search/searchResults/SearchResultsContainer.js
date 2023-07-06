@@ -805,7 +805,7 @@ class SearchResultsContainer extends React.PureComponent {
     const onClickName = featureCollection?.source?.onClickName;
     if (onClickName) {
       app.globalObserver.publish(
-        `search.featureCollectionClicked.${onClickName}`,
+        "search.featureCollectionClicked",
         featureCollection
       );
     } else {
