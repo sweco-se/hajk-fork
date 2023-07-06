@@ -339,13 +339,11 @@ class AttributeTable extends React.Component {
   };
 
   #renderSearchCheckboxSection = (searchResult) => {
-    const { classes } = this.props;
     const { type, filterParams } = searchResult;
 
     if (type !== "routes") return null;
     return (
       <FormControlLabel
-        className={classes.showLinesCheckbox}
         control={
           <Checkbox
             defaultChecked={filterParams.showStopPoints}
