@@ -85,6 +85,10 @@ const StyledTab = styled(Tab)(({ theme }) => ({
   backgroundColor: theme.palette.primary.light,
 }));
 
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  color: "white",
+}));
+
 const StyledTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.common.white,
 }));
@@ -182,9 +186,7 @@ class SearchResultListContainer extends React.Component {
 
     localObserver.publish("vt-add-search-result-to-map", {
       searchResultId: searchResultId,
-      olFeatures: this.#convertToGeoJson(
-        result?.featureCollection || result?.value
-      ),
+      olFeatures: this.#getFeaturesFromResult(result),
       zoomToSearchResult: zoomToSearchResult,
     });
     this.#setActiveTabId(searchResultId, zoomToSearchResult);
@@ -435,7 +437,7 @@ class SearchResultListContainer extends React.Component {
     return (
       <StyledTab
         label={
-          <Grid container sx={{ color: "white" }}>
+          <StyledGrid container>
             <Grid item xs={10}>
               <StyledTypography variant="subtitle2">
                 {searchResult.label}
@@ -450,7 +452,7 @@ class SearchResultListContainer extends React.Component {
                 fontSize="inherit"
               />
             </StyledGridClearIcon>
-          </Grid>
+          </StyledGrid>
         }
         value={searchResultId}
         key={`simple-tabpanel-${searchResultId}`}
