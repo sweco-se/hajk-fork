@@ -293,7 +293,10 @@ class AttributeTable extends React.Component {
   };
 
   #sort = ({ sortBy, sortDirection }) => {
-    let rowsToBeSorted = this.#getSortedRows(sortBy, sortDirection);
+    let rowsToBeSorted = this.#getSortedRows({
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    });
 
     this.setState((state) => {
       return {
@@ -381,7 +384,7 @@ class AttributeTable extends React.Component {
             rowGetter={({ index }) => this.state.rows[index]}
             rowClicked={this.#onRowClick}
             columns={this.#getColumns()}
-            sort={this.#sort}
+            sort={this.#sort.bind(this)}
             sortDirection={this.state.sortDirection}
             sortBy={this.state.sortBy}
             scrollToIndex={this.state.focusedRow}

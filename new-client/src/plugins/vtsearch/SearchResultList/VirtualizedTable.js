@@ -82,6 +82,13 @@ const StyledTable = styled(Table)(({ theme }) => ({
     padding: theme.spacing(0),
     paddingRight: theme.direction === "rtl" ? "0px !important" : undefined,
   },
+  "& .ReactVirtualized__Table__row": {
+    cursor: "pointer",
+    borderBottom: `2px solid ${theme.palette.grey[200]}`,
+    "&:hover": {
+      backgroundColor: theme.palette.grey[200],
+    },
+  },
 }));
 
 const StyledTableCellForCell = styled(TableCell)(({ theme }) => ({
@@ -144,91 +151,63 @@ class VirtualizedTable extends React.PureComponent {
     selectedRow: headerRowIndex,
   };
 
-  // getRowClassName = ({ index }) => {
-  //   const { classes } = this.props;
-  //   if (index !== headerRowIndex && this.props.selectedRow.index === index) {
-  //     return clsx(
-  //       classes.tableRow,
-  //       classes.tableRowSelected,
-  //       classes.flexContainer
-  //     );
-  //   }
-  //   return (
-  //     index !== headerRowIndex &&
-  //     clsx(classes.tableRow, classes.tableRowHover, classes.flexContainer)
-  //   );
-  // };
+  state = {
+    index: -1,
+  };
 
-  getRow(dataKey, index, other) {
-    // Forced to use a Column here instead of a styled column because a Table only accepts an object of type Column.
-    return (
-      dataKey !== "id" && (
-        <Column
-          key={dataKey}
-          headerRenderer={(headerProps) =>
-            this.headerRenderer({
-              ...headerProps,
-              columnIndex: index,
-            })
-          }
-          sx={{
-            cursor: "pointer",
-            border: "1px solid grey",
-            outline: "none",
-            whiteSpace: "pre-wrap",
-            alignItems: "center",
-            boxSizing: "border-box",
-            justifyContent: "center",
-            wordBreak: "break-all",
-            borderBottom: 0,
-            "&:hover": {
-              backgroundColor: "white",
-            },
-          }}
-          cellRenderer={this.cellRenderer}
-          dataKey={dataKey}
-          {...other}
-        />
-      )
-    );
-  }
+  /**
+   * Handles the click on a table row.
+   * @param {event} event
+   */
+  #handleRowSelect = (event) => {
+    const { rowClicked } = this.props;
+    rowClicked(event);
 
-  getSelectedRow(dataKey, index, other) {
-    // Forced to use a Column here instead of a styled column because a Table only accepts an object of type Column.
-    return (
-      dataKey !== "id" && (
-        <Column
-          key={dataKey}
-          headerRenderer={(headerProps) =>
-            this.headerRenderer({
-              ...headerProps,
-              columnIndex: index,
-            })
-          }
-          sx={{
-            whiteSpace: "pre-wrap",
-            alignItems: "center",
-            boxSizing: "border-box",
-            justifyContent: "center",
-            cursor: "pointer",
-            wordBreak: "break-all",
-            borderBottom: 0,
-            background: "red",
-          }}
-          cellRenderer={this.cellRenderer}
-          dataKey={dataKey}
-          {...other}
-        />
-      )
-    );
-  }
+    this.setState({
+      index: event.index,
+    });
+  };
 
-  cellRenderer = ({ cellData, columnIndex, rowData }) => {
-    const { columns } = this.props;
-    if (cellData == null) {
-      return "";
+  /**
+   * Handles the styling of the table row. A selected row has a specific color.
+   * @param {object} row
+   * @returns Returns a styling for the row.
+   */
+  #rowStyleClickedRow = (row) => {
+    if (row.index < 0) return;
+    if (this.state.index === row.index) {
+      return {
+        backgroundColor: "#0096ed", // theme.palette.primary.main
+      };
     }
+    return {
+      backgroundColor: "#fff",
+    };
+  };
 
+  #getColumn = (dataKey, index, other) => {
+    return (
+      dataKey !== "id" && (
+        <Column
+          key={dataKey}
+          headerRenderer={(headerProps) =>
+            this.#headerRenderer({
+              ...headerProps,
+              columnIndex: index,
+            })
+          }
+          cellRenderer={this.#cellRenderer}
+          dataKey={dataKey}
+          {...other}
+        />
+      )
+    );
+  };
+
+  #cellRenderer = ({ cellData, columnIndex, rowData }) => {
+    const { columns } = this.props;
+
+    if (cellData == null) return "";
     return (
       <>
         <Tooltip disableInteractive title={cellData}>
@@ -248,7 +227,7 @@ class VirtualizedTable extends React.PureComponent {
     );
   };
 
-  headerRenderer = ({ label, columnIndex, sortDirection }) => {
+  #headerRenderer = ({ label, columnIndex, sortDirection }) => {
     const { columns, sortable } = this.props;
 
     return (
@@ -268,21 +247,22 @@ class VirtualizedTable extends React.PureComponent {
     const { columns, rowHeight, rowClicked, headerHeight, ...tableProps } =
       this.props;
     return (
-      <AutoSizer>
+      <AutoSizer style={{ borderBottom: "1px solid grey" }}>
         {({ height, width }) => (
           <StyledTable
             height={height}
             width={width}
             rowHeight={rowHeight}
             headerHeight={headerHeight}
-            onRowClick={rowClicked}
+            onRowClick={this.#handleRowSelect.bind(this)}
+            rowStyle={this.#rowStyleClickedRow.bind(this)}
             {...tableProps}
           >
             {columns.map(({ dataKey, ...other }, index) => {
-              return index !== headerRowIndex &&
-                this.props.selectedRow.index === index
-                ? this.getRow(dataKey, index, other)
-                : this.getSelectedRow(dataKey, index, other);
+              return (
+                index !== headerRowIndex &&
+                this.#getColumn(dataKey, index, other)
+              );
             })}
           </StyledTable>
         )}
