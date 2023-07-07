@@ -214,6 +214,10 @@ export default class MapViewModel {
   #journeySearch = ({
     selectedFromDate,
     selectedEndDate,
+    publicLine,
+    internalLineNumber,
+    stopArea,
+    stopPoint,
     selectedFormType,
     searchCallback,
   }) => {
@@ -223,16 +227,32 @@ export default class MapViewModel {
       value = "Circle";
       geometryFunction = createBox();
     }
-    this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
-      searchCallback();
-      if (wktFeatureGeom != null) {
-        this.model.getJourneys(
-          selectedFromDate,
-          selectedEndDate,
-          wktFeatureGeom
-        );
-      }
-    });
+    if (selectedFormType === "") {
+      this.model.getJourneys(
+        selectedFromDate,
+        selectedEndDate,
+        publicLine,
+        internalLineNumber,
+        stopArea,
+        stopPoint
+      );
+    } else {
+      this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
+        searchCallback();
+        if (wktFeatureGeom != null) {
+          this.model.getJourneys(
+            selectedFromDate,
+            selectedEndDate,
+            publicLine,
+            internalLineNumber,
+            stopArea,
+            stopPoint,
+            selectedFormType,
+            wktFeatureGeom
+          );
+        }
+      });
+    }
   };
 
   #stopSearch = ({
