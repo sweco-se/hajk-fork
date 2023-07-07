@@ -959,9 +959,7 @@ export default class SearchModel {
       filterOnWkt
     )
       url = url + viewParams;
-    console.log("SEARCH: " + url);
     url = this.encodeUrlForGeoServer(url);
-    console.log("ENCODED: " + url);
 
     fetch(url)
       .then((res) => {
@@ -1000,7 +998,6 @@ export default class SearchModel {
 
           let zoomToSearchResult = true;
           if (filterOnWkt) zoomToSearchResult = false;
-          console.log(journeys);
           this.localObserver.publish("vt-result-done", {
             result: journeys,
             zoomToSearchResult: zoomToSearchResult,
