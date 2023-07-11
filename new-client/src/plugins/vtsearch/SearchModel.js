@@ -93,6 +93,30 @@ export default class SearchModel {
   };
 
   /**
+   * Private method that adjusts a comma-separated list of string so that it's supported for a web browser and GeoServer.
+   * @param {string} commaSeparatedListOfString The comma-separated list that needs to be adjusted to.
+   * @returns {string} Returns comma-separated list of single-quoted strings for GeoServer (, => ',').
+   *
+   * @memberof SearchModel
+   */
+  encodeCommaSeparatedListOfStringInCqlForGeoServer = (
+    commaSeparatedListOfString
+  ) => {
+    return commaSeparatedListOfString.replace(/,/g, "%27,%27");
+  };
+
+  /**
+   * Private method that remove eventually spaces from a comma-separated list of string.
+   * @param {string} listOfStrings The list with eventually spaces that needs to be adjusted to.
+   * @returns {string} Returns list of strings without spaces.
+   *
+   * @memberof SearchModel
+   */
+  removeSpacesInListOfStrings = (listOfStrings) => {
+    return listOfStrings.replaceAll(" ", "");
+  };
+
+  /**
    * Private method that gets all attributes that should remain from GeoServer.
    * @param {Array<string, string>} attributesToDisplay An array of attributes to be displayed.
    * @returns {Array<string>} Returns an array with only attribute names, stripped of all other data.
@@ -973,7 +997,9 @@ export default class SearchModel {
    * @param {string} internalLineNumber The internal line number.
    * @param {string} isInMunicipalityZoneGid The Gid number of a municipality
    * @param {string} transportModeType The transport type of lines.
+   * @param {string} transportCompanyName
    * @param {string} stopAreaNameOrNumber The stop area name or stop area number.
+   * @param {string} designation
    * @param {string} polygonAsWkt A polygon, as a WKT, to intersects with.
    *
    * @memberof SearchModel
@@ -983,7 +1009,9 @@ export default class SearchModel {
     internalLineNumber,
     isInMunicipalityZoneGid,
     transportModeType,
+    transportCompanyName,
     stopAreaNameOrNumber,
+    designation,
     polygonAsWkt
   ) {
     this.localObserver.publish("vt-result-begin", {
@@ -1003,7 +1031,15 @@ export default class SearchModel {
     }
     if (internalLineNumber) {
       if (addAndInCql) cql = cql + " AND ";
-      cql = cql + `InternalLineNumber like '${internalLineNumber}'`;
+      cql = cql + `InternalLineNumber IN (${internalLineNumber})`;
+      addAndInCql = true;
+    }
+    if (designation) {
+      designation = this.removeSpacesInListOfStrings(designation);
+      designation =
+        this.encodeCommaSeparatedListOfStringInCqlForGeoServer(designation);
+      if (addAndInCql) cql = cql + " AND ";
+      cql = cql + `Designation IN ('${designation}')`;
       addAndInCql = true;
     }
     if (isInMunicipalityZoneGid) {
@@ -1014,6 +1050,11 @@ export default class SearchModel {
     if (transportModeType) {
       if (addAndInCql) cql = cql + " AND ";
       cql = cql + `TransportModeType like '${transportModeType}'`;
+      addAndInCql = true;
+    }
+    if (transportCompanyName) {
+      if (addAndInCql) cql = cql + " AND ";
+      cql = cql + `TransportCompany like '${transportCompanyName}'`;
       addAndInCql = true;
     }
     if (stopAreaNameOrNumber) {
@@ -1046,7 +1087,6 @@ export default class SearchModel {
       url = url + this.encodeCqlForGeoServer(cql);
     }
     url = this.encodeUrlForGeoServer(url);
-
     fetch(url)
       .then((res) => {
         res.json().then((jsonResult) => {
