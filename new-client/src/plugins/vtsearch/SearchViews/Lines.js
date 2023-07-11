@@ -57,7 +57,7 @@ class Lines extends React.PureComponent {
     transportCompany: "",
     transportCompanies: [],
     throughStopArea: "",
-    throughStopPoint: "",
+    designation: "",
     searchErrorMessage: "",
   };
 
@@ -130,7 +130,8 @@ class Lines extends React.PureComponent {
       municipality: "",
       trafficTransport: "",
       throughStopArea: "",
-      throughStopPoint: "",
+      designation: "",
+      transportCompany: "",
       searchErrorMessage: "",
     });
   };
@@ -142,7 +143,7 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
-      throughStopPoint,
+      designation,
       transportCompany,
     } = this.state;
 
@@ -160,7 +161,7 @@ class Lines extends React.PureComponent {
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
-      throughStopPoint: throughStopPoint,
+      designation: designation,
       transportCompanyName: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
@@ -174,7 +175,7 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
-      throughStopPoint,
+      designation,
       transportCompany,
     } = this.state;
 
@@ -205,7 +206,7 @@ class Lines extends React.PureComponent {
         municipality: municipality.gid,
         trafficTransport: trafficTransport,
         throughStopArea: throughStopArea,
-        throughStopPoint: throughStopPoint,
+        designation: designation,
         transportCompanyName: transportCompany,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
@@ -220,7 +221,7 @@ class Lines extends React.PureComponent {
       municipality,
       trafficTransport,
       throughStopArea,
-      throughStopPoint,
+      designation,
       transportCompany,
     } = this.state;
 
@@ -251,7 +252,7 @@ class Lines extends React.PureComponent {
         municipality: municipality.gid,
         trafficTransportName: trafficTransport,
         throughStopArea: throughStopArea,
-        throughStopPoint: throughStopPoint,
+        designation: designation,
         transportCompanyName: transportCompany,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,
@@ -289,8 +290,14 @@ class Lines extends React.PureComponent {
     });
   };
 
+  // handleDesignationChange = (e) => {
+  //   this.setState({
+  //     designation: e.target.value,
+  //   });
+  // };
+
   handleThroughStopAreaChange = (event) => {
-    const { throughStopPoint, isPolygonActive, isRectangleActive } = this.state;
+    const { designation, isPolygonActive, isRectangleActive } = this.state;
 
     this.setState({
       throughStopArea: event.target.value,
@@ -299,7 +306,7 @@ class Lines extends React.PureComponent {
 
     if (
       (isPolygonActive || isRectangleActive) &&
-      throughStopPoint &&
+      designation &&
       !event.target.value
     ) {
       this.localObserver.publish("vt-activate-search", () => {});
@@ -311,7 +318,7 @@ class Lines extends React.PureComponent {
     }
   };
 
-  handleThroughStopPointChange = (event) => {
+  handleDesignationChange = (event) => {
     const {
       searchErrorMessage,
       throughStopArea,
@@ -320,7 +327,7 @@ class Lines extends React.PureComponent {
     } = this.state;
 
     this.setState({
-      throughStopPoint: event.target.value,
+      designation: event.target.value,
       searchErrorMessage: event.target.value ? searchErrorMessage : "",
     });
 
@@ -391,8 +398,8 @@ class Lines extends React.PureComponent {
             <TextField
               fullWidth
               id="standard-helperText"
-              value={this.state.throughStopPoint}
-              onChange={this.handleThroughStopPointChange}
+              value={this.state.designation}
+              onChange={this.handleDesignationChange}
               variant="standard"
             />
           </Tooltip>
@@ -523,8 +530,8 @@ class Lines extends React.PureComponent {
   };
 
   #validateSearchForm = () => {
-    const { throughStopArea, throughStopPoint } = this.state;
-    if (throughStopPoint && !throughStopArea) return SEARCH_ERROR_MESSAGE;
+    const { throughStopArea, designation } = this.state;
+    if (designation && !throughStopArea) return SEARCH_ERROR_MESSAGE;
 
     return "";
   };

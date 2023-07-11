@@ -305,7 +305,9 @@ export default class MapViewModel {
     internalLineNumber,
     municipality,
     trafficTransport,
+    transportCompanyName,
     throughStopArea,
+    designation,
     selectedFormType,
     searchCallback,
   }) => {
@@ -322,7 +324,9 @@ export default class MapViewModel {
         internalLineNumber,
         municipality,
         trafficTransport,
-        throughStopArea
+        transportCompanyName,
+        throughStopArea,
+        designation
       );
     } else {
       this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
@@ -332,7 +336,9 @@ export default class MapViewModel {
           internalLineNumber,
           municipality,
           trafficTransport,
+          transportCompanyName,
           throughStopArea,
+          designation,
           wktFeatureGeom
         );
       });
