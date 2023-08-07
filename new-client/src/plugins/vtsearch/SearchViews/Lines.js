@@ -543,7 +543,10 @@ class Lines extends React.PureComponent {
   ) => {
     const { internalLineNumber, designation } = this.state;
 
-    if (internalLineNumber && !this.containsOnlyNumbers(internalLineNumber))
+    if (
+      internalLineNumber &&
+      !this.validateInternalLineNumber(internalLineNumber)
+    )
       return callbackInvalidInernalLineNumber();
 
     if (callbackAllIsOK) return callbackAllIsOK();
@@ -566,8 +569,20 @@ class Lines extends React.PureComponent {
     return this.#renderNoErrorMessage();
   };
 
+  validateInternalLineNumber = (internalLineNumber) => {
+    //split to list
+    let test = internalLineNumber.split(",");
+    console.log(test);
+    for (let i = 0; i < test.length; i++) {
+      if (test[i] && !this.containsOnlyNumbers(test[i])) return false;
+    }
+
+    return true;
+  };
+
   containsOnlyNumbers = (stringValue) => {
     // Checks for only digits.
+    console.log("CHEK " + stringValue);
     if (stringValue.match(/^[0-9]+$/) != null) return true;
 
     return false;
