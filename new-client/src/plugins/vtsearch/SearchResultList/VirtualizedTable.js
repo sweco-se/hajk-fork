@@ -247,7 +247,7 @@ class VirtualizedTable extends React.PureComponent {
     const { columns, rowHeight, rowClicked, headerHeight, ...tableProps } =
       this.props;
     return (
-      <AutoSizer style={{ borderBottom: "1px solid grey" }}>
+      <AutoSizer>
         {({ height, width }) => (
           <StyledTable
             height={height}
