@@ -59,6 +59,7 @@ class Lines extends React.PureComponent {
     throughStopArea: "",
     designation: "",
     searchErrorMessage: "",
+    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -147,6 +148,10 @@ class Lines extends React.PureComponent {
       transportCompany,
     } = this.state;
 
+    // Remove trailing ',' from comma-separated strings (to avoid geoserver error)
+    let checkedInternalLineNumber = internalLineNumber.replace(/,\s*$/, "");
+    console.log(checkedInternalLineNumber);
+
     let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
       this.setState({
@@ -157,7 +162,7 @@ class Lines extends React.PureComponent {
 
     this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
@@ -263,6 +268,7 @@ class Lines extends React.PureComponent {
   handleInternalLineNrChange = (event) => {
     this.setState({
       internalLineNumber: event.target.value,
+      internalLineErrorMessage: "",
     });
   };
 
@@ -370,6 +376,8 @@ class Lines extends React.PureComponent {
               id="standard-helperText"
               onChange={this.handleInternalLineNrChange}
               value={this.state.internalLineNumber}
+              error={!(this.state.internalLineErrorMessage === "")}
+              helperText={this.state.internalLineErrorMessage}
               variant="standard"
             />
           </Tooltip>
@@ -589,6 +597,10 @@ class Lines extends React.PureComponent {
   };
 
   #renderErrorMessageInvalidInternalLine = () => {
+    this.setState({
+      internalLineErrorMessage: "Fel värde på tekniskt nr",
+    });
+
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
