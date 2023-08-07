@@ -515,7 +515,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  #renderErrorMessage = (errorMessage) => {
+  #renderSearchErrorMessage = (errorMessage) => {
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
@@ -536,12 +536,62 @@ class Lines extends React.PureComponent {
     return "";
   };
 
-  #showErrorMessage = () => {
+  #validateParameters = (
+    callbackInvalidInernalLineNumber,
+    callbackInvalidDesignation,
+    callbackAllIsOK
+  ) => {
+    const { internalLineNumber, designation } = this.state;
+
+    if (internalLineNumber && !this.containsOnlyNumbers(internalLineNumber))
+      return callbackInvalidInernalLineNumber();
+
+    if (callbackAllIsOK) return callbackAllIsOK();
+  };
+
+  #showValidateParametersErrorMessage = () => {
+    return this.#validateParameters(
+      this.#renderErrorMessageInvalidInternalLine,
+      this.#renderErrorMessageInvalidDesignation,
+      this.renderNoErrorMessage
+    );
+  };
+
+  #showSearchErrorMessage = () => {
     const { searchErrorMessage } = this.state;
 
-    if (searchErrorMessage) return this.#renderErrorMessage(searchErrorMessage);
+    if (searchErrorMessage)
+      return this.#renderSearchErrorMessage(searchErrorMessage);
 
     return this.#renderNoErrorMessage();
+  };
+
+  containsOnlyNumbers = (stringValue) => {
+    // Checks for only digits.
+    if (stringValue.match(/^[0-9]+$/) != null) return true;
+
+    return false;
+  };
+
+  #renderErrorMessageInvalidInternalLine = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
+          KOMMATECKEN
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
+  };
+
+  #renderErrorMessageInvalidDesignation = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          LISTAN MED FLERA HÅLLPLATSLÄGEN MÅSTE SEPARERADES MED KOMMATECKEN
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
   };
 
   #renderSpatialSearchSection = () => {
@@ -605,7 +655,8 @@ class Lines extends React.PureComponent {
           {this.#renderTrafficTypeSection()}
           {this.#renderMunicipalitySection()}
           {this.#renderSearchButtonSection()}
-          {this.#showErrorMessage()}
+          {this.#showValidateParametersErrorMessage()}
+          {this.#showSearchErrorMessage()}
           {this.#renderSpatialSearchSection()}
         </Grid>
       </div>
