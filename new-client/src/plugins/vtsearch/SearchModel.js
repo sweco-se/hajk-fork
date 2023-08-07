@@ -928,7 +928,16 @@ export default class SearchModel {
    *
    * @memberof SearchModel
    */
-  getJourneys(filterOnFromDate, filterOnToDate, filterOnWkt) {
+  getJourneys(
+    filterOnFromDate,
+    filterOnToDate,
+    filterOnPublicLine,
+    filterOnInternalLine,
+    filterOnNameOrNumber,
+    filterOnDesignation,
+    selectedFormType,
+    filterOnWkt
+  ) {
     this.localObserver.publish("vt-result-begin", {
       label: this.geoServer.journeys.searchLabel,
     });
@@ -943,8 +952,36 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnFromDate:${filterOnFromDate};`;
     if (filterOnToDate)
       viewParams = viewParams + `filterOnToDate:${filterOnToDate};`;
+    if (filterOnNameOrNumber) {
+      if (this.containsOnlyNumbers(filterOnNameOrNumber))
+        viewParams =
+          viewParams + `filterOnStopAreaNumber:${filterOnNameOrNumber};`;
+      else
+        viewParams =
+          viewParams + `filterOnStopAreaName:${filterOnNameOrNumber};`;
+    }
+    if (filterOnDesignation) {
+      filterOnDesignation =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
+      viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
+    }
+    if (filterOnPublicLine)
+      viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
+    if (filterOnInternalLine) {
+      filterOnInternalLine =
+        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
+      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
+    }
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
-    if (filterOnFromDate || filterOnToDate || filterOnWkt)
+    if (
+      filterOnFromDate ||
+      filterOnToDate ||
+      filterOnNameOrNumber ||
+      filterOnDesignation ||
+      filterOnPublicLine ||
+      filterOnInternalLine ||
+      filterOnWkt
+    )
       url = url + viewParams;
     url = this.encodeUrlForGeoServer(url);
 
@@ -970,6 +1007,11 @@ export default class SearchModel {
           journeys.searchParams = {
             filterOnFromDate: filterOnFromDate,
             filterOnToDate: filterOnToDate,
+            filterOnPublicLine: filterOnPublicLine,
+            filterOnInternalLine: filterOnInternalLine,
+            filterOnNameOrNumber: filterOnNameOrNumber,
+            filterOnDesignation: filterOnDesignation,
+            selectedFormType: selectedFormType,
             filterOnWkt: filterOnWkt,
           };
 

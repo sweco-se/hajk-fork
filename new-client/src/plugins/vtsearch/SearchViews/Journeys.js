@@ -91,7 +91,6 @@ class Journeys extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    // classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -103,6 +102,7 @@ class Journeys extends React.PureComponent {
     this.model = this.props.model;
     this.localObserver = this.props.localObserver;
     this.globalObserver = this.props.app.globalObserver;
+    this.bindSubscriptions();
   }
 
   bindSubscriptions() {
@@ -157,11 +157,11 @@ class Journeys extends React.PureComponent {
       return;
     }
 
-    this.clearSearchInputAndButtons();
+    // this.clearSearchInputAndButtons();
     this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
-      publicLineName: publicLineName,
+      publicLine: publicLineName,
       internalLineNumber: internalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
@@ -552,7 +552,7 @@ class Journeys extends React.PureComponent {
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
     this.localObserver.publish("vt-journeys-search", {
-      publicLineName: publicLineName,
+      publicLine: publicLineName,
       internalLineNumber: internalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
