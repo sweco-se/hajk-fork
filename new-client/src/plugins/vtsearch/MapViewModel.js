@@ -105,7 +105,7 @@ export default class MapViewModel {
 
     this.map.on("singleclick", this.#onFeaturesClickedInMap);
 
-    this.localObserver.subscribe("add-search-result", (olFeatures) => {
+    this.localObserver.subscribe("vt-add-search-result", (olFeatures) => {
       this.#addFeatureToSearchResultLayer(olFeatures);
     });
 

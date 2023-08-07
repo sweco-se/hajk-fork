@@ -78,15 +78,34 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 const StyledTab = styled(Tab)(({ theme }) => ({
   minHeight: theme.spacing(0),
   width: theme.spacing(20),
-  height: theme.spacing(4),
+  height: theme.spacing(3.8),
   padding: theme.spacing(0),
   marginLeft: theme.spacing(0.5),
   color: theme.palette.common.white,
   backgroundColor: theme.palette.primary.light,
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
+const StyledTabSelected = styled(Tab)(({ theme }) => ({
+  minHeight: theme.spacing(0),
+  width: theme.spacing(20),
+  height: theme.spacing(3.8),
+  padding: theme.spacing(0),
+  marginLeft: theme.spacing(0.5),
   color: theme.palette.common.white,
+  backgroundColor: theme.palette.primary.light,
+  borderBottom: "2px solid white",
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  color: theme.palette.common.white,
+}));
+
+const StyledTypographySelected = styled(Typography)(({ theme }) => ({
+  color: theme.palette.common.white,
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.dark,
 }));
 
 const StyledGridClearIcon = styled(Grid)(({ theme }) => ({
@@ -182,9 +201,7 @@ class SearchResultListContainer extends React.Component {
 
     localObserver.publish("vt-add-search-result-to-map", {
       searchResultId: searchResultId,
-      olFeatures: this.#convertToGeoJson(
-        result?.featureCollection || result?.value
-      ),
+      olFeatures: this.#getFeaturesFromResult(result),
       zoomToSearchResult: zoomToSearchResult,
     });
     this.#setActiveTabId(searchResultId, zoomToSearchResult);
@@ -432,10 +449,34 @@ class SearchResultListContainer extends React.Component {
     )
       searchResult.label = toolConfig.geoServer[searchResult.type].searchLabel;
 
-    return (
+    return searchResultId === this.state.activeTabId ? (
+      <StyledTabSelected
+        label={
+          <StyledGrid container>
+            <Grid item xs={10}>
+              <StyledTypographySelected variant="subtitle2">
+                {searchResult.label}
+              </StyledTypographySelected>
+            </Grid>
+            <StyledGridClearIcon item xs={2}>
+              <StyledClearIcon
+                onClick={(e) => {
+                  e.stopPropagation();
+                  this.#onTabClose(searchResultId);
+                }}
+                fontSize="inherit"
+              />
+            </StyledGridClearIcon>
+          </StyledGrid>
+        }
+        value={searchResultId}
+        key={`simple-tabpanel-${searchResultId}`}
+        aria-controls={`simple-tabpanel-${searchResultId}`}
+      ></StyledTabSelected>
+    ) : (
       <StyledTab
         label={
-          <Grid container sx={{ color: "white" }}>
+          <StyledGrid container>
             <Grid item xs={10}>
               <StyledTypography variant="subtitle2">
                 {searchResult.label}
@@ -450,7 +491,7 @@ class SearchResultListContainer extends React.Component {
                 fontSize="inherit"
               />
             </StyledGridClearIcon>
-          </Grid>
+          </StyledGrid>
         }
         value={searchResultId}
         key={`simple-tabpanel-${searchResultId}`}

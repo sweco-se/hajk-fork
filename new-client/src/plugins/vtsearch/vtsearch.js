@@ -107,7 +107,6 @@ const LoaderContainer = styled("div")(() => ({
 }));
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  padding: 7, // ???
   transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
   transition: (theme) =>
     theme.transitions.create("transform", {
@@ -206,7 +205,6 @@ class VTSearch extends React.PureComponent {
       "search.featureCollectionClicked",
       (searchResult) => {
         searchResult.type = searchResult?.source?.onClickName;
-
         const featureCollection = searchResult?.value;
         const attributesToDisplay =
           this.searchModel.geoServer[searchResult.type]?.attributesToDisplay;

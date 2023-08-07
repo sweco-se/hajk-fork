@@ -293,7 +293,10 @@ class AttributeTable extends React.Component {
   };
 
   #sort = ({ sortBy, sortDirection }) => {
-    let rowsToBeSorted = this.#getSortedRows(sortBy, sortDirection);
+    let rowsToBeSorted = this.#getSortedRows({
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    });
 
     this.setState((state) => {
       return {
@@ -367,12 +370,11 @@ class AttributeTable extends React.Component {
     else localObserver.publish("vt-search-hide-stop-points-by-line");
   };
 
-  // Lägg in en label från toolconfig i searchresult
   render() {
     const { height, searchResult, rowHeight } = this.props;
     const features = this.#getFeaturesFromSearchResult(searchResult);
     return (
-      <Paper style={{ height: height }}>
+      <Paper sx={{ height: height }}>
         {this.state.exportCsvFile && this.#renderCSVDownloadComponent()}
         {this.#renderSearchCheckboxSection(searchResult)}
         {features.length > 0 ? (
@@ -381,7 +383,7 @@ class AttributeTable extends React.Component {
             rowGetter={({ index }) => this.state.rows[index]}
             rowClicked={this.#onRowClick}
             columns={this.#getColumns()}
-            sort={this.#sort}
+            sort={this.#sort.bind(this)}
             sortDirection={this.state.sortDirection}
             sortBy={this.state.sortBy}
             scrollToIndex={this.state.focusedRow}
@@ -390,7 +392,7 @@ class AttributeTable extends React.Component {
             rowHeight={rowHeight}
           />
         ) : (
-          <Paper style={{ height: height }}>Inga sökresultat</Paper>
+          <Paper sx={{ height: height }}>Inga sökresultat</Paper>
         )}
       </Paper>
     );
