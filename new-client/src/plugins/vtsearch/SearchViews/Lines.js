@@ -156,10 +156,6 @@ class Lines extends React.PureComponent {
       transportCompany,
     } = this.state;
 
-    // Remove trailing ',' from comma-separated strings (to avoid geoserver error)
-    let checkedInternalLineNumber =
-      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
     let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
       this.setState({
@@ -167,6 +163,9 @@ class Lines extends React.PureComponent {
       });
       return;
     }
+
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
 
     this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
@@ -381,10 +380,7 @@ class Lines extends React.PureComponent {
   };
 
   #disableSearch = () => {
-    this.setState(
-      { spatialToolsEnabled: false, searchButtonEnabled: false }
-      // this.deactivateSearch
-    );
+    this.setState({ spatialToolsEnabled: false, searchButtonEnabled: false });
   };
 
   #enableSearch = () => {
