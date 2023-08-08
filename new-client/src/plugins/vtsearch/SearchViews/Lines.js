@@ -149,7 +149,9 @@ class Lines extends React.PureComponent {
     } = this.state;
 
     // Remove trailing ',' from comma-separated strings (to avoid geoserver error)
-    let checkedInternalLineNumber = internalLineNumber.replace(/,\s*$/, "");
+    // let checkedInternalLineNumber = internalLineNumber.replace(/,\s*$/, "");
+    let checkedInternalLineNumber =
+      this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     console.log(checkedInternalLineNumber);
 
     let validationErrorMessage = this.#validateSearchForm();
@@ -205,9 +207,12 @@ class Lines extends React.PureComponent {
         return;
       }
 
+      let checkedInternalLineNumber =
+        this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         municipality: municipality.gid,
         trafficTransport: trafficTransport,
         throughStopArea: throughStopArea,
@@ -251,9 +256,12 @@ class Lines extends React.PureComponent {
         return;
       }
 
+      let checkedInternalLineNumber =
+        this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         municipality: municipality.gid,
         trafficTransportName: trafficTransport,
         throughStopArea: throughStopArea,
@@ -544,12 +552,8 @@ class Lines extends React.PureComponent {
     return "";
   };
 
-  #validateParameters = (
-    callbackInvalidInernalLineNumber,
-    callbackInvalidDesignation,
-    callbackAllIsOK
-  ) => {
-    const { internalLineNumber, designation } = this.state;
+  #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
+    const { internalLineNumber } = this.state;
 
     if (
       internalLineNumber &&
@@ -563,7 +567,6 @@ class Lines extends React.PureComponent {
   #showValidateParametersErrorMessage = () => {
     return this.#validateParameters(
       this.#renderErrorMessageInvalidInternalLine,
-      this.#renderErrorMessageInvalidDesignation,
       this.renderNoErrorMessage
     );
   };
@@ -578,19 +581,31 @@ class Lines extends React.PureComponent {
   };
 
   validateInternalLineNumber = (internalLineNumber) => {
-    //split to list
-    let test = internalLineNumber.split(",");
-    console.log(test);
-    for (let i = 0; i < test.length; i++) {
-      if (test[i] && !this.containsOnlyNumbers(test[i])) return false;
+    let stringList = internalLineNumber.split(",");
+    console.log(stringList);
+    for (let i = 0; i < stringList.length; i++) {
+      if (stringList[i] && !this.containsOnlyNumbers(stringList[i]))
+        return false;
     }
 
     return true;
   };
 
+  removeTralingCommasFromCommaSeparatedString = (stringValue) => {
+    let stringList = stringValue.split(",");
+    if (stringList.length === 0) return "";
+
+    let fixedString = stringList[0];
+    for (let i = 1; i < stringList.length; i++) {
+      if (stringList[i]) fixedString += "," + stringList[i];
+    }
+
+    return fixedString;
+  };
+
   containsOnlyNumbers = (stringValue) => {
     // Checks for only digits.
-    console.log("CHEK " + stringValue);
+    console.log("CHECK " + stringValue);
     if (stringValue.match(/^[0-9]+$/) != null) return true;
 
     return false;
@@ -606,16 +621,6 @@ class Lines extends React.PureComponent {
         <StyledErrorMessageTypography variant="body2">
           TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
           KOMMATECKEN
-        </StyledErrorMessageTypography>
-      </Grid>
-    );
-  };
-
-  #renderErrorMessageInvalidDesignation = () => {
-    return (
-      <Grid item xs={12}>
-        <StyledErrorMessageTypography variant="body2">
-          LISTAN MED FLERA HÅLLPLATSLÄGEN MÅSTE SEPARERADES MED KOMMATECKEN
         </StyledErrorMessageTypography>
       </Grid>
     );
