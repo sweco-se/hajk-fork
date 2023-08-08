@@ -19,6 +19,10 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import {
+  validateInternalLineNumber,
+  removeTralingCommasFromCommaSeparatedString,
+} from "./Validator";
 
 const StyledSearchButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.primary.main,
@@ -54,6 +58,7 @@ class Stops extends React.PureComponent {
     transportCompany: "",
     transportCompanies: [],
     searchErrorMessage: "",
+    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -177,9 +182,27 @@ class Stops extends React.PureComponent {
   };
 
   handleInternalLineNrChange = (event) => {
-    this.setState({
-      internalLineNumber: event.target.value,
-    });
+    let validationMessage = validateInternalLineNumber(event.target.value)
+      ? ""
+      : "Fel värde på tekniskt nr";
+
+    this.setState(
+      {
+        internalLineNumber: event.target.value,
+        internalLineErrorMessage: validationMessage,
+      },
+      () => {
+        this.#validateParameters(this.#disableSearch, this.#enableSearch);
+      }
+    );
+  };
+
+  #disableSearch = () => {
+    this.setState({ spatialToolsEnabled: false, searchButtonEnabled: false });
+  };
+
+  #enableSearch = () => {
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
   handlePublicLineNameChange = (event) => {
@@ -254,13 +277,16 @@ class Stops extends React.PureComponent {
       return;
     }
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
     this.localObserver.publish("vt-stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
       publicLine: publicLineName,
       municipality: municipality.gid,
       stopPoint: stopPoint,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       transportCompany: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
@@ -446,6 +472,8 @@ class Stops extends React.PureComponent {
               variant="standard"
               value={this.state.internalLineNumber}
               onChange={this.handleInternalLineNrChange}
+              error={!(this.state.internalLineErrorMessage === "")}
+              helperText={this.state.internalLineErrorMessage}
             ></TextField>
           </Tooltip>
         </Grid>
@@ -572,8 +600,19 @@ class Stops extends React.PureComponent {
     );
   };
 
-  renderNoErrorMessage = () => {
+  #renderNoErrorMessage = () => {
     return <Typography></Typography>;
+  };
+
+  #renderErrorMessageInvalidInternalLine = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
+          KOMMATECKEN
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
   };
 
   validateSearchForm = () => {
@@ -585,12 +624,27 @@ class Stops extends React.PureComponent {
     return "";
   };
 
-  showErrorMessage = () => {
+  #showValidateParametersErrorMessage = () => {
+    return this.#validateParameters(
+      this.#renderErrorMessageInvalidInternalLine,
+      this.#renderNoErrorMessage
+    );
+  };
+
+  #showSearchErrorMessage = () => {
     const { searchErrorMessage } = this.state;
 
     if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
 
-    return this.renderNoErrorMessage();
+    return this.#renderNoErrorMessage();
+  };
+
+  #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
+    const { internalLineErrorMessage } = this.state;
+
+    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
+
+    if (callbackAllIsOK) return callbackAllIsOK();
   };
 
   render() {
@@ -605,7 +659,8 @@ class Stops extends React.PureComponent {
           {this.renderRadioButtonSection()}
           {this.renderTextParameterSection()}
           {this.renderSearchButton()}
-          {this.showErrorMessage()}
+          {this.#showSearchErrorMessage()}
+          {this.#showValidateParametersErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
       </div>
