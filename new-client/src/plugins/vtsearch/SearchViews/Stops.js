@@ -47,6 +47,8 @@ const SEARCH_ERROR_MESSAGE =
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
+    spatialToolsEnabled: true,
+    searchButtonEnabled: true,
     busStopValue: "stopAreas",
     stopNameOrNr: "",
     publicLineName: "",
@@ -94,11 +96,13 @@ class Stops extends React.PureComponent {
   }
 
   togglePolygonState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isPolygonActive: !this.state.isPolygonActive }, () => {
       this.handlePolygonClick();
     });
   };
   toggleRectangleState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
       this.handleRectangleClick();
     });
@@ -324,13 +328,16 @@ class Stops extends React.PureComponent {
         return;
       }
 
+      let checkedInternalLineNumber =
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
       this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
         municipality: municipality.gid,
         stopPoint: stopPoint,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         transportCompany: transportCompany,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
@@ -368,13 +375,15 @@ class Stops extends React.PureComponent {
         });
         return;
       }
+      let checkedInternalLineNumber =
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
       this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
         municipality: municipality.gid,
         stopPoint: stopPoint,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         transportCompany: transportCompany,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,
@@ -536,7 +545,11 @@ class Stops extends React.PureComponent {
   renderSearchButton = () => {
     return (
       <Grid item xs={12}>
-        <StyledSearchButton onClick={this.doSearch} variant="outlined">
+        <StyledSearchButton
+          onClick={this.doSearch}
+          variant="outlined"
+          disabled={!this.state.searchButtonEnabled}
+        >
           <Typography>SÖK</Typography>
         </StyledSearchButton>
       </Grid>
@@ -608,8 +621,8 @@ class Stops extends React.PureComponent {
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
-          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
-          KOMMATECKEN
+          TEKNISKT LINJENR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE
+          MED KOMMATECKEN
         </StyledErrorMessageTypography>
       </Grid>
     );
