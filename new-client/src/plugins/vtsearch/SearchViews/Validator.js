@@ -1,12 +1,17 @@
 /**
- * Function that validates internal line number input
+ * Function that validates internal line number input. Will make sure the input is
+ * on the form digit,digit,digit etc. One ',' at the end of the string is allowed.
  * @param {*} internalLineNumber internal line number as comma-separated string
  * @returns true if the input is valid (numbers separated by ',') false otherwise
  */
 export function validateInternalLineNumber(internalLineNumber) {
   let stringList = internalLineNumber.split(",");
   for (let i = 0; i < stringList.length; i++) {
-    if (stringList[i] && !containsOnlyNumbers(stringList[i])) return false;
+    if (i === stringList.length - 1) {
+      if (stringList[i] && !containsOnlyNumbers(stringList[i])) return false;
+    } else {
+      if (!containsOnlyNumbers(stringList[i])) return false;
+    }
   }
 
   return true;
