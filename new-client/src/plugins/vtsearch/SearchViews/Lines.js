@@ -280,10 +280,14 @@ class Lines extends React.PureComponent {
   };
 
   handleInternalLineNrChange = (event) => {
+    let validationMessage = validateInternalLineNumber(event.target.value)
+      ? ""
+      : "Fel värde på tekniskt nr";
+
     this.setState(
       {
         internalLineNumber: event.target.value,
-        internalLineErrorMessage: "",
+        internalLineErrorMessage: validationMessage,
       },
       () => {
         this.#validateParameters(this.#disableSearch, this.#enableSearch);
@@ -579,10 +583,9 @@ class Lines extends React.PureComponent {
   };
 
   #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
-    const { internalLineNumber } = this.state;
+    const { internalLineErrorMessage } = this.state;
 
-    if (internalLineNumber && !validateInternalLineNumber(internalLineNumber))
-      return callbackInvalidInernalLineNumber();
+    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
 
     if (callbackAllIsOK) return callbackAllIsOK();
   };
@@ -590,7 +593,7 @@ class Lines extends React.PureComponent {
   #showValidateParametersErrorMessage = () => {
     return this.#validateParameters(
       this.#renderErrorMessageInvalidInternalLine,
-      this.renderNoErrorMessage
+      this.#renderNoErrorMessage
     );
   };
 
@@ -604,10 +607,6 @@ class Lines extends React.PureComponent {
   };
 
   #renderErrorMessageInvalidInternalLine = () => {
-    this.setState({
-      internalLineErrorMessage: "Fel värde på tekniskt nr",
-    });
-
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
