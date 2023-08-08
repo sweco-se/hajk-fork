@@ -48,6 +48,8 @@ const SEARCH_ERROR_MESSAGE =
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
+    spatialToolsEnabled: true,
+    searchButtonEnabled: true,
     publicLineName: "",
     internalLineNumber: "",
     municipalities: [],
@@ -100,11 +102,13 @@ class Lines extends React.PureComponent {
   }
 
   togglePolygonState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isPolygonActive: !this.state.isPolygonActive }, () => {
       this.handlePolygonClick();
     });
   };
   toggleRectangleState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
       this.handleRectangleClick();
     });
@@ -274,10 +278,15 @@ class Lines extends React.PureComponent {
   };
 
   handleInternalLineNrChange = (event) => {
-    this.setState({
-      internalLineNumber: event.target.value,
-      internalLineErrorMessage: "",
-    });
+    this.setState(
+      {
+        internalLineNumber: event.target.value,
+        internalLineErrorMessage: "",
+      },
+      () => {
+        this.#validateParameters(this.#disableSearch, this.#enableSearch);
+      }
+    );
   };
 
   handlePublicLineNameChange = (event) => {
@@ -363,6 +372,17 @@ class Lines extends React.PureComponent {
     if (event.key === "Enter") {
       this.doSearch();
     }
+  };
+
+  #disableSearch = () => {
+    this.setState(
+      { spatialToolsEnabled: false, searchButtonEnabled: false }
+      // this.deactivateSearch
+    );
+  };
+
+  #enableSearch = () => {
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
   #renderPublicAndTechnicalNrSection = () => {
@@ -523,7 +543,11 @@ class Lines extends React.PureComponent {
     return (
       <>
         <Grid item xs={12}>
-          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+          <StyledSearchButton
+            onClick={this.doSearch}
+            variant="outlined"
+            disabled={!this.state.searchButtonEnabled}
+          >
             <StyledTypography>SÖK</StyledTypography>
           </StyledSearchButton>
         </Grid>
