@@ -17,6 +17,10 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import {
+  validateInternalLineNumber,
+  removeTralingCommasFromCommaSeparatedString,
+} from "./Validator";
 
 // Define JSS styles that will be used in this component.
 // Example below utilizes the very powerful "theme" object
@@ -153,10 +157,8 @@ class Lines extends React.PureComponent {
     } = this.state;
 
     // Remove trailing ',' from comma-separated strings (to avoid geoserver error)
-    // let checkedInternalLineNumber = internalLineNumber.replace(/,\s*$/, "");
     let checkedInternalLineNumber =
-      this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-    console.log(checkedInternalLineNumber);
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
 
     let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
@@ -212,7 +214,7 @@ class Lines extends React.PureComponent {
       }
 
       let checkedInternalLineNumber =
-        this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
 
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
@@ -261,7 +263,7 @@ class Lines extends React.PureComponent {
       }
 
       let checkedInternalLineNumber =
-        this.removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
 
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
@@ -579,10 +581,7 @@ class Lines extends React.PureComponent {
   #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
     const { internalLineNumber } = this.state;
 
-    if (
-      internalLineNumber &&
-      !this.validateInternalLineNumber(internalLineNumber)
-    )
+    if (internalLineNumber && !validateInternalLineNumber(internalLineNumber))
       return callbackInvalidInernalLineNumber();
 
     if (callbackAllIsOK) return callbackAllIsOK();
@@ -602,37 +601,6 @@ class Lines extends React.PureComponent {
       return this.#renderSearchErrorMessage(searchErrorMessage);
 
     return this.#renderNoErrorMessage();
-  };
-
-  validateInternalLineNumber = (internalLineNumber) => {
-    let stringList = internalLineNumber.split(",");
-    console.log(stringList);
-    for (let i = 0; i < stringList.length; i++) {
-      if (stringList[i] && !this.containsOnlyNumbers(stringList[i]))
-        return false;
-    }
-
-    return true;
-  };
-
-  removeTralingCommasFromCommaSeparatedString = (stringValue) => {
-    let stringList = stringValue.split(",");
-    if (stringList.length === 0) return "";
-
-    let fixedString = stringList[0];
-    for (let i = 1; i < stringList.length; i++) {
-      if (stringList[i]) fixedString += "," + stringList[i];
-    }
-
-    return fixedString;
-  };
-
-  containsOnlyNumbers = (stringValue) => {
-    // Checks for only digits.
-    console.log("CHECK " + stringValue);
-    if (stringValue.match(/^[0-9]+$/) != null) return true;
-
-    return false;
   };
 
   #renderErrorMessageInvalidInternalLine = () => {
