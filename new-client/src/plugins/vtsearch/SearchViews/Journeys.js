@@ -162,12 +162,14 @@ class Journeys extends React.PureComponent {
       return;
     }
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     // this.clearSearchInputAndButtons();
     this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       publicLine: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFormType: "",
@@ -580,9 +582,11 @@ class Journeys extends React.PureComponent {
       this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     this.localObserver.publish("vt-journeys-search", {
       publicLine: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
