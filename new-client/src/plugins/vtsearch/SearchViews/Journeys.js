@@ -48,10 +48,6 @@ const StyledSearchButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.primary.main,
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
-}));
-
 const SEARCH_ERROR_MESSAGE =
   "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
 
@@ -888,7 +884,7 @@ class Journeys extends React.PureComponent {
             variant="outlined"
             disabled={!this.state.searchButtonEnabled}
           >
-            <StyledTypography>SÖK</StyledTypography>
+            <Typography>SÖK</Typography>
           </StyledSearchButton>
         </Grid>
       </>
