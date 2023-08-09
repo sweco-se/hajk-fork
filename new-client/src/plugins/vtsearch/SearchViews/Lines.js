@@ -17,6 +17,10 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import {
+  validateInternalLineNumber,
+  removeTralingCommasFromCommaSeparatedString,
+} from "./Validator";
 
 // Define JSS styles that will be used in this component.
 // Example below utilizes the very powerful "theme" object
@@ -48,6 +52,8 @@ const SEARCH_ERROR_MESSAGE =
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
+    spatialToolsEnabled: true,
+    searchButtonEnabled: true,
     publicLineName: "",
     internalLineNumber: "",
     municipalities: [],
@@ -59,6 +65,7 @@ class Lines extends React.PureComponent {
     throughStopArea: "",
     designation: "",
     searchErrorMessage: "",
+    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -99,11 +106,13 @@ class Lines extends React.PureComponent {
   }
 
   togglePolygonState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isPolygonActive: !this.state.isPolygonActive }, () => {
       this.handlePolygonClick();
     });
   };
   toggleRectangleState = () => {
+    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
       this.handleRectangleClick();
     });
@@ -155,9 +164,12 @@ class Lines extends React.PureComponent {
       return;
     }
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
     this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
@@ -200,9 +212,12 @@ class Lines extends React.PureComponent {
         return;
       }
 
+      let checkedInternalLineNumber =
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         municipality: municipality.gid,
         trafficTransport: trafficTransport,
         throughStopArea: throughStopArea,
@@ -246,9 +261,12 @@ class Lines extends React.PureComponent {
         return;
       }
 
+      let checkedInternalLineNumber =
+        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
+
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: internalLineNumber,
+        internalLineNumber: checkedInternalLineNumber,
         municipality: municipality.gid,
         trafficTransportName: trafficTransport,
         throughStopArea: throughStopArea,
@@ -261,9 +279,19 @@ class Lines extends React.PureComponent {
   };
 
   handleInternalLineNrChange = (event) => {
-    this.setState({
-      internalLineNumber: event.target.value,
-    });
+    let validationMessage = validateInternalLineNumber(event.target.value)
+      ? ""
+      : "Fel värde på tekniskt nr";
+
+    this.setState(
+      {
+        internalLineNumber: event.target.value,
+        internalLineErrorMessage: validationMessage,
+      },
+      () => {
+        this.#validateParameters(this.#disableSearch, this.#enableSearch);
+      }
+    );
   };
 
   handlePublicLineNameChange = (event) => {
@@ -351,6 +379,14 @@ class Lines extends React.PureComponent {
     }
   };
 
+  #disableSearch = () => {
+    this.setState({ spatialToolsEnabled: false, searchButtonEnabled: false });
+  };
+
+  #enableSearch = () => {
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
+  };
+
   #renderPublicAndTechnicalNrSection = () => {
     return (
       <>
@@ -370,6 +406,8 @@ class Lines extends React.PureComponent {
               id="standard-helperText"
               onChange={this.handleInternalLineNrChange}
               value={this.state.internalLineNumber}
+              error={!(this.state.internalLineErrorMessage === "")}
+              helperText={this.state.internalLineErrorMessage}
               variant="standard"
             />
           </Tooltip>
@@ -507,7 +545,11 @@ class Lines extends React.PureComponent {
     return (
       <>
         <Grid item xs={12}>
-          <StyledSearchButton onClick={this.doSearch} variant="outlined">
+          <StyledSearchButton
+            onClick={this.doSearch}
+            variant="outlined"
+            disabled={!this.state.searchButtonEnabled}
+          >
             <StyledTypography>SÖK</StyledTypography>
           </StyledSearchButton>
         </Grid>
@@ -515,7 +557,7 @@ class Lines extends React.PureComponent {
     );
   };
 
-  #renderErrorMessage = (errorMessage) => {
+  #renderSearchErrorMessage = (errorMessage) => {
     return (
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
@@ -536,12 +578,39 @@ class Lines extends React.PureComponent {
     return "";
   };
 
-  #showErrorMessage = () => {
+  #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
+    const { internalLineErrorMessage } = this.state;
+
+    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
+
+    if (callbackAllIsOK) return callbackAllIsOK();
+  };
+
+  #showValidateParametersErrorMessage = () => {
+    return this.#validateParameters(
+      this.#renderErrorMessageInvalidInternalLine,
+      this.#renderNoErrorMessage
+    );
+  };
+
+  #showSearchErrorMessage = () => {
     const { searchErrorMessage } = this.state;
 
-    if (searchErrorMessage) return this.#renderErrorMessage(searchErrorMessage);
+    if (searchErrorMessage)
+      return this.#renderSearchErrorMessage(searchErrorMessage);
 
     return this.#renderNoErrorMessage();
+  };
+
+  #renderErrorMessageInvalidInternalLine = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
+          KOMMATECKEN
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
   };
 
   #renderSpatialSearchSection = () => {
@@ -605,7 +674,8 @@ class Lines extends React.PureComponent {
           {this.#renderTrafficTypeSection()}
           {this.#renderMunicipalitySection()}
           {this.#renderSearchButtonSection()}
-          {this.#showErrorMessage()}
+          {this.#showValidateParametersErrorMessage()}
+          {this.#showSearchErrorMessage()}
           {this.#renderSpatialSearchSection()}
         </Grid>
       </div>
