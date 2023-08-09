@@ -38,10 +38,6 @@ const StyledDivider = styled(Divider)(({ theme }) => ({
   marginBottom: theme.spacing(3),
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
-}));
-
 const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
 }));
@@ -550,7 +546,7 @@ class Lines extends React.PureComponent {
             variant="outlined"
             disabled={!this.state.searchButtonEnabled}
           >
-            <StyledTypography>SÖK</StyledTypography>
+            <Typography>SÖK</Typography>
           </StyledSearchButton>
         </Grid>
       </>

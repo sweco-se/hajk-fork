@@ -13,6 +13,10 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import {
+  validateInternalLineNumber,
+  removeTralingCommasFromCommaSeparatedString,
+} from "./Validator";
 
 const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
@@ -44,10 +48,6 @@ const StyledSearchButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.primary.main,
 }));
 
-const StyledTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
-}));
-
 const SEARCH_ERROR_MESSAGE =
   "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
 
@@ -55,6 +55,7 @@ class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
     spatialToolsEnabled: true,
+    searchButtonEnabled: true,
     isPolygonActive: false,
     isRectangleActive: false,
     selectedFromDate: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -80,7 +81,7 @@ class Journeys extends React.PureComponent {
     stopArea: "",
     stopPoint: "",
     searchErrorMessage: "",
-    searchButtonEnabled: true,
+    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -157,12 +158,14 @@ class Journeys extends React.PureComponent {
       return;
     }
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     // this.clearSearchInputAndButtons();
     this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       publicLine: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFormType: "",
@@ -186,11 +189,12 @@ class Journeys extends React.PureComponent {
         fromTimeInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
       }
     );
@@ -229,11 +233,12 @@ class Journeys extends React.PureComponent {
         fromDateInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
       }
     );
@@ -255,11 +260,12 @@ class Journeys extends React.PureComponent {
         endTimeInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
       }
     );
@@ -281,11 +287,12 @@ class Journeys extends React.PureComponent {
         endDateInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
       }
     );
@@ -337,9 +344,25 @@ class Journeys extends React.PureComponent {
   };
 
   handleInternalLineNrChange = (event) => {
-    this.setState({
-      internalLineNumber: event.target.value,
-    });
+    let validationMessage = validateInternalLineNumber(event.target.value)
+      ? ""
+      : "Fel värde på tekniskt nr";
+
+    this.setState(
+      {
+        internalLineNumber: event.target.value,
+        internalLineErrorMessage: validationMessage,
+      },
+      () => {
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
+        );
+      }
+    );
   };
 
   handlePublicLineNameChange = (event) => {
@@ -357,10 +380,10 @@ class Journeys extends React.PureComponent {
 
   updateStateForTimeOrDateChange(timeOrDate) {
     if (!this.isTimeOrDateValid(timeOrDate)) {
-      this.disablePolygonAndRectangleSearch();
+      this.#disableSearch();
       return;
     }
-    if (!this.state.spatialToolsEnabled) this.enablePolygonAndRectangleSearch();
+    if (!this.state.spatialToolsEnabled) this.#enableSearch();
   }
 
   isTimeOrDateValid = (timeOrDate) => {
@@ -383,21 +406,22 @@ class Journeys extends React.PureComponent {
     );
   };
 
-  disablePolygonAndRectangleSearch = () => {
+  #disableSearch = () => {
     this.setState(
       { spatialToolsEnabled: false, searchButtonEnabled: false },
       this.deactivateSearch
     );
   };
 
-  enablePolygonAndRectangleSearch = () => {
+  #enableSearch = () => {
     this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
-  validateDateAndTime = (
+  #validateParameters = (
     callbackInvalidDate,
     callbackInvalidTime,
     callbackWrongDateAndTime,
+    callbackInvalidInernalLineNumber,
     callbackAllIsOK
   ) => {
     const {
@@ -405,6 +429,7 @@ class Journeys extends React.PureComponent {
       selectedEndDate,
       selectedEndTime,
       selectedFromTime,
+      internalLineErrorMessage,
     } = this.state;
 
     if (
@@ -422,6 +447,8 @@ class Journeys extends React.PureComponent {
     const dateAndTimeValues = this.getFormattedDate();
     if (dateAndTimeValues.formatFromDate > dateAndTimeValues.formatEndDate)
       return callbackWrongDateAndTime();
+
+    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
 
     if (callbackAllIsOK) return callbackAllIsOK();
   };
@@ -551,9 +578,11 @@ class Journeys extends React.PureComponent {
       this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
+    let checkedInternalLineNumber =
+      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     this.localObserver.publish("vt-journeys-search", {
       publicLine: publicLineName,
-      internalLineNumber: internalLineNumber,
+      internalLineNumber: checkedInternalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
@@ -722,11 +751,12 @@ class Journeys extends React.PureComponent {
     return this.renderNoErrorMessage();
   };
 
-  showErrorMessage = () => {
-    return this.validateDateAndTime(
+  #showValidateParametersErrorMessage = () => {
+    return this.#validateParameters(
       this.renderErrorMessageInvalidDate,
       this.renderErrorMessageInvalidTime,
       this.renderErrorMessageStartTimeBiggerThanEndTime,
+      this.#renderErrorMessageInvalidInternalLine,
       this.renderNoErrorMessage
     );
   };
@@ -736,6 +766,17 @@ class Journeys extends React.PureComponent {
       <Grid item xs={12}>
         <StyledErrorMessageTypography variant="body2">
           {errorMessage}
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
+  };
+
+  #renderErrorMessageInvalidInternalLine = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
+          KOMMATECKEN
         </StyledErrorMessageTypography>
       </Grid>
     );
@@ -825,6 +866,8 @@ class Journeys extends React.PureComponent {
               onChange={this.handleInternalLineNrChange}
               value={this.state.internalLineNumber}
               variant="standard"
+              error={!(this.state.internalLineErrorMessage === "")}
+              helperText={this.state.internalLineErrorMessage}
             />
           </Tooltip>
         </Grid>
@@ -841,7 +884,7 @@ class Journeys extends React.PureComponent {
             variant="outlined"
             disabled={!this.state.searchButtonEnabled}
           >
-            <StyledTypography>SÖK</StyledTypography>
+            <Typography>SÖK</Typography>
           </StyledSearchButton>
         </Grid>
       </>
@@ -911,7 +954,7 @@ class Journeys extends React.PureComponent {
           {this.renderStopAreaStopPointSection()}
           {this.renderPublicAndTechnicalNrSection()}
           {this.renderSearchButtonSection()}
-          {this.showErrorMessage()}
+          {this.#showValidateParametersErrorMessage()}
           {this.showSearchErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
