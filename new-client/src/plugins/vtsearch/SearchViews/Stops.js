@@ -188,7 +188,7 @@ class Stops extends React.PureComponent {
   handleInternalLineNrChange = (event) => {
     let validationMessage = validateInternalLineNumber(event.target.value)
       ? ""
-      : "Fel värde på tekniskt nr";
+      : "Fel värde på tekniskt linjenr";
 
     this.setState(
       {
