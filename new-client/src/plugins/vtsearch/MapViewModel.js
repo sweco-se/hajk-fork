@@ -84,7 +84,11 @@ export default class MapViewModel {
         .getLayers()
         .getArray()
         .filter((layer) => {
-          if (layer.get("type") === "vt-search-result-layer") return layer;
+          if (
+            layer.get("type") === "vt-search-result-layer" ||
+            layer.get("name") === "vt-search-result-layer"
+          )
+            return layer;
           return null;
         });
       layersToRemove.forEach((layer) => {
@@ -603,7 +607,10 @@ export default class MapViewModel {
     this.map.forEachFeatureAtPixel(
       evt.pixel,
       (feature, layer) => {
-        if (layer.get("type") === "vt-search-result-layer") {
+        if (
+          layer.get("type") === "vt-search-result-layer" ||
+          layer.get("name") === "vt-search-result-layer"
+        ) {
           features.push(feature);
         }
       },
