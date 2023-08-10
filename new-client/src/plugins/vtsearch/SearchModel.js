@@ -64,7 +64,8 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   encodeWktForGeoServer = (wkt) => {
-    return this.encodeWktInCqlForGeoServer(wkt).replace(/,/g, "%5C,");
+    //return this.encodeWktInCqlForGeoServer(wkt).replace(/,/g, "%5C,");
+    return this.encodeWktInCqlForGeoServer(wkt);
   };
 
   /**
@@ -75,7 +76,8 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   encodeCommaSeparatedStringForGeoServer = (commaSeparatedString) => {
-    return commaSeparatedString.replace(/,/g, "%5C,");
+    //return commaSeparatedString.replace(/,/g, "%5C,");
+    return commaSeparatedString;
   };
 
   /**
@@ -95,7 +97,7 @@ export default class SearchModel {
   };
 
   /**
-   * Private method that encodes the swedish characters å, ä and ö.
+   * Private method that encodes ',' and the swedish characters å, ä and ö.
    * @param {string} url The url that needs to be encoded.
    * @returns {string} Returns an encoded url.
    *
@@ -105,7 +107,8 @@ export default class SearchModel {
     return url
       .replace(/å/g, "%C3%A5")
       .replace(/ä/g, "%C3%A4")
-      .replace(/ö/g, "%C3%B6");
+      .replace(/ö/g, "%C3%B6")
+      .replace(/,/g, "%5C,");
   };
 
   /**
