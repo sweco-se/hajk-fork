@@ -1,4 +1,5 @@
 import React from "react";
+import { useTheme } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import TableCell from "@mui/material/TableCell";
 import { AutoSizer, Column, Table } from "react-virtualized";
@@ -91,6 +92,13 @@ const StyledTable = styled(Table)(({ theme }) => ({
   },
 }));
 
+const StyledTableRow = () => {
+  const theme = useTheme();
+  return {
+    backgroundColor: theme.palette.primary.light,
+  };
+};
+
 const StyledTableCellForCell = styled(TableCell)(({ theme }) => ({
   marginRight: 0,
   border: "none",
@@ -113,26 +121,6 @@ const StyledTableCellForHeader = styled(TableCell)(({ theme }) => ({
   lineHeight: 1,
   borderBottom: theme.spacing(0),
 }));
-
-// const StyledTableRowBase = styled(Table)(({ theme }) => ({
-//   cursor: "pointer",
-//   border: `1px solid ${theme.palette.grey[200]}`,
-//   whiteSpace: "wrap",
-//   outline: "none",
-//   display: "flex",
-//   alignItems: "center",
-//   boxSizing: "border-box",
-// }));
-
-// const StyledTableRow = styled(StyledTableRowBase)(({ theme }) => ({
-//   "&:hover": {
-//     backgroundColor: theme.palette.grey[200],
-//   },
-// }));
-
-// const StyledTableRowSelected = styled(StyledTableRowBase)(({ theme }) => ({
-//   background: theme.palette.primary.main,
-// }));
 
 const headerRowIndex = -1;
 
@@ -175,14 +163,12 @@ class VirtualizedTable extends React.PureComponent {
    */
   #rowStyleClickedRow = (row) => {
     if (row.index < 0) return;
-    if (this.state.index === row.index) {
+    if (this.state.index === row.index)
       return {
-        backgroundColor: "#0096ed", // theme.palette.primary.main
+        backgroundColor: "#0096ed", // Only accepts rgb codes, not from theme
       };
-    }
-    return {
-      backgroundColor: "#fff",
-    };
+
+    return StyledTableRow;
   };
 
   #getColumn = (dataKey, index, other) => {
