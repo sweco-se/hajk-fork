@@ -64,20 +64,18 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   encodeWktForGeoServer = (wkt) => {
-    //return this.encodeWktInCqlForGeoServer(wkt).replace(/,/g, "%5C,");
     return this.encodeWktInCqlForGeoServer(wkt);
   };
 
   /**
-   * Private method that adjusts a comma-separated string so that it's supported for a web browser and GeoServer.
-   * @param {string} commaSeparatedString The comma-separated list that needs to be adjusted.
+   * Private method that adjusts a commas in a string so that it's supported for a web browser and GeoServer.
+   * @param {string} stringValue The comma-separated list that needs to be adjusted.
    * @returns {string} Returns a supported string for GeoServer.
    *
    * @memberof SearchModel
    */
-  encodeCommaSeparatedStringForGeoServer = (commaSeparatedString) => {
-    //return commaSeparatedString.replace(/,/g, "%5C,");
-    return commaSeparatedString;
+  encodeCommasForGeoServer = (stringValue) => {
+    return stringValue.replace(/,/g, "%5C,");
   };
 
   /**
@@ -107,8 +105,7 @@ export default class SearchModel {
     return url
       .replace(/å/g, "%C3%A5")
       .replace(/ä/g, "%C3%A4")
-      .replace(/ö/g, "%C3%B6")
-      .replace(/,/g, "%5C,");
+      .replace(/ö/g, "%C3%B6");
   };
 
   /**
@@ -982,8 +979,6 @@ export default class SearchModel {
     if (filterOnDesignation) {
       filterOnDesignation =
         this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
-      filterOnDesignation =
-        this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
       viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
     }
     if (filterOnPublicLine)
@@ -991,8 +986,6 @@ export default class SearchModel {
     if (filterOnInternalLine) {
       filterOnInternalLine =
         this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      filterOnInternalLine =
-        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
@@ -1005,7 +998,7 @@ export default class SearchModel {
       filterOnInternalLine ||
       filterOnWkt
     )
-      url = url + viewParams;
+      url = url + this.encodeCommasForGeoServer(viewParams);
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url)
@@ -1236,8 +1229,6 @@ export default class SearchModel {
     if (filterOnInternalLine) {
       filterOnInternalLine =
         this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      filterOnInternalLine =
-        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
     if (filterOnTransportCompany)
@@ -1253,7 +1244,7 @@ export default class SearchModel {
       filterOnTransportCompany ||
       filterOnWkt
     )
-      url = url + viewParams;
+      url = url + this.encodeCommasForGeoServer(viewParams);
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url).then((res) => {
@@ -1340,15 +1331,11 @@ export default class SearchModel {
     if (filterOnDesignation) {
       filterOnDesignation =
         this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
-      filterOnDesignation =
-        this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
       viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
     }
     if (filterOnInternalLine) {
       filterOnInternalLine =
         this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      filterOnInternalLine =
-        this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
     if (filterOnTransportCompany)
@@ -1364,7 +1351,7 @@ export default class SearchModel {
       filterOnTransportCompany ||
       filterOnWkt
     )
-      url = url + viewParams;
+      url = url + this.encodeCommasForGeoServer(viewParams);
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url).then((res) => {
