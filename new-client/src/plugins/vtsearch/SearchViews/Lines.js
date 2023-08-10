@@ -17,10 +17,7 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
-import {
-  validateInternalLineNumber,
-  removeTralingCommasFromCommaSeparatedString,
-} from "./Validator";
+import { validateInternalLineNumber } from "./Validator";
 
 // Define JSS styles that will be used in this component.
 // Example below utilizes the very powerful "theme" object
@@ -160,12 +157,9 @@ class Lines extends React.PureComponent {
       return;
     }
 
-    let checkedInternalLineNumber =
-      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
     this.localObserver.publish("vt-routes-search", {
       publicLineName: publicLineName,
-      internalLineNumber: checkedInternalLineNumber,
+      internalLineNumber: internalLineNumber,
       municipality: municipality.gid,
       trafficTransport: trafficTransport,
       throughStopArea: throughStopArea,
@@ -208,12 +202,9 @@ class Lines extends React.PureComponent {
         return;
       }
 
-      let checkedInternalLineNumber =
-        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: checkedInternalLineNumber,
+        internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
         trafficTransport: trafficTransport,
         throughStopArea: throughStopArea,
@@ -257,12 +248,9 @@ class Lines extends React.PureComponent {
         return;
       }
 
-      let checkedInternalLineNumber =
-        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
       this.localObserver.publish("vt-routes-search", {
         publicLineName: publicLineName,
-        internalLineNumber: checkedInternalLineNumber,
+        internalLineNumber: internalLineNumber,
         municipality: municipality.gid,
         trafficTransportName: trafficTransport,
         throughStopArea: throughStopArea,

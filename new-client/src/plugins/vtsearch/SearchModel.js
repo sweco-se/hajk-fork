@@ -79,6 +79,22 @@ export default class SearchModel {
   };
 
   /**
+   * Removes all commas (',') at the end of comma-separated string
+   * @param {string} commmaSeparatedString the comma-separated string to be fixed
+   * @returns {string} comma-separated string without any commas at the end of the string
+   * @memberof SearchModel
+   */
+  removeCommasFromEndOfCommaSeparatedString = (commmaSeparatedString) => {
+    let idx = commmaSeparatedString.lastIndexOf(",");
+    while (idx >= 0 && idx === commmaSeparatedString.length - 1) {
+      commmaSeparatedString = commmaSeparatedString.substring(0, idx);
+      idx = commmaSeparatedString.lastIndexOf(",");
+    }
+
+    return commmaSeparatedString;
+  };
+
+  /**
    * Private method that encodes the swedish characters å, ä and ö.
    * @param {string} url The url that needs to be encoded.
    * @returns {string} Returns an encoded url.
@@ -962,12 +978,16 @@ export default class SearchModel {
     }
     if (filterOnDesignation) {
       filterOnDesignation =
+        this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
+      filterOnDesignation =
         this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
       viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
     }
     if (filterOnPublicLine)
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnInternalLine) {
+      filterOnInternalLine =
+        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
       filterOnInternalLine =
         this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
@@ -1072,11 +1092,14 @@ export default class SearchModel {
       addAndInCql = true;
     }
     if (internalLineNumber) {
+      internalLineNumber =
+        this.removeCommasFromEndOfCommaSeparatedString(internalLineNumber);
       if (addAndInCql) cql = cql + " AND ";
       cql = cql + `InternalLineNumber IN (${internalLineNumber})`;
       addAndInCql = true;
     }
     if (designation) {
+      designation = this.removeCommasFromEndOfCommaSeparatedString(designation);
       designation = this.removeSpacesInListOfStrings(designation);
       designation =
         this.encodeCommaSeparatedListOfStringInCqlForGeoServer(designation);
@@ -1209,6 +1232,8 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
     if (filterOnInternalLine) {
       filterOnInternalLine =
+        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
+      filterOnInternalLine =
         this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
     }
@@ -1311,10 +1336,14 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
     if (filterOnDesignation) {
       filterOnDesignation =
+        this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
+      filterOnDesignation =
         this.encodeCommaSeparatedStringForGeoServer(filterOnDesignation);
       viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
     }
     if (filterOnInternalLine) {
+      filterOnInternalLine =
+        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
       filterOnInternalLine =
         this.encodeCommaSeparatedStringForGeoServer(filterOnInternalLine);
       viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;

@@ -28,20 +28,3 @@ export function containsOnlyNumbers(stringValue) {
 
   return false;
 }
-
-/**
- * Removes all commas (',') at the end of comma-separated string
- * @param {*} commmaSeparatedString the comma-separated string to be fixed
- * @returns comma-separated string without any commas at the end of the string
- */
-export function removeTralingCommasFromCommaSeparatedString(
-  commmaSeparatedString
-) {
-  let idx = commmaSeparatedString.lastIndexOf(",");
-  while (idx >= 0 && idx === commmaSeparatedString.length - 1) {
-    commmaSeparatedString = commmaSeparatedString.substring(0, idx);
-    idx = commmaSeparatedString.lastIndexOf(",");
-  }
-
-  return commmaSeparatedString;
-}
