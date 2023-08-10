@@ -19,10 +19,7 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
-import {
-  validateInternalLineNumber,
-  removeTralingCommasFromCommaSeparatedString,
-} from "./Validator";
+import { validateInternalLineNumber } from "./Validator";
 
 const StyledSearchButton = styled(Button)(({ theme }) => ({
   borderColor: theme.palette.primary.main,
@@ -281,16 +278,13 @@ class Stops extends React.PureComponent {
       return;
     }
 
-    let checkedInternalLineNumber =
-      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
     this.localObserver.publish("vt-stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
       publicLine: publicLineName,
       municipality: municipality.gid,
       stopPoint: stopPoint,
-      internalLineNumber: checkedInternalLineNumber,
+      internalLineNumber: internalLineNumber,
       transportCompany: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
@@ -328,16 +322,13 @@ class Stops extends React.PureComponent {
         return;
       }
 
-      let checkedInternalLineNumber =
-        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
-
       this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
         municipality: municipality.gid,
         stopPoint: stopPoint,
-        internalLineNumber: checkedInternalLineNumber,
+        internalLineNumber: internalLineNumber,
         transportCompany: transportCompany,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
@@ -375,15 +366,13 @@ class Stops extends React.PureComponent {
         });
         return;
       }
-      let checkedInternalLineNumber =
-        removeTralingCommasFromCommaSeparatedString(internalLineNumber);
       this.localObserver.publish("vt-stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
         publicLine: publicLineName,
         municipality: municipality.gid,
         stopPoint: stopPoint,
-        internalLineNumber: checkedInternalLineNumber,
+        internalLineNumber: internalLineNumber,
         transportCompany: transportCompany,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,

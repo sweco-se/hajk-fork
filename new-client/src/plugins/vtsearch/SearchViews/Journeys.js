@@ -13,10 +13,7 @@ import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
-import {
-  validateInternalLineNumber,
-  removeTralingCommasFromCommaSeparatedString,
-} from "./Validator";
+import { validateInternalLineNumber } from "./Validator";
 
 const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.error.main,
@@ -158,14 +155,12 @@ class Journeys extends React.PureComponent {
       return;
     }
 
-    let checkedInternalLineNumber =
-      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     // this.clearSearchInputAndButtons();
     this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       publicLine: publicLineName,
-      internalLineNumber: checkedInternalLineNumber,
+      internalLineNumber: internalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFormType: "",
@@ -578,11 +573,9 @@ class Journeys extends React.PureComponent {
       this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
-    let checkedInternalLineNumber =
-      removeTralingCommasFromCommaSeparatedString(internalLineNumber);
     this.localObserver.publish("vt-journeys-search", {
       publicLine: publicLineName,
-      internalLineNumber: checkedInternalLineNumber,
+      internalLineNumber: internalLineNumber,
       stopArea: stopArea,
       stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
