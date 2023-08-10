@@ -39,7 +39,7 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const SEARCH_ERROR_MESSAGE =
-  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER -NR.";
 
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -621,7 +621,7 @@ class Stops extends React.PureComponent {
     const { stopNameOrNr, stopPoint, busStopValue } = this.state;
 
     if (stopPoint && !stopNameOrNr && busStopValue === "stopPoints")
-      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+      return SEARCH_ERROR_MESSAGE;
 
     return "";
   };

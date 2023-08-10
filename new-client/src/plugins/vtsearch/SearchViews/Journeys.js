@@ -46,7 +46,7 @@ const StyledSearchButton = styled(Button)(({ theme }) => ({
 }));
 
 const SEARCH_ERROR_MESSAGE =
-  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER -NR.";
 
 class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
@@ -730,8 +730,7 @@ class Journeys extends React.PureComponent {
 
   validateSearchForm = () => {
     const { stopArea, stopPoint } = this.state;
-    if (stopPoint && !stopArea)
-      return "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+    if (stopPoint && !stopArea) return SEARCH_ERROR_MESSAGE;
 
     return "";
   };
