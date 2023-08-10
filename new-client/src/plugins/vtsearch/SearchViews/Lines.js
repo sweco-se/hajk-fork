@@ -40,7 +40,7 @@ const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
 }));
 
 const SEARCH_ERROR_MESSAGE =
-  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER NUMMER.";
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER -NR.";
 
 class Lines extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
