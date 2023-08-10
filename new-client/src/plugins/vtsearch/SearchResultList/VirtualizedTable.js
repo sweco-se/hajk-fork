@@ -87,7 +87,7 @@ const StyledTable = styled(Table)(({ theme }) => ({
     cursor: "pointer",
     borderBottom: `2px solid ${theme.palette.grey[200]}`,
     "&:hover": {
-      backgroundColor: theme.palette.grey[200],
+      backgroundColor: theme.palette.grey[500],
     },
   },
 }));
