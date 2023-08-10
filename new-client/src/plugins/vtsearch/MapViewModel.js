@@ -482,7 +482,7 @@ export default class MapViewModel {
 
     this.highlightLayer = new VectorLayer({
       layerType: "system",
-      zIndex: 5000,
+      zIndex: 6000,
       style: new Style({
         image: new Circle({
           fill: fill,
@@ -588,6 +588,7 @@ export default class MapViewModel {
    */
 
   #onFeaturesClickedInMap = (e) => {
+    debugger;
     var featuresClicked = this.#getFeaturesAtClickedPixel(e);
     if (featuresClicked.length > 0) {
       this.#highlightFeature(featuresClicked[0]);
