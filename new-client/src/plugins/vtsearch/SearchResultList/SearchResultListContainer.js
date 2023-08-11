@@ -195,15 +195,18 @@ class SearchResultListContainer extends React.Component {
   };
 
   #onSearchDone = (result, zoomToSearchResult) => {
-    const { localObserver } = this.props;
     this.#applyFilterFunction(result);
-    var searchResultId = this.#addResultToSearchResultList(result);
+    this.#addResultToSearchResultList(result, zoomToSearchResult);
+  };
 
+  #addSearchResultToMap = (searchResultId, zoomToSearchResult, result) => {
+    const { localObserver } = this.props;
     localObserver.publish("vt-add-search-result-to-map", {
       searchResultId: searchResultId,
       olFeatures: this.#getFeaturesFromResult(result),
       zoomToSearchResult: zoomToSearchResult,
     });
+
     this.#setActiveTabId(searchResultId, zoomToSearchResult);
 
     if (result.type === "journeys") {
@@ -391,7 +394,7 @@ class SearchResultListContainer extends React.Component {
     localObserver.publish("vt-resize-map", 0);
   };
 
-  #addResultToSearchResultList = (result) => {
+  #addResultToSearchResultList = (result, zoomToSearchResult) => {
     var newId = 0;
 
     if (this.state.searchResultIds.length > 0) {
@@ -405,7 +408,9 @@ class SearchResultListContainer extends React.Component {
     });
 
     var searchResultIds = this.state.searchResultIds.concat(newId);
-    this.setState({ searchResultIds: searchResultIds });
+    this.setState({ searchResultIds: searchResultIds }, () => {
+      this.#addSearchResultToMap(newId, zoomToSearchResult, result);
+    });
     return newId;
   };
 
