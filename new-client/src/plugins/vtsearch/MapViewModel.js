@@ -537,10 +537,8 @@ export default class MapViewModel {
    * @param {Array<{external:"ol/interaction/Extent"}>}
    */
   #zoomToExtent = (extent) => {
-    console.log("this.map.getSize() " + this.map.getSize());
     this.map.getView().fit(extent, {
-      // size: this.map.getSize(),
-      size: [1310, 449],
+      size: this.map.getSize(),
       padding: [10, 10, 10, 10],
     });
   };
