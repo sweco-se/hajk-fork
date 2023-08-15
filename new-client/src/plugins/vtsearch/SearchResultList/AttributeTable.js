@@ -28,7 +28,7 @@ class AttributeTable extends React.Component {
     sortOrder:
       this.props.toolConfig.geoServer[this.props.searchResult.type]
         ?.defaultSortOrder,
-    focusedRow: 0,
+    focusedRow: -1,
     rows: this.getRows(),
     exportCsvFile: false,
   };

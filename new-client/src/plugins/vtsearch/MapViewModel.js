@@ -588,7 +588,6 @@ export default class MapViewModel {
    */
 
   #onFeaturesClickedInMap = (e) => {
-    debugger;
     var featuresClicked = this.#getFeaturesAtClickedPixel(e);
     if (featuresClicked.length > 0) {
       this.#highlightFeature(featuresClicked[0]);
