@@ -139,10 +139,6 @@ class VirtualizedTable extends React.PureComponent {
     selectedRow: headerRowIndex,
   };
 
-  state = {
-    index: -1,
-  };
-
   /**
    * Handles the click on a table row.
    * @param {event} event
@@ -150,10 +146,6 @@ class VirtualizedTable extends React.PureComponent {
   #handleRowSelect = (event) => {
     const { rowClicked } = this.props;
     rowClicked(event);
-
-    this.setState({
-      index: event.index,
-    });
   };
 
   /**
@@ -162,13 +154,10 @@ class VirtualizedTable extends React.PureComponent {
    * @returns Returns a styling for the row.
    */
   #rowStyleClickedRow = (row) => {
-    const { scrollToIndex } = this.props;
+    const { selectedRow } = this.props;
 
     if (row.index < 0) return;
-    if (
-      this.state.index === row.index ||
-      (row.index === scrollToIndex && this.state.index === -1)
-    )
+    if (selectedRow.index === row.index)
       return {
         backgroundColor: "#0096ed", // Only accepts rgb codes, not from theme
       };
