@@ -3,10 +3,6 @@ import AttributeTable from "./AttributeTable";
 import SummaryTable from "./SummaryTable";
 import { CSVDownload } from "react-csv";
 
-// const styles = (theme) => ({
-//   paper: { height: 240, marginBottom: 10, boxShadow: "none" },
-// });
-
 /**
  * @summary Table used to show summary for journeys
  * @description Table used to show a summary when the user search
@@ -179,5 +175,4 @@ class AdvancedAttributeTable extends React.Component {
   };
 }
 
-//export default withStyles(styles)(AdvancedAttributeTable);
 export default AdvancedAttributeTable;

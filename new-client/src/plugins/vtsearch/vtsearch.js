@@ -27,72 +27,6 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import Search from "./../../components/Search/Search";
 
-// const styles = (theme) => {
-//   return {
-//     root: {
-//       padding: "2px 4px",
-//       display: "flex",
-//       alignItems: "center",
-
-//       [theme.breakpoints.up("sm")]: {
-//         maxWidth: 620,
-//       },
-//     },
-//     input: {
-//       marginLeft: theme.spacing(1),
-//       flex: 1,
-//     },
-//     searchContainer: {
-//       maxWidth: 260,
-//       boxShadow: theme.shadows[10],
-//     },
-//     searchContainerBox: {
-//       display: "flex",
-//       padding: 0, // override current padding
-//       flexWrap: "wrap",
-//       minHeight: 60,
-//     },
-//     expand: {
-//       transform: "rotate(0deg)",
-//       transition: theme.transitions.create("transform", {
-//         duration: theme.transitions.duration.shortest,
-//       }),
-//     },
-//     formControl: {
-//       margin: theme.spacing(1),
-//       marginLeft: "0px",
-//       marginBottom: "24px",
-//       width: "100%",
-//       minWidth: 200,
-//     },
-//     selectEmpty: {
-//       marginTop: theme.spacing(2),
-//     },
-//     expandOpen: {
-//       transform: "rotate(180deg)",
-//     },
-//     searchContainerTitle: {
-//       marginLeft: 10,
-//     },
-//     iconButton: { padding: 7 },
-
-//     selectInput: {
-//       padding: 5,
-//     },
-//     searchModuleContainer: {
-//       minHeight: 200,
-//     },
-//     searchModuleContainerRoot: {
-//       padding: 10,
-//     },
-//     loaderContainer: {
-//       flexBasis: "100%",
-//       minHeight: "5px",
-//       marginTop: "10px",
-//     },
-//   };
-// };
-
 const StyledFormControl = styled(FormControl)(({ theme }) => ({
   marginTop: theme.spacing(1),
   marginLeft: theme.spacing(0),
@@ -301,31 +235,6 @@ class VTSearch extends React.PureComponent {
   };
 
   renderDropDown() {
-    // const { classes } = this.props;
-    // return (
-    //   <FormControl className={classes.formControl}>
-    //     <InputLabel id="search-type">SÖKALTERNATIV</InputLabel>
-    //     <Select
-    //       classes={{ root: classes.selectInput }}
-    //       onChange={this.handleChange}
-    //       native
-    //       inputProps={{
-    //         name: "searchType",
-    //         id: "search-type",
-    //       }}
-    //     >
-    //       {Object.keys(searchTypes).map((key) => {
-    //         if (key === "DEFAULT")
-    //           return <option key={key} value="" aria-label="None" />;
-    //         return (
-    //           <option key={key} value={key}>
-    //             {searchTypes[key]}
-    //           </option>
-    //         );
-    //       })}
-    //     </Select>
-    //   </FormControl>
-    // );
     return (
       <StyledFormControl fullWidth>
         <InputLabel sx={{ left: "-14px" }} id="search-type-label">
@@ -356,23 +265,6 @@ class VTSearch extends React.PureComponent {
   }
 
   renderExpansionButton() {
-    // const { classes } = this.props;
-    // return (
-    //   <IconButton
-    //     className={
-    //       (clsx(classes.expand, {
-    //         [classes.expandOpen]: this.state.expanded,
-    //       }),
-    //       classes.dropDownIconButton)
-    //     }
-    //     onClick={this.handleExpandClick}
-    //     aria-expanded={this.state.expanded}
-    //     aria-label="show more"
-    //     size="large"
-    //   >
-    //     <ExpandMoreIcon />
-    //   </IconButton>
-    // );
     return (
       <StyledIconButton
         onClick={this.handleExpandClick}
@@ -386,24 +278,10 @@ class VTSearch extends React.PureComponent {
   }
 
   renderMenuButton() {
-    // const { onMenuClick, classes, menuButtonDisabled } = this.props;
     const { onMenuClick, menuButtonDisabled } = this.props;
     const tooltipText = menuButtonDisabled
       ? "Du måste först låsa upp verktygspanelen för kunna klicka på den här knappen. Tryck på hänglåset till vänster."
       : "Visa verktygspanelen";
-    // return (
-    //   <Tooltip disableInteractive title={tooltipText}>
-    //     <IconButton
-    //       className={classes.iconButton}
-    //       onClick={onMenuClick}
-    //       disabled={menuButtonDisabled}
-    //       aria-label="menu"
-    //       size="large"
-    //     >
-    //       <MenuIcon />
-    //     </IconButton>
-    //   </Tooltip>
-    // );
     return (
       <Tooltip disableInteractive title={tooltipText}>
         <IconButton

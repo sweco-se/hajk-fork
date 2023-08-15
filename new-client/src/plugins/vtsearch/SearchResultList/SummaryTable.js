@@ -3,10 +3,6 @@ import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import VirtualizedTable from "./VirtualizedTable";
 
-// const styles = (theme) => ({
-//   paper: { height: 240, boxShadow: "none" },
-// });
-
 const StyledPaper = styled(Paper)(({ theme }) => ({
   height: 240,
   boxShadow: "none",
