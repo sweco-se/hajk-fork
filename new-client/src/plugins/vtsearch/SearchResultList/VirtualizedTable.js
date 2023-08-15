@@ -162,8 +162,13 @@ class VirtualizedTable extends React.PureComponent {
    * @returns Returns a styling for the row.
    */
   #rowStyleClickedRow = (row) => {
+    const { scrollToIndex } = this.props;
+
     if (row.index < 0) return;
-    if (this.state.index === row.index)
+    if (
+      this.state.index === row.index ||
+      (row.index === scrollToIndex && this.state.index === -1)
+    )
       return {
         backgroundColor: "#0096ed", // Only accepts rgb codes, not from theme
       };
