@@ -55,6 +55,17 @@ export default class MapViewModel {
     );
 
     this.localObserver.subscribe(
+      "vt-zoom-to-search-result-feature",
+      (payload) => {
+        var olFeature = this.#getSearchResultLayerFromId(payload.searchResultId)
+          .getSource()
+          .getFeatureById(payload.olFeatureId);
+
+        this.#zoomToExtent(olFeature.getGeometry().getExtent());
+      }
+    );
+
+    this.localObserver.subscribe(
       "vt-add-search-result-to-map",
       ({ searchResultId, olFeatures, zoomToSearchResult }) => {
         var searchResultLayer = this.#addSearchResultLayerToMap(searchResultId);
