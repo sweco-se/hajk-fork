@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-// import withStyles from "@mui/styles/withStyles";
 import { styled } from "@mui/material/styles";
 import {
   TextField,
@@ -301,12 +300,6 @@ class Lines extends React.PureComponent {
       transportCompany: e.target.value,
     });
   };
-
-  // handleDesignationChange = (e) => {
-  //   this.setState({
-  //     designation: e.target.value,
-  //   });
-  // };
 
   handleThroughStopAreaChange = (event) => {
     const { designation, isPolygonActive, isRectangleActive } = this.state;

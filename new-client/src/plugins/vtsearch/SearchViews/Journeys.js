@@ -155,7 +155,6 @@ class Journeys extends React.PureComponent {
       return;
     }
 
-    // this.clearSearchInputAndButtons();
     this.localObserver.publish("vt-journeys-search", {
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,

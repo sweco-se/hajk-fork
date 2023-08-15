@@ -23,32 +23,6 @@ import { Typography } from "@mui/material";
  * @extends {React.PureComponent}
  */
 
-// const styles = (theme) => {
-//   return {
-//     window: {
-//       zIndex: theme.zIndex.appBar,
-//       background: theme.palette.common.white,
-//       boxShadow: theme.shadows[24],
-//       overflow: "hidden",
-//       pointerEvents: "all",
-//     },
-//     tabsRoot: {
-//       minHeight: 0,
-//     },
-//     tabRoot: {
-//       minHeight: 0,
-//       height: theme.spacing(4),
-//       padding: theme.spacing(0),
-//       marginLeft: theme.spacing(0.5),
-//       backgroundColor: theme.palette.primary.light,
-//     },
-//     toolbar: {
-//       minHeight: 0,
-//       backgroundColor: theme.palette.primary.dark,
-//     },
-//   };
-// };
-
 const StyledAppBar = styled(AppBar)(({ theme }) => ({
   height: theme.spacing(4),
   padding: theme.spacing(0),

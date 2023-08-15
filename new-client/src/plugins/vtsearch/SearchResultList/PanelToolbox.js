@@ -15,17 +15,6 @@ import { Tooltip } from "@mui/material";
  * @class PanelToolbox
  * @extends {React.PureComponent}
  */
-// const styles = (theme) => {
-//   return {
-//     iconButtonRoot: {
-//       color: theme.palette.common.white,
-//       padding: 0,
-//     },
-//     expandOpen: {
-//       transform: "rotate(180deg)",
-//     },
-//   };
-// };
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   color: theme.palette.common.white,
