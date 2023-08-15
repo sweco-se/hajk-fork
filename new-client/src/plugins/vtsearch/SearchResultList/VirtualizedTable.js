@@ -149,6 +149,15 @@ class VirtualizedTable extends React.PureComponent {
   };
 
   /**
+   * Handles double click on a table row.
+   * @param {event} event
+   */
+  #handleRowDoubleClick = (event) => {
+    const { rowDoubleClicked } = this.props;
+    rowDoubleClicked(event);
+  };
+
+  /**
    * Handles the styling of the table row. A selected row has a specific color.
    * @param {object} row
    * @returns Returns a styling for the row.
@@ -224,8 +233,14 @@ class VirtualizedTable extends React.PureComponent {
   };
 
   render() {
-    const { columns, rowHeight, rowClicked, headerHeight, ...tableProps } =
-      this.props;
+    const {
+      columns,
+      rowHeight,
+      rowClicked,
+      rowDoubleClicked,
+      headerHeight,
+      ...tableProps
+    } = this.props;
     return (
       <AutoSizer>
         {({ height, width }) => (
@@ -235,6 +250,7 @@ class VirtualizedTable extends React.PureComponent {
             rowHeight={rowHeight}
             headerHeight={headerHeight}
             onRowClick={this.#handleRowSelect.bind(this)}
+            onRowDoubleClick={this.#handleRowDoubleClick.bind(this)}
             rowStyle={this.#rowStyleClickedRow.bind(this)}
             {...tableProps}
           >

@@ -330,6 +330,14 @@ class AttributeTable extends React.Component {
     else localObserver.publish("vt-search-hide-stop-points-by-line");
   };
 
+  #onRowDoubleClick = (row) => {
+    const { localObserver, searchResult } = this.props;
+    localObserver.publish("vt-attribute-table-row-double-clicked", {
+      olFeatureId: row.rowData.olFeatureId,
+      searchResultId: searchResult.id,
+    });
+  };
+
   #renderCSVDownloadComponent = () => {
     return (
       <CSVDownload
@@ -382,6 +390,7 @@ class AttributeTable extends React.Component {
             rowCount={this.state.rows.length}
             rowGetter={({ index }) => this.state.rows[index]}
             rowClicked={this.#onRowClick}
+            rowDoubleClicked={this.#onRowDoubleClick}
             columns={this.#getColumns()}
             sort={this.#sort.bind(this)}
             sortDirection={this.state.sortDirection}

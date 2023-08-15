@@ -294,6 +294,13 @@ class SearchResultListContainer extends React.Component {
       localObserver.publish("vt-highlight-search-result-feature", payload);
     });
 
+    localObserver.subscribe(
+      "vt-attribute-table-row-double-clicked",
+      (payload) => {
+        localObserver.publish("vt-zoom-to-search-result-feature", payload);
+      }
+    );
+
     localObserver.subscribe("vt-set-active-tab", (searchResultId) => {
       this.#handleTabChange(null, searchResultId);
     });
