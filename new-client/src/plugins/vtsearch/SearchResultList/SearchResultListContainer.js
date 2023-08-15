@@ -173,11 +173,6 @@ class SearchResultListContainer extends React.Component {
     this.#bindSubscriptions();
   }
 
-  #resetHeightOfResultList = () => {
-    const { localObserver } = this.props;
-    localObserver.publish("vt-search-result-list-normal");
-  };
-
   #setActiveTabId = (searchResultId, zoomToSearchResult = true) => {
     const { localObserver } = this.props;
     if (searchResultId !== this.state.activeTabId) {
@@ -208,10 +203,6 @@ class SearchResultListContainer extends React.Component {
     });
 
     this.#setActiveTabId(searchResultId, zoomToSearchResult);
-
-    if (result.type === "journeys") {
-      this.#resetHeightOfResultList();
-    }
   };
 
   /**
