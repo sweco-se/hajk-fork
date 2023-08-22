@@ -32,26 +32,27 @@ namespace MapService.Filters
             JsonDocument mapDocument = MapConfigHandler.GetMapAsJsonDocument(map);
             JsonObject filteredMapObjects = MapConfigHandler.GetMapAsJsonObject(map);
 
-            var visibleForGroups = ConfigHandler.GetVisibleForGroups(mapDocument);
-
-            if (visibleForGroups == null || !visibleForGroups.Any()) { return filteredMapObjects; }
-
             if (adUserGroups == null || !adUserGroups.Any()) { return null; }
 
-            bool isGroupsMatched = false;
+            var visibleForGroups = ConfigHandler.GetVisibleForGroups(mapDocument);
 
-            foreach (var visibleForGroup in visibleForGroups)
+            if (visibleForGroups != null && visibleForGroups.Any())
             {
-                if (adUserGroups.Contains(visibleForGroup))
+                bool isGroupsMatched = false;
+
+                foreach (var visibleForGroup in visibleForGroups)
                 {
-                    isGroupsMatched = true;
-                    break;
+                    if (adUserGroups.Contains(visibleForGroup))
+                    {
+                        isGroupsMatched = true;
+                        break;
+                    }
                 }
-            }
 
-            if (!isGroupsMatched)
-            {
-                return null;
+                if (!isGroupsMatched)
+                {
+                    return null;
+                }
             }
 
             #region filter baselayers
