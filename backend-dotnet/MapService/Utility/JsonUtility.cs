@@ -164,25 +164,50 @@ namespace MapService.Utility
 
         public static void SetLayersInGroupFromJsonObject(JsonObject jsonObject, JsonArray jsonArray, JsonElement groupId)
         {
-            JsonArray tools = jsonObject["tools"]?.AsArray();
-            foreach (JsonObject tool in tools)
+            JsonArray? toolsArray = jsonObject["tools"]?.AsArray();
+
+            if (toolsArray == null) { return; }
+
+            foreach (var toolObject in toolsArray.OfType<JsonObject>())
             {
-                if (tool["type"].ToString() == "layerswitcher")
+                if (toolObject?["type"]?.ToString() == "layerswitcher")
                 {
-                    JsonArray jsonArrayGroups = tool["options"]["groups"].AsArray();
-                    foreach (JsonObject jsonObjectInArray in jsonArrayGroups)
+                    var options = toolObject?["options"];
+                    var groups = options?["groups"];
+
+                    var jsonArrayGroups = groups?.AsArray();
+
+                    if (jsonArrayGroups != null)
                     {
-                        //Looping through all the groups, the code only runs when we work with a group for the first time(new group-id)
-                        if (groupId.ToString() == jsonObjectInArray["id"].ToString())
+                        foreach (var jsonObjectInArray in jsonArrayGroups.OfType<JsonObject>())
                         {
-                            jsonObjectInArray["layers"].AsArray().Clear();
-                            jsonObjectInArray["layers"] = jsonArray;
-                            break;
+                            UpdateLayersInGroups(jsonObjectInArray, groupId.ToString(), jsonArray);
                         }
                     }
-
                 }
             }
+        }
+
+        public static void UpdateLayersInGroups(JsonObject json, string targetGroupId, JsonArray newLayers)
+        {
+            if (json == null || json["id"]?.ToString() != targetGroupId)
+            {
+                if (json?.ContainsKey("groups") == true)
+                {
+                    JsonArray? groupsArray = json["groups"]?.AsArray();
+
+                    if (groupsArray == null) { return; }
+
+                    foreach (var group in groupsArray.OfType<JsonObject>())
+                    {
+                        UpdateLayersInGroups(group, targetGroupId, newLayers);
+                    }
+                }
+                return;
+            }
+
+            json["layers"]?.AsArray().Clear();
+            json["layers"] = newLayers;
         }
 
         public static JsonArray FilterLayers(IEnumerable<string>? adUserGroups, JsonElement layers)
@@ -217,6 +242,5 @@ namespace MapService.Utility
 
             return filteredLayers;
         }
-
     }
 }
