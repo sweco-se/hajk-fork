@@ -59,6 +59,7 @@ namespace MapService.Filters
 
             var inputOptions = "$.tools[?(@.type == 'layerswitcher')].options";
             var resultOptions = JsonPathUtility.GetJsonElement(mapDocument, inputOptions);
+
             JsonElement baselayers = resultOptions.Value.GetProperty("baselayers");
             JsonArray filteredBaseLayers = JsonUtility.FilterLayers(adUserGroups, baselayers);
 
@@ -73,11 +74,7 @@ namespace MapService.Filters
 
             foreach (JsonElement jsonElement in resultGroups.Value.EnumerateArray())
             {
-                JsonElement layersInGroup = jsonElement.GetProperty("layers");
-                JsonElement idOfGroup = jsonElement.GetProperty("id");
-                JsonArray filteredLayersInGroup = JsonUtility.FilterLayers(adUserGroups, layersInGroup);
-
-                JsonUtility.SetLayersInGroupFromJsonObject(filteredMapObjects, filteredLayersInGroup, idOfGroup);
+                FilterLayersInGroup(jsonElement, adUserGroups, filteredMapObjects);
             }
 
             #endregion filter groups
@@ -85,6 +82,31 @@ namespace MapService.Filters
             FilterToolsInMap(filteredMapObjects, adUserGroups);
 
             return filteredMapObjects;
+        }
+
+        internal static void FilterLayersInGroup(JsonElement group, IEnumerable<string>? adUserGroups, JsonObject filteredMapObjects)
+        {
+            if (!group.TryGetProperty("layers", out JsonElement layersInGroup))
+            {
+                return;
+            }
+
+            if (!group.TryGetProperty("id", out JsonElement idOfGroup))
+            {
+                return;
+            }
+
+            JsonArray filteredLayersInGroup = JsonUtility.FilterLayers(adUserGroups, layersInGroup);
+
+            if (group.TryGetProperty("groups", out JsonElement subGroups))
+            {
+                foreach (JsonElement subGroup in subGroups.EnumerateArray())
+                {
+                    FilterLayersInGroup(subGroup, adUserGroups, filteredMapObjects);
+                }
+            }
+
+            JsonUtility.SetLayersInGroupFromJsonObject(filteredMapObjects, filteredLayersInGroup, idOfGroup);
         }
 
         internal static void FilterToolsInMap(JsonObject filteredMapObjects, IEnumerable<string>? adUserGroups)
