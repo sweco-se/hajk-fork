@@ -86,8 +86,8 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     //c.SwaggerEndpoint("/api/v1/spec", "HAJK Backend");
-    c.SwaggerEndpoint("/swagger/v2/swagger.yml", "HAJK .NET Backend v2");
-    c.SwaggerEndpoint("/swagger/v1/swagger.yml", "HAJK .NET Backend v1");
+    c.SwaggerEndpoint("v2/swagger.yml", "HAJK .NET Backend v2");
+    c.SwaggerEndpoint("v1/swagger.yml", "HAJK .NET Backend v1");
 });
 //}
 
