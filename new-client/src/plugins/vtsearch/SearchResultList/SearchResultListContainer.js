@@ -33,7 +33,6 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "block",
   minHeight: 0,
   height: theme.spacing(3),
-  backgroundColor: theme.palette.primary.dark,
 }));
 
 const StyledRnd = styled(Rnd)(({ theme }) => ({
