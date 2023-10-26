@@ -487,7 +487,7 @@ class Stops extends React.PureComponent {
                 if (name === "") {
                   return (
                     <MenuItem key={index} value={name}>
-                      {name}
+                      <Typography aria-label="None">&nbsp;</Typography>
                     </MenuItem>
                   );
                 } else {
@@ -513,7 +513,7 @@ class Stops extends React.PureComponent {
                 if (municipality.name === "") {
                   return (
                     <StyledFirstMenuItem key={index} value={municipality}>
-                      <Typography>{municipality.name}</Typography>
+                      <Typography aria-label="None">&nbsp;</Typography>
                     </StyledFirstMenuItem>
                   );
                 } else {
