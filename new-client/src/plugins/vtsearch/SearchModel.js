@@ -1142,6 +1142,7 @@ export default class SearchModel {
       internalLineNumber ||
       isInMunicipalityZoneGid ||
       transportModeType ||
+      transportCompanyName ||
       stopAreaNameOrNumber ||
       polygonAsWkt
     ) {
