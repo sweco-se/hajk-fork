@@ -438,7 +438,7 @@ class Lines extends React.PureComponent {
               if (name === "") {
                 return (
                   <MenuItem key={index} value={name}>
-                    {name}
+                    <Typography aria-label="None">&nbsp;</Typography>
                   </MenuItem>
                 );
               } else {
@@ -470,7 +470,7 @@ class Lines extends React.PureComponent {
               if (name === "") {
                 return (
                   <MenuItem key={index} value={name}>
-                    {name}
+                    <Typography aria-label="None">&nbsp;</Typography>
                   </MenuItem>
                 );
               } else {
@@ -501,7 +501,7 @@ class Lines extends React.PureComponent {
               if (municipality.name === "") {
                 return (
                   <MenuItem key={index} value={municipality}>
-                    <Typography>{municipality.name}</Typography>
+                    <Typography aria-label="None">&nbsp;</Typography>
                   </MenuItem>
                 );
               } else {
