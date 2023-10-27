@@ -85,12 +85,22 @@ class Stops extends React.PureComponent {
         municipalities: result?.length > 0 ? result : [],
       });
       this.model.fetchAllPossibleTransportCompanyNames().then((result) => {
-        this.setState({
-          transportCompanies: result.length > 0 ? result : [],
-        });
+        this.setState(
+          {
+            transportCompanies: result.length > 0 ? result : [],
+          },
+          () => this.#setEmptyMunicipality()
+        );
       });
     });
   }
+
+  /**
+   * Function that selects municipality manually because it's an object and not an empty string.
+   */
+  #setEmptyMunicipality = () => {
+    this.setState({ municipality: this.state.municipalities[0] });
+  };
 
   togglePolygonState = () => {
     if (!this.state.spatialToolsEnabled) return;
@@ -98,6 +108,7 @@ class Stops extends React.PureComponent {
       this.handlePolygonClick();
     });
   };
+
   toggleRectangleState = () => {
     if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
@@ -335,6 +346,7 @@ class Stops extends React.PureComponent {
       });
     }
   };
+
   handleRectangleClick = () => {
     if (this.state.isPolygonActive) {
       this.localObserver.publish("vt-activate-search", () => {});
@@ -432,6 +444,7 @@ class Stops extends React.PureComponent {
       </Grid>
     );
   };
+
   renderTextParameterSection = () => {
     const { municipalities, transportCompanies } = this.state;
     return (

@@ -89,13 +89,24 @@ class Lines extends React.PureComponent {
           trafficTransports: result.length > 0 ? result : [],
         });
         this.model.fetchAllPossibleTransportCompanyNames().then((result) => {
-          this.setState({
-            transportCompanies: result.length > 0 ? result : [],
-          });
+          this.setState(
+            {
+              transportCompanies: result.length > 0 ? result : [],
+            },
+            // Need to set the selected municipality manually as it's an object and not an empty string.
+            () => this.#setEmptyMunicipality()
+          );
         });
       });
     });
   }
+
+  /**
+   * Function that selects municipality manually because it's an object and not an empty string.
+   */
+  #setEmptyMunicipality = () => {
+    this.setState({ municipality: this.state.municipalities[0] });
+  };
 
   togglePolygonState = () => {
     if (!this.state.spatialToolsEnabled) return;
@@ -103,12 +114,14 @@ class Lines extends React.PureComponent {
       this.handlePolygonClick();
     });
   };
+
   toggleRectangleState = () => {
     if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
       this.handleRectangleClick();
     });
   };
+
   bindSubscriptions() {
     const { localObserver } = this.props;
     localObserver.subscribe("vt-result-done", () => {
@@ -486,6 +499,7 @@ class Lines extends React.PureComponent {
       </Grid>
     );
   };
+
   #renderMunicipalitySection = () => {
     const { municipalities } = this.state;
     return (
