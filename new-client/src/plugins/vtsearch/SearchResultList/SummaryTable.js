@@ -1,11 +1,12 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
-import Paper from "@material-ui/core/Paper";
+import { styled } from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
 import VirtualizedTable from "./VirtualizedTable";
 
-const styles = (theme) => ({
-  paper: { height: 240, boxShadow: "none" },
-});
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  height: 240,
+  boxShadow: "none",
+}));
 
 /**
  * @summary Table used to show summary for journeys
@@ -20,10 +21,10 @@ class SummaryTable extends React.Component {
   };
 
   render = () => {
-    const { classes, rowHeight, columns, height } = this.props;
+    const { rowHeight, columns, height } = this.props;
 
     return (
-      <Paper className={classes.paper} style={{ height: `${height}px` }}>
+      <StyledPaper style={{ height: `${height}px` }}>
         <VirtualizedTable
           rowCount={this.state.rows.length}
           rowHeight={rowHeight}
@@ -31,9 +32,9 @@ class SummaryTable extends React.Component {
           columns={columns}
           sortable={false}
         />
-      </Paper>
+      </StyledPaper>
     );
   };
 }
 
-export default withStyles(styles)(SummaryTable);
+export default SummaryTable;

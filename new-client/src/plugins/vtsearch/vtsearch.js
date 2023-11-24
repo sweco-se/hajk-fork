@@ -9,90 +9,44 @@ import Journeys from "./SearchViews/Journeys";
 import Stops from "./SearchViews/Stops";
 import Lines from "./SearchViews/Lines";
 import Observer from "react-event-observer";
-import { Tooltip } from "@material-ui/core";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import IconButton from "@material-ui/core/IconButton";
-import clsx from "clsx";
-import MenuIcon from "@material-ui/icons/Menu";
-import { withStyles } from "@material-ui/core/styles";
-import FormControl from "@material-ui/core/FormControl";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
+import { Tooltip } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import { styled } from "@mui/material/styles";
+import FormControl from "@mui/material/FormControl";
+import LinearProgress from "@mui/material/LinearProgress";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
 import SearchResultListContainer from "./SearchResultList/SearchResultListContainer";
 import ReactDOM from "react-dom";
 import MapViewModel from "./MapViewModel";
 
 import BaseWindowPlugin from "../BaseWindowPlugin";
-import SearchIcon from "@material-ui/icons/Search";
+import SearchIcon from "@mui/icons-material/Search";
 
 import Search from "./../../components/Search/Search";
 
-const styles = (theme) => {
-  return {
-    root: {
-      padding: "2px 4px",
-      display: "flex",
-      alignItems: "center",
+const StyledFormControl = styled(FormControl)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginLeft: theme.spacing(0),
+  marginBottom: theme.spacing(3),
+  minWidth: 200,
+}));
 
-      [theme.breakpoints.up("sm")]: {
-        maxWidth: 620,
-      },
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    searchContainer: {
-      maxWidth: 260,
-      boxShadow: theme.shadows[10],
-    },
-    searchContainerBox: {
-      display: "flex",
-      padding: 0, // override current padding
-      flexWrap: "wrap",
-      minHeight: 60,
-    },
-    expand: {
-      transform: "rotate(0deg)",
-      transition: theme.transitions.create("transform", {
-        duration: theme.transitions.duration.shortest,
-      }),
-    },
-    formControl: {
-      margin: theme.spacing(1),
-      marginLeft: "0px",
-      marginBottom: "24px",
-      width: "100%",
-      minWidth: 200,
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-    expandOpen: {
-      transform: "rotate(180deg)",
-    },
-    searchContainerTitle: {
-      marginLeft: 10,
-    },
-    iconButton: { padding: 7 },
+const LoaderContainer = styled("div")(() => ({
+  flexBasis: "100%",
+  minHeight: "5px",
+  marginTop: "10px",
+}));
 
-    selectInput: {
-      padding: 5,
-    },
-    searchModuleContainer: {
-      minHeight: 200,
-    },
-    searchModuleContainerRoot: {
-      padding: 10,
-    },
-    loaderContainer: {
-      flexBasis: "100%",
-      minHeight: "5px",
-      marginTop: "10px",
-    },
-  };
-};
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  transform: this.state.expanded ? "rotate(180deg)" : "rotate(0deg)",
+  transition: (theme) =>
+    theme.transitions.create("transform", {
+      duration: (theme) => theme.transitions.duration.shortest,
+    }),
+}));
 
 const searchTypes = {
   DEFAULT: "",
@@ -122,6 +76,7 @@ class VTSearch extends React.PureComponent {
     loading: false,
     appLoaded: false,
     draggingEnabled: true,
+    coreAppLoaded: false,
   };
 
   static propTypes = {
@@ -168,7 +123,7 @@ class VTSearch extends React.PureComponent {
       this.setState({ loading: false });
     });
 
-    this.localObserver.subscribe("vt-chosen", (typeOfSearch) => {
+    this.localObserver.subscribe("vtsearch-chosen", (typeOfSearch) => {
       this.localObserver.publish("vt-deactivate-search");
       this.setState({
         activeSearchTool: typeOfSearch,
@@ -176,7 +131,7 @@ class VTSearch extends React.PureComponent {
       });
     });
 
-    this.localObserver.subscribe("vt-dragging-enabled", (enabled) => {
+    this.localObserver.subscribe("vtsearch-dragging-enabled", (enabled) => {
       this.setState({ draggingEnabled: enabled });
     });
 
@@ -184,7 +139,6 @@ class VTSearch extends React.PureComponent {
       "search.featureCollectionClicked",
       (searchResult) => {
         searchResult.type = searchResult?.source?.onClickName;
-
         const featureCollection = searchResult?.value;
         const attributesToDisplay =
           this.searchModel.geoServer[searchResult.type]?.attributesToDisplay;
@@ -193,7 +147,10 @@ class VTSearch extends React.PureComponent {
           attributesToDisplay
         );
 
-        this.localObserver.publish("vt-result-done", searchResult);
+        this.localObserver.publish("vt-result-done", {
+          result: searchResult,
+          zoomToSearchResult: true,
+        });
       }
     );
 
@@ -278,12 +235,14 @@ class VTSearch extends React.PureComponent {
   };
 
   renderDropDown() {
-    const { classes } = this.props;
     return (
-      <FormControl className={classes.formControl}>
-        <InputLabel id="search-type">SÖKALTERNATIV</InputLabel>
+      <StyledFormControl fullWidth>
+        <InputLabel sx={{ left: "-14px" }} id="search-type-label">
+          SÖKALTERNATIV
+        </InputLabel>
         <Select
-          classes={{ root: classes.selectInput }}
+          variant="standard"
+          labelId="search-type-label"
           onChange={this.handleChange}
           native
           inputProps={{
@@ -301,41 +260,36 @@ class VTSearch extends React.PureComponent {
             );
           })}
         </Select>
-      </FormControl>
+      </StyledFormControl>
     );
   }
 
   renderExpansionButton() {
-    const { classes } = this.props;
     return (
-      <IconButton
-        className={
-          (clsx(classes.expand, {
-            [classes.expandOpen]: this.state.expanded,
-          }),
-          classes.dropDownIconButton)
-        }
+      <StyledIconButton
         onClick={this.handleExpandClick}
         aria-expanded={this.state.expanded}
         aria-label="show more"
+        size="large"
       >
         <ExpandMoreIcon />
-      </IconButton>
+      </StyledIconButton>
     );
   }
 
   renderMenuButton() {
-    const { onMenuClick, classes, menuButtonDisabled } = this.props;
+    const { onMenuClick, menuButtonDisabled } = this.props;
     const tooltipText = menuButtonDisabled
       ? "Du måste först låsa upp verktygspanelen för kunna klicka på den här knappen. Tryck på hänglåset till vänster."
       : "Visa verktygspanelen";
     return (
-      <Tooltip title={tooltipText}>
+      <Tooltip disableInteractive title={tooltipText}>
         <IconButton
-          className={classes.iconButton}
+          sx={{ padding: "7px" }}
           onClick={onMenuClick}
           disabled={menuButtonDisabled}
           aria-label="menu"
+          size="large"
         >
           <MenuIcon />
         </IconButton>
@@ -348,12 +302,12 @@ class VTSearch extends React.PureComponent {
   }
 
   onClickSearchContainer = () => {
-    this.localObserver.publish("vtsearch-clicked");
+    this.localObserver.publish("vt-clicked");
   };
 
   render() {
     const { app, options } = this.props;
-    const { classes, children, ...baseWindowProps } = this.props; // BaseWindowPlugin can't handle content in classes.
+    const { classes, ...baseWindowProps } = this.props; // BaseWindowPlugin can't handle content in classes.
 
     //OBS We need to keep the tooltip and IconButton to render menu!! //Tobias
     return (
@@ -376,7 +330,7 @@ class VTSearch extends React.PureComponent {
         <>
           {this.renderDropDown()}
           {this.renderSearchmodule()}
-          <div className={classes.loaderContainer}>{this.renderLoader()}</div>
+          <LoaderContainer>{this.renderLoader()}</LoaderContainer>
           {ReactDOM.createPortal(
             <SearchResultListContainer
               localObserver={this.localObserver}
@@ -393,4 +347,4 @@ class VTSearch extends React.PureComponent {
   }
 }
 
-export default withStyles(styles)(VTSearch);
+export default VTSearch;

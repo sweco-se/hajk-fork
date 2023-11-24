@@ -2,17 +2,17 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Rnd } from "react-rnd";
-import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Grid from "@material-ui/core/Grid";
-import Toolbar from "@material-ui/core/Toolbar";
+import { styled } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Grid from "@mui/material/Grid";
+import Toolbar from "@mui/material/Toolbar";
 import PanelToolbox from "./PanelToolbox";
 import TabPanel from "./TabPanel";
-import ClearIcon from "@material-ui/icons/Clear";
+import ClearIcon from "@mui/icons-material/Clear";
 import GeoJSON from "ol/format/GeoJSON";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 /**
  * @summary Base in the search result list
@@ -23,31 +23,71 @@ import { Typography } from "@material-ui/core";
  * @extends {React.PureComponent}
  */
 
-const styles = (theme) => {
-  return {
-    window: {
-      zIndex: theme.zIndex.appBar,
-      background: theme.palette.common.white,
-      boxShadow: theme.shadows[24],
-      overflow: "hidden",
-      pointerEvents: "all",
-    },
-    tabsRoot: {
-      minHeight: 0,
-    },
-    tabRoot: {
-      minHeight: 0,
-      height: theme.spacing(4),
-      padding: theme.spacing(0),
-      marginLeft: theme.spacing(0.5),
-      backgroundColor: theme.palette.primary.light,
-    },
-    toolbar: {
-      minHeight: 0,
-      backgroundColor: theme.palette.primary.dark,
-    },
-  };
-};
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
+  height: theme.spacing(4),
+  padding: theme.spacing(0),
+  display: "block",
+}));
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  display: "block",
+  minHeight: 0,
+  height: theme.spacing(3),
+}));
+
+const StyledRnd = styled(Rnd)(({ theme }) => ({
+  zIndex: theme.zIndex.appBar,
+  background: theme.palette.common.white,
+  boxShadow: theme.shadows[24],
+  overflow: "hidden",
+  pointerEvents: "all",
+}));
+
+const StyledTabs = styled(Tabs)(({ theme }) => ({
+  minHeight: theme.spacing(0),
+  height: theme.spacing(4),
+}));
+
+const StyledTab = styled(Tab)(({ theme }) => ({
+  minHeight: theme.spacing(0),
+  width: theme.spacing(20),
+  height: theme.spacing(3.8),
+  padding: theme.spacing(0),
+  marginLeft: theme.spacing(0.5),
+  color: theme.palette.common.white,
+  backgroundColor: theme.palette.primary.light,
+}));
+
+const StyledTabSelected = styled(Tab)(({ theme }) => ({
+  minHeight: theme.spacing(0),
+  width: theme.spacing(20),
+  height: theme.spacing(3.8),
+  padding: theme.spacing(0),
+  marginLeft: theme.spacing(0.5),
+  color: theme.palette.common.white,
+  backgroundColor: theme.palette.primary.light,
+  borderBottom: "2px solid white",
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+  color: theme.palette.common.white,
+}));
+
+const StyledTypographySelected = styled(Typography)(({ theme }) => ({
+  color: theme.palette.common.white,
+}));
+
+const StyledTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.primary.dark,
+}));
+
+const StyledGridClearIcon = styled(Grid)(({ theme }) => ({
+  paddingTop: theme.spacing(0.5),
+}));
+
+const StyledClearIcon = styled(ClearIcon)(({ theme }) => ({
+  color: theme.palette.common.white,
+}));
 
 const windowsContainer = document.getElementById("windows-container");
 
@@ -106,38 +146,36 @@ class SearchResultListContainer extends React.Component {
     this.#bindSubscriptions();
   }
 
-  #resetHeightOfResultList = () => {
-    const { localObserver } = this.props;
-    localObserver.publish("vt-search-result-list-normal");
-  };
-
-  #setActiveTabId = (searchResultId) => {
+  #setActiveTabId = (searchResultId, zoomToSearchResult = true) => {
     const { localObserver } = this.props;
     if (searchResultId !== this.state.activeTabId) {
       localObserver.publish("vt-clear-highlight");
     }
 
     localObserver.publish("vt-hide-all-layers");
-    localObserver.publish("vt-toggle-visibility", searchResultId);
+    localObserver.publish("vt-toggle-visibility", {
+      setLayerIdVisible: searchResultId,
+      zoomToSearchResult: zoomToSearchResult,
+    });
     localObserver.publish("vt-active-tab-change", this.state.activeTabId);
 
     this.setState({ activeTabId: searchResultId });
   };
 
-  #onSearchDone = (result) => {
-    const { localObserver } = this.props;
+  #onSearchDone = (result, zoomToSearchResult) => {
     this.#applyFilterFunction(result);
-    var searchResultId = this.#addResultToSearchResultList(result);
+    this.#addResultToSearchResultList(result, zoomToSearchResult);
+  };
 
+  #addSearchResultToMap = (searchResultId, zoomToSearchResult, result) => {
+    const { localObserver } = this.props;
     localObserver.publish("vt-add-search-result-to-map", {
       searchResultId: searchResultId,
       olFeatures: this.#getFeaturesFromResult(result),
+      zoomToSearchResult: zoomToSearchResult,
     });
-    this.#setActiveTabId(searchResultId);
 
-    if (result.type === "journeys") {
-      this.#resetHeightOfResultList();
-    }
+    this.#setActiveTabId(searchResultId, zoomToSearchResult);
   };
 
   /**
@@ -213,18 +251,28 @@ class SearchResultListContainer extends React.Component {
       this.#sendToBackSearchResultContainer();
     });
 
-    localObserver.subscribe("vt-result-done", (result) => {
-      this.#bringToFrontSearchResultContainer();
-      this.setState({
-        windowWidth: getWindowContainerWidth(),
-        windowHeight: getWindowContainerHeight(),
-      });
-      this.#onSearchDone(result);
-    });
+    localObserver.subscribe(
+      "vt-result-done",
+      ({ result, zoomToSearchResult }) => {
+        this.#bringToFrontSearchResultContainer();
+        this.setState({
+          windowWidth: getWindowContainerWidth(),
+          windowHeight: getWindowContainerHeight(),
+        });
+        this.#onSearchDone(result, zoomToSearchResult);
+      }
+    );
 
     localObserver.subscribe("vt-attribute-table-row-clicked", (payload) => {
       localObserver.publish("vt-highlight-search-result-feature", payload);
     });
+
+    localObserver.subscribe(
+      "vt-attribute-table-row-double-clicked",
+      (payload) => {
+        localObserver.publish("vt-zoom-to-search-result-feature", payload);
+      }
+    );
 
     localObserver.subscribe("vt-set-active-tab", (searchResultId) => {
       this.#handleTabChange(null, searchResultId);
@@ -264,7 +312,7 @@ class SearchResultListContainer extends React.Component {
 
     localObserver.subscribe("vt-search-result-list-close", () => {
       localObserver.publish("vt-hide-all-layers");
-      localObserver.publish("vt-close-all-Layer");
+      localObserver.publish("vt-close-all-vt-searchLayer");
       localObserver.publish("vt-clear-highlight");
       localObserver.publish("vt-resize-map", 0);
       this.searchResults.length = 0;
@@ -275,6 +323,7 @@ class SearchResultListContainer extends React.Component {
         searchResultIds: [],
       });
     });
+
     localObserver.subscribe("vt-export-search-result-clicked", () => {
       localObserver.publish(
         "vt-export-search-result-for-active-tab",
@@ -283,7 +332,7 @@ class SearchResultListContainer extends React.Component {
     });
   };
 
-  #handleTabChange = (_event, newValue) => {
+  #handleTabChange = (event, newValue) => {
     const { localObserver } = this.props;
     if (newValue !== this.state.activeTabId) {
       localObserver.publish("vt-remove-highlight-attribute-row");
@@ -308,12 +357,15 @@ class SearchResultListContainer extends React.Component {
     const nextactiveTabId = this.#getNextTabActive(searchResultId);
     console.log(nextactiveTabId, "nextActiveTabId");
     this.setState({ activeTabId: nextactiveTabId });
-    localObserver.publish("vt-toggle-visibility", nextactiveTabId);
+    localObserver.publish("vt-toggle-visibility", {
+      setLayerIdVisible: nextactiveTabId,
+      zoomToSearchResult: true,
+    });
     this.#removeSearchResult(searchResultId);
     localObserver.publish("vt-resize-map", 0);
   };
 
-  #addResultToSearchResultList = (result) => {
+  #addResultToSearchResultList = (result, zoomToSearchResult) => {
     var newId = 0;
 
     if (this.state.searchResultIds.length > 0) {
@@ -327,7 +379,9 @@ class SearchResultListContainer extends React.Component {
     });
 
     var searchResultIds = this.state.searchResultIds.concat(newId);
-    this.setState({ searchResultIds: searchResultIds });
+    this.setState({ searchResultIds: searchResultIds }, () => {
+      this.#addSearchResultToMap(newId, zoomToSearchResult, result);
+    });
     return newId;
   };
 
@@ -362,7 +416,7 @@ class SearchResultListContainer extends React.Component {
   };
 
   #renderTabs = (searchResult) => {
-    const { classes, toolConfig } = this.props;
+    const { toolConfig } = this.props;
     var searchResultId = searchResult.id;
 
     if (
@@ -371,55 +425,78 @@ class SearchResultListContainer extends React.Component {
     )
       searchResult.label = toolConfig.geoServer[searchResult.type].searchLabel;
 
-    return (
-      <Tab
-        classes={{ root: classes.tabRoot }}
+    return searchResultId === this.state.activeTabId ? (
+      <StyledTabSelected
         label={
-          <Grid container>
+          <StyledGrid container>
             <Grid item xs={10}>
-              <Typography variant="subtitle2">{searchResult.label}</Typography>
+              <StyledTypographySelected variant="subtitle2">
+                {searchResult.label}
+              </StyledTypographySelected>
             </Grid>
-            <Grid item xs={2}>
-              <ClearIcon
+            <StyledGridClearIcon item xs={2}>
+              <StyledClearIcon
                 onClick={(e) => {
                   e.stopPropagation();
                   this.#onTabClose(searchResultId);
                 }}
                 fontSize="inherit"
               />
-            </Grid>
-          </Grid>
+            </StyledGridClearIcon>
+          </StyledGrid>
         }
         value={searchResultId}
         key={`simple-tabpanel-${searchResultId}`}
         aria-controls={`simple-tabpanel-${searchResultId}`}
-      ></Tab>
+      ></StyledTabSelected>
+    ) : (
+      <StyledTab
+        label={
+          <StyledGrid container>
+            <Grid item xs={10}>
+              <StyledTypography variant="subtitle2">
+                {searchResult.label}
+              </StyledTypography>
+            </Grid>
+            <StyledGridClearIcon item xs={2}>
+              <StyledClearIcon
+                onClick={(e) => {
+                  e.stopPropagation();
+                  this.#onTabClose(searchResultId);
+                }}
+                fontSize="inherit"
+              />
+            </StyledGridClearIcon>
+          </StyledGrid>
+        }
+        value={searchResultId}
+        key={`simple-tabpanel-${searchResultId}`}
+        aria-controls={`simple-tabpanel-${searchResultId}`}
+      ></StyledTab>
     );
   };
 
   #renderTabsController = (searchResults) => {
-    const { classes } = this.props;
-    console.log(this.state.activeTabId, "activeTabId");
+    const windowVisible = this.props;
     return (
-      <Tabs
-        classes={{
-          root: classes.tabsRoot,
-        }}
-        value={this.state.activeTabId}
+      <StyledTabs
+        value={windowVisible ? this.state.activeTabId : false} // If the window is not visible,
+        // we cannot send a proper value to the tabs-component. If we do, mui will throw an error.
+        // false is OK though, apparently.
         onChange={this.#handleTabChange}
         aria-label="search-result-tabs"
       >
         {searchResults.map((searchResult) => {
           return this.#renderTabs(searchResult);
         })}
-      </Tabs>
+      </StyledTabs>
     );
   };
 
   #renderTabsHeader = (searchResults) => {
-    const { classes, localObserver } = this.props;
+    const { localObserver } = this.props;
     return (
-      <AppBar
+      <StyledAppBar
         ref={(appbar) => {
           if (this.appbarHeight === null) {
             this.appbarHeight = appbar.offsetHeight;
@@ -427,19 +504,18 @@ class SearchResultListContainer extends React.Component {
         }}
         position="static"
       >
-        <Toolbar classes={{ regular: classes.toolbar }}>
-          <Grid justify="space-between" alignItems="center" container>
+        <StyledToolbar>
+          <Grid justifyContent="space-between" alignItems="center" container>
             <Grid style={{ paddingLeft: 10 }} item>
               {searchResults.length > 0 &&
                 this.#renderTabsController(searchResults)}
             </Grid>
-
             <Grid style={{ paddingLeft: 0 }} item>
               <PanelToolbox localObserver={localObserver}></PanelToolbox>
             </Grid>
           </Grid>
-        </Toolbar>
-      </AppBar>
+        </StyledToolbar>
+      </StyledAppBar>
     );
   };
 
@@ -479,16 +555,15 @@ class SearchResultListContainer extends React.Component {
   };
 
   #renderSearchResultContainer = () => {
-    const { classes, windowContainerId } = this.props;
+    const { windowContainerId } = this.props;
     let searchResults = this.#getSearchResults();
     this.#handleMapResizeWhenRendering();
     return (
-      <Rnd
+      <StyledRnd
         style={{
           zIndex: this.state.zIndex,
         }}
         onClick={this.#onClickSearchResultContainer}
-        className={classes.window}
         size={{
           width: this.state.windowWidth,
           height: this.state.maximized
@@ -539,7 +614,7 @@ class SearchResultListContainer extends React.Component {
             return this.#renderSearchResultAsTabContent(searchResult);
           })}
         </section>
-      </Rnd>
+      </StyledRnd>
     );
   };
 
@@ -550,4 +625,4 @@ class SearchResultListContainer extends React.Component {
   }
 }
 
-export default withStyles(styles)(SearchResultListContainer);
+export default SearchResultListContainer;

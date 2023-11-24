@@ -55,10 +55,25 @@ export default class MapViewModel {
     );
 
     this.localObserver.subscribe(
+      "vt-zoom-to-search-result-feature",
+      (payload) => {
+        var olFeature = this.#getSearchResultLayerFromId(payload.searchResultId)
+          .getSource()
+          .getFeatureById(payload.olFeatureId);
+
+        this.#zoomToExtent(olFeature.getGeometry().getExtent());
+      }
+    );
+
+    this.localObserver.subscribe(
       "vt-add-search-result-to-map",
-      ({ searchResultId, olFeatures }) => {
+      ({ searchResultId, olFeatures, zoomToSearchResult }) => {
         var searchResultLayer = this.#addSearchResultLayerToMap(searchResultId);
-        this.#addFeatureToSearchResultLayer(olFeatures, searchResultLayer);
+        this.#addFeatureToSearchResultLayer(
+          olFeatures,
+          searchResultLayer,
+          zoomToSearchResult
+        );
       }
     );
 
@@ -75,12 +90,16 @@ export default class MapViewModel {
       this.#hideAllLayers();
     });
 
-    this.localObserver.subscribe("vt-close-all-Layer", () => {
+    this.localObserver.subscribe("vt-close-all-vt-searchLayer", () => {
       const layersToRemove = this.map
         .getLayers()
         .getArray()
         .filter((layer) => {
-          if (layer.get("type") === "vt-search-result-layer") return layer;
+          if (
+            layer.get("type") === "vt-search-result-layer" ||
+            layer.get("name") === "vt-search-result-layer"
+          )
+            return layer;
           return null;
         });
       layersToRemove.forEach((layer) => {
@@ -88,9 +107,12 @@ export default class MapViewModel {
       });
     });
 
-    this.localObserver.subscribe("vt-toggle-visibility", (searchResultID) => {
-      this.#toggleLayerVisibility(searchResultID);
-    });
+    this.localObserver.subscribe(
+      "vt-toggle-visibility",
+      ({ setLayerIdVisible, zoomToSearchResult }) => {
+        this.#toggleLayerVisibility(setLayerIdVisible, zoomToSearchResult);
+      }
+    );
 
     this.localObserver.subscribe("vt-hide-current-layer", () => {
       this.#hideCurrentLayer();
@@ -168,7 +190,7 @@ export default class MapViewModel {
       .getArray()
       .filter((layer) => {
         return (
-          layer.get("type") === "vt-search-result-layer" &&
+          layer.get("name") === "vt-search-result-layer" &&
           layer.get("searchResultId") === searchResultId
         );
       })[0];
@@ -207,6 +229,10 @@ export default class MapViewModel {
   #journeySearch = ({
     selectedFromDate,
     selectedEndDate,
+    publicLine,
+    internalLineNumber,
+    stopArea,
+    stopPoint,
     selectedFormType,
     searchCallback,
   }) => {
@@ -216,16 +242,32 @@ export default class MapViewModel {
       value = "Circle";
       geometryFunction = createBox();
     }
-    this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
-      searchCallback();
-      if (wktFeatureGeom != null) {
-        this.model.getJourneys(
-          selectedFromDate,
-          selectedEndDate,
-          wktFeatureGeom
-        );
-      }
-    });
+    if (selectedFormType === "") {
+      this.model.getJourneys(
+        selectedFromDate,
+        selectedEndDate,
+        publicLine,
+        internalLineNumber,
+        stopArea,
+        stopPoint
+      );
+    } else {
+      this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
+        searchCallback();
+        if (wktFeatureGeom != null) {
+          this.model.getJourneys(
+            selectedFromDate,
+            selectedEndDate,
+            publicLine,
+            internalLineNumber,
+            stopArea,
+            stopPoint,
+            selectedFormType,
+            wktFeatureGeom
+          );
+        }
+      });
+    }
   };
 
   #stopSearch = ({
@@ -233,6 +275,9 @@ export default class MapViewModel {
     stopNameOrNr,
     publicLine,
     municipality,
+    stopPoint,
+    internalLineNumber,
+    transportCompany,
     selectedFormType,
     searchCallback,
   }) => {
@@ -244,9 +289,22 @@ export default class MapViewModel {
     }
     if (selectedFormType === "") {
       if (busStopValue === "stopAreas") {
-        this.model.getStopAreas(stopNameOrNr, publicLine, municipality);
+        this.model.getStopAreas(
+          stopNameOrNr,
+          publicLine,
+          municipality,
+          internalLineNumber,
+          transportCompany
+        );
       } else {
-        this.model.getStopPoints(stopNameOrNr, publicLine, municipality);
+        this.model.getStopPoints(
+          stopNameOrNr,
+          publicLine,
+          municipality,
+          stopPoint,
+          internalLineNumber,
+          transportCompany
+        );
       }
     } else {
       this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
@@ -256,14 +314,21 @@ export default class MapViewModel {
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            internalLineNumber,
+            transportCompany,
+            wktFeatureGeom,
+            selectedFormType
           );
         } else {
           this.model.getStopPoints(
             stopNameOrNr,
             publicLine,
             municipality,
-            wktFeatureGeom
+            stopPoint,
+            internalLineNumber,
+            transportCompany,
+            wktFeatureGeom,
+            selectedFormType
           );
         }
       });
@@ -275,7 +340,9 @@ export default class MapViewModel {
     internalLineNumber,
     municipality,
     trafficTransport,
+    transportCompanyName,
     throughStopArea,
+    designation,
     selectedFormType,
     searchCallback,
   }) => {
@@ -292,7 +359,9 @@ export default class MapViewModel {
         internalLineNumber,
         municipality,
         trafficTransport,
-        throughStopArea
+        transportCompanyName,
+        throughStopArea,
+        designation
       );
     } else {
       this.#getWktFromUser(value, geometryFunction).then((wktFeatureGeom) => {
@@ -302,7 +371,9 @@ export default class MapViewModel {
           internalLineNumber,
           municipality,
           trafficTransport,
+          transportCompanyName,
           throughStopArea,
+          designation,
           wktFeatureGeom
         );
       });
@@ -311,6 +382,8 @@ export default class MapViewModel {
 
   #addDrawSearch = () => {
     this.drawlayer = new VectorLayer({
+      layerType: "system",
+      zIndex: 5000,
       source: new VectorSource({}),
     });
     this.map.addLayer(this.drawlayer);
@@ -338,6 +411,8 @@ export default class MapViewModel {
       width: this.model.mapColors.searchStrokeLineWidth,
     });
     var searchResultLayer = new VectorLayer({
+      layerType: "system",
+      zIndex: 5000,
       style: new Style({
         image: new Circle({
           fill: fill,
@@ -350,7 +425,7 @@ export default class MapViewModel {
       source: new VectorSource({}),
     });
     console.log(this.map, "map");
-    searchResultLayer.set("type", "vt-search-result-layer");
+    searchResultLayer.set("name", "vt-search-result-layer");
     searchResultLayer.set("searchResultId", searchResultId);
     searchResultLayer.set("queryable", false);
     searchResultLayer.set("visible", false);
@@ -417,6 +492,8 @@ export default class MapViewModel {
     });
 
     this.highlightLayer = new VectorLayer({
+      layerType: "system",
+      zIndex: 6000,
       style: new Style({
         image: new Circle({
           fill: fill,
@@ -428,8 +505,7 @@ export default class MapViewModel {
       }),
       source: new VectorSource({}),
     });
-    this.highlightLayer.set("type", "vt-highlight-layer");
-    this.highlightLayer.setZIndex(50);
+    this.highlightLayer.set("name", "vt-highlight-layer");
     this.map.addLayer(this.highlightLayer);
   };
 
@@ -454,9 +530,14 @@ export default class MapViewModel {
    * @memberof MapViewModel
    * @param {Array<{external:"ol.feature"}>}
    */
-  #addFeatureToSearchResultLayer = (olFeatures, searchResultLayer) => {
+  #addFeatureToSearchResultLayer = (
+    olFeatures,
+    searchResultLayer,
+    zoomToSearchResult
+  ) => {
     searchResultLayer.getSource().addFeatures(olFeatures);
-    this.#zoomToExtent(searchResultLayer.getSource().getExtent());
+    if (zoomToSearchResult)
+      this.#zoomToExtent(searchResultLayer.getSource().getExtent());
   };
 
   /**
@@ -479,11 +560,12 @@ export default class MapViewModel {
    * @param {integer : searchResultId}
    * @memberof MapViewModel
    */
-  #toggleLayerVisibility = (searchResultId) => {
+  #toggleLayerVisibility = (searchResultId, zoomToSearchResult = true) => {
     this.map.getLayers().forEach((layer) => {
       if (layer.get("searchResultId") === searchResultId) {
         layer.set("visible", !layer.get("visible"));
-        this.#zoomToExtent(layer.getSource().getExtent());
+        if (zoomToSearchResult)
+          this.#zoomToExtent(layer.getSource().getExtent());
       }
     });
   };
@@ -502,7 +584,7 @@ export default class MapViewModel {
    */
   #hideAllLayers = () => {
     this.map.getLayers().forEach((layer) => {
-      if (layer.get("type") === "vt-search-result-layer") {
+      if (layer.get("name") === "vt-search-result-layer") {
         layer.set("visible", false);
       }
     });
@@ -536,7 +618,10 @@ export default class MapViewModel {
     this.map.forEachFeatureAtPixel(
       evt.pixel,
       (feature, layer) => {
-        if (layer.get("type") === "vt-search-result-layer") {
+        if (
+          layer.get("type") === "vt-search-result-layer" ||
+          layer.get("name") === "vt-search-result-layer"
+        ) {
           features.push(feature);
         }
       },

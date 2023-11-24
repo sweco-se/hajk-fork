@@ -44,7 +44,7 @@ var documentEditor = Model.extend({
       chapter.html = chapter.html
         .replaceAll("&lt;", "<")
         .replaceAll("&gt;", ">");
-      return false;
+        return false;
     });
 
     hfetch(url, {

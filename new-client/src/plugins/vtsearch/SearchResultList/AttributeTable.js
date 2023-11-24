@@ -1,15 +1,10 @@
 import React from "react";
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 import VirtualizedTable from "./VirtualizedTable";
-import { withStyles } from "@material-ui/core/styles";
 import { SortDirection } from "react-virtualized";
 import { MockdataSearchModel } from "./../Mockdata/MockdataSearchModel";
 import { CSVDownload } from "react-csv";
-import { Checkbox, FormControlLabel } from "@material-ui/core";
-
-const styles = (theme) => ({
-  cvsLinkComponent: { color: "orange" },
-});
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 /**
  * @summary Attribute table for objects in the map
@@ -33,7 +28,7 @@ class AttributeTable extends React.Component {
     sortOrder:
       this.props.toolConfig.geoServer[this.props.searchResult.type]
         ?.defaultSortOrder,
-    focusedRow: 0,
+    focusedRow: -1,
     rows: this.getRows(),
     exportCsvFile: false,
   };
@@ -65,12 +60,13 @@ class AttributeTable extends React.Component {
     this.#bindSubscriptions();
   }
 
-  getFeaturePropertiesKeys(searchResult) {
-    const features = this.getFeaturesFromSearchResult(searchResult);
-    const properties = features[0].properties
-      ? features[0].properties
-      : features[0].getProperties();
-    return Object.keys(properties);
+  #getFeaturePropertiesKeys(searchResult) {
+    const features = this.#getFeaturesFromSearchResult(searchResult);
+    return Object.keys(
+      features[0].properties
+        ? features[0].properties
+        : features[0].getProperties()
+    ).filter((key) => key);
   }
 
   getRowIndexFromOlFeatureId = (olFeatureId) => {
@@ -115,7 +111,7 @@ class AttributeTable extends React.Component {
   };
 
   #getExportHeaders = () => {
-    let columns = this.getColumns();
+    let columns = this.#getColumns();
     return columns.map((value) => {
       return { label: value.label, key: value.dataKey };
     });
@@ -129,11 +125,10 @@ class AttributeTable extends React.Component {
     this.setState({ exportCsvFile: true });
   };
 
-  #getDisplayName = (key, resultList) => {
-    const { toolConfig } = this.props;
+  #getDisplayName = (key) => {
+    const { toolConfig, searchResult } = this.props;
     var attributesMappingArray =
-      //toolConfig.geoServer[searchResult.type]?.attributesToDisplay;
-      toolConfig.geoServer[resultList.type]?.attributesToDisplay;
+      toolConfig.geoServer[searchResult.type]?.attributesToDisplay;
 
     var displayName = attributesMappingArray?.find((entry) => {
       return entry.key === key;
@@ -160,10 +155,10 @@ class AttributeTable extends React.Component {
     return newDisplayOrder;
   };
 
-  getColumns() {
-    const { toolConfig, searchResult } = this.props;
+  #getColumns() {
+    const { searchResult, toolConfig } = this.props;
 
-    let propertyKeys = this.getFeaturePropertiesKeys(searchResult);
+    let propertyKeys = this.#getFeaturePropertiesKeys(searchResult);
     let attributeDisplayOrder =
       toolConfig.geoServer[searchResult.type]?.attributesToDisplay;
     propertyKeys = this.#reorderPropertyKeys(
@@ -175,7 +170,7 @@ class AttributeTable extends React.Component {
     });
 
     return propertyKeys.map((key) => {
-      var displayName = this.#getDisplayName(key, searchResult);
+      var displayName = this.#getDisplayName(key);
       console.log(displayName, "displayName");
       return {
         label: displayName || key,
@@ -187,14 +182,18 @@ class AttributeTable extends React.Component {
 
   getRows() {
     const { searchResult } = this.props;
-    const features = this.getFeaturesFromSearchResult(searchResult);
+    const features = this.#getFeaturesFromSearchResult(searchResult);
     return features.map((feature, index) => {
-      const properties = feature.properties
-        ? feature.properties
-        : feature.getProperties();
-      return Object.keys(properties).reduce(
+      return Object.keys(
+        feature.properties ? feature.properties : feature.getProperties()
+      ).reduce(
         (acc, key) => {
-          return { ...acc, [key]: properties[key] };
+          return {
+            ...acc,
+            [key]: feature.properties
+              ? feature.properties[key]
+              : feature.getProperties()[key],
+          };
         },
         {
           olFeatureId: feature.id ? feature.id : feature.getId(),
@@ -207,7 +206,7 @@ class AttributeTable extends React.Component {
   /**
    * Gets all features from a search result. The result will differ if it's from core or from the vtsearch plugin.
    */
-  getFeaturesFromSearchResult(searchResult) {
+  #getFeaturesFromSearchResult(searchResult) {
     return (
       searchResult?.value?.features || searchResult?.featureCollection?.features
     );
@@ -234,16 +233,13 @@ class AttributeTable extends React.Component {
     var regex = /(\.\d+)|(\d+(\.\d+)?)|([^\d.]+)|(\.\D+)|(\.$)/g;
 
     if (compareOne === compareTwo) return 0;
+    if (compareOne === undefined && compareTwo === undefined) return 0;
+    if (compareOne === undefined && compareTwo !== undefined) return 1;
+    if (compareOne !== undefined && compareTwo === undefined) return -1;
 
-    compareOneString =
-      compareOne === undefined
-        ? ""
-        : compareOne.toString().toLowerCase().match(regex);
+    compareOneString = compareOne.toString().toLowerCase().match(regex);
 
-    compareTwoString =
-      compareTwo === undefined
-        ? ""
-        : compareTwo.toString().toLowerCase().match(regex);
+    compareTwoString = compareTwo.toString().toLowerCase().match(regex);
 
     length = compareOneString.length;
 
@@ -264,7 +260,7 @@ class AttributeTable extends React.Component {
     return compareTwoString[i] ? -1 : 0;
   };
 
-  #getSortedRows = (sortBy, sortDirection) => {
+  #getSortedRows = ({ sortBy, sortDirection }) => {
     var compareOne = null;
     var compareTwo = null;
     var rowsToBeSorted = this.state.rows;
@@ -280,9 +276,11 @@ class AttributeTable extends React.Component {
       rowsToBeSorted.sort((a, b) => {
         compareOne = a[sortBy] === "" ? null : a[sortBy]; //Handle empty string same way as null
         compareTwo = b[sortBy] === "" ? null : b[sortBy]; //Handle empty string same way as null
-        if (compareOne !== null && compareTwo !== null)
+        if (compareOne !== null && compareTwo !== null) {
           return this.#sortAlphaNumerical(compareOne, compareTwo);
-        else return this.#sortNulls(compareOne, compareTwo);
+        } else {
+          return this.#sortNulls(compareOne, compareTwo);
+        }
       });
     }
 
@@ -295,7 +293,10 @@ class AttributeTable extends React.Component {
   };
 
   #sort = ({ sortBy, sortDirection }) => {
-    let rowsToBeSorted = this.#getSortedRows(sortBy, sortDirection);
+    let rowsToBeSorted = this.#getSortedRows({
+      sortBy: sortBy,
+      sortDirection: sortDirection,
+    });
 
     this.setState((state) => {
       return {
@@ -329,6 +330,14 @@ class AttributeTable extends React.Component {
     else localObserver.publish("vt-search-hide-stop-points-by-line");
   };
 
+  #onRowDoubleClick = (row) => {
+    const { localObserver, searchResult } = this.props;
+    localObserver.publish("vt-attribute-table-row-double-clicked", {
+      olFeatureId: row.rowData.olFeatureId,
+      searchResultId: searchResult.id,
+    });
+  };
+
   #renderCSVDownloadComponent = () => {
     return (
       <CSVDownload
@@ -341,13 +350,11 @@ class AttributeTable extends React.Component {
   };
 
   #renderSearchCheckboxSection = (searchResult) => {
-    const { classes } = this.props;
     const { type, filterParams } = searchResult;
 
     if (type !== "routes") return null;
     return (
       <FormControlLabel
-        className={classes.showLinesCheckbox}
         control={
           <Checkbox
             defaultChecked={filterParams.showStopPoints}
@@ -371,12 +378,11 @@ class AttributeTable extends React.Component {
     else localObserver.publish("vt-search-hide-stop-points-by-line");
   };
 
-  // Lägg in en label från toolconfig i searchresult
   render() {
     const { height, searchResult, rowHeight } = this.props;
-    const features = this.getFeaturesFromSearchResult(searchResult);
+    const features = this.#getFeaturesFromSearchResult(searchResult);
     return (
-      <Paper style={{ height: height }}>
+      <Paper sx={{ height: height }}>
         {this.state.exportCsvFile && this.#renderCSVDownloadComponent()}
         {this.#renderSearchCheckboxSection(searchResult)}
         {features.length > 0 ? (
@@ -384,8 +390,9 @@ class AttributeTable extends React.Component {
             rowCount={this.state.rows.length}
             rowGetter={({ index }) => this.state.rows[index]}
             rowClicked={this.#onRowClick}
-            columns={this.getColumns()}
-            sort={this.#sort}
+            rowDoubleClicked={this.#onRowDoubleClick}
+            columns={this.#getColumns()}
+            sort={this.#sort.bind(this)}
             sortDirection={this.state.sortDirection}
             sortBy={this.state.sortBy}
             scrollToIndex={this.state.focusedRow}
@@ -394,11 +401,11 @@ class AttributeTable extends React.Component {
             rowHeight={rowHeight}
           />
         ) : (
-          <Paper style={{ height: height }}>Inga sökresultat</Paper>
+          <Paper sx={{ height: height }}>Inga sökresultat</Paper>
         )}
       </Paper>
     );
   }
 }
 
-export default withStyles(styles)(AttributeTable);
+export default AttributeTable;

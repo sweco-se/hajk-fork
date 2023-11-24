@@ -1,15 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
-
-import NormalIcon from "@material-ui/icons/FlipToFront";
-
-import CloseIcon from "@material-ui/icons/Close";
-import { withStyles } from "@material-ui/core/styles";
-import IconButton from "@material-ui/core/IconButton";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import SaveAltIcon from "@material-ui/icons/SaveAlt";
-
-import { Tooltip } from "@material-ui/core";
+import NormalIcon from "@mui/icons-material/FlipToFront";
+import CloseIcon from "@mui/icons-material/Close";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { Tooltip } from "@mui/material";
 
 /**
  * @summary Window size handling
@@ -19,17 +16,15 @@ import { Tooltip } from "@material-ui/core";
  * @extends {React.PureComponent}
  */
 
-const styles = (theme) => {
-  return {
-    iconButtonRoot: {
-      color: theme.palette.common.white,
-      padding: 0,
-    },
-    expandOpen: {
-      transform: "rotate(180deg)",
-    },
-  };
-};
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.common.white,
+  padding: 0,
+}));
+
+const StyledExpandMoreIconTransformed = styled(ExpandMoreIcon)(({ theme }) => ({
+  transform: "rotate(180deg)",
+}));
+
 class PanelToolbox extends React.PureComponent {
   state = {
     minimizeVisible: true,
@@ -91,19 +86,15 @@ class PanelToolbox extends React.PureComponent {
   };
 
   renderButton = (onClickCallback, iconElement) => {
-    const { classes } = this.props;
     return (
-      <IconButton
-        classes={{ root: classes.iconButtonRoot }}
-        onClick={onClickCallback}
-      >
+      <StyledIconButton onClick={onClickCallback} size="large">
         {iconElement === "minimize" ? (
           <Tooltip title="Minimera">
             <ExpandMoreIcon />
           </Tooltip>
         ) : iconElement === "maximize" ? (
           <Tooltip title="Maximera">
-            <ExpandMoreIcon className={classes.expandOpen} />
+            <StyledExpandMoreIconTransformed />
           </Tooltip>
         ) : iconElement === "normalize" ? (
           <Tooltip title="Återställ">
@@ -118,7 +109,7 @@ class PanelToolbox extends React.PureComponent {
             <SaveAltIcon />
           </Tooltip>
         ) : null}
-      </IconButton>
+      </StyledIconButton>
     );
   };
 
@@ -128,7 +119,6 @@ class PanelToolbox extends React.PureComponent {
         {this.renderButton(this.#export, "export")}
         {this.state.minimizeVisible &&
           this.renderButton(this.minimize, "minimize")}
-
         {this.state.maximizeVisible &&
           this.renderButton(this.maximize, "maximize")}
         {this.state.normalVisible &&
@@ -139,4 +129,4 @@ class PanelToolbox extends React.PureComponent {
   }
 }
 
-export default withStyles(styles)(PanelToolbox);
+export default PanelToolbox;

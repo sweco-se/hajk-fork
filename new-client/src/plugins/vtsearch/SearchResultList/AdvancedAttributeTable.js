@@ -1,13 +1,7 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
-
 import AttributeTable from "./AttributeTable";
 import SummaryTable from "./SummaryTable";
 import { CSVDownload } from "react-csv";
-
-const styles = (theme) => ({
-  paper: { height: 240, marginBottom: 10, boxShadow: "none" },
-});
 
 /**
  * @summary Table used to show summary for journeys
@@ -53,7 +47,7 @@ class AdvancedAttributeTable extends React.Component {
   };
 
   #getExportHeaders = () => {
-    let columns = this.getColumns();
+    let columns = this.#getColumns();
     return columns.map((value) => {
       return { label: value.label, key: value.dataKey };
     });
@@ -64,7 +58,7 @@ class AdvancedAttributeTable extends React.Component {
     return this.getSummarization().length * rowHeight + 50;
   }
 
-  getColumns() {
+  #getColumns() {
     const { windowWidth } = this.props;
     return [
       {
@@ -167,7 +161,7 @@ class AdvancedAttributeTable extends React.Component {
           localObserver={localObserver}
           height={this.state.summaryHeight}
           rows={this.getRows()}
-          columns={this.getColumns()}
+          columns={this.#getColumns()}
           searchResult={searchResult}
         ></SummaryTable>
         <AttributeTable
@@ -181,4 +175,4 @@ class AdvancedAttributeTable extends React.Component {
   };
 }
 
-export default withStyles(styles)(AdvancedAttributeTable);
+export default AdvancedAttributeTable;

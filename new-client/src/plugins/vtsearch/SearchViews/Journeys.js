@@ -1,42 +1,58 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import { Typography, Divider } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import DateFnsUtils from "@date-io/date-fns";
-import AccessTimeIcon from "@material-ui/icons/AccessTime";
-import EventIcon from "@material-ui/icons/Event";
+import { styled } from "@mui/material/styles";
+import { Typography, Divider, TextField, Tooltip, Button } from "@mui/material";
+import Grid from "@mui/material/Grid";
+import {
+  LocalizationProvider,
+  TimePicker,
+  DatePicker,
+} from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
+import { validateInternalLineNumber } from "./Validator";
 
-import {
-  MuiPickersUtilsProvider,
-  KeyboardTimePicker,
-  KeyboardDatePicker,
-} from "@material-ui/pickers";
+const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
+  color: theme.palette.error.main,
+}));
 
-// Define JSS styles that will be used in this component.
-// Examle below utilizes the very powerful "theme" object
-// that gives access to some constants, see: https://material-ui.com/customization/default-theme/
-const styles = (theme) => ({
-  journeysForm: { marginTop: 10 },
-  dateForm: {
-    marginTop: 0,
-    marginBottom: -4,
-    width: "100%",
-    color: theme.palette.primary.main,
-  },
-  spaceToFromDate: { marginBottom: 40, width: "100%" },
-  divider: { marginTop: theme.spacing(3), marginBottom: theme.spacing(3) },
-  errorMessage: { color: theme.palette.error.main },
-});
+const StyledLocalizationProvider = styled(LocalizationProvider)(() => ({
+  marginTop: 2,
+}));
+
+const StyledTimePicker = styled(TimePicker)(({ theme }) => ({
+  marginTop: 0,
+  marginBottom: 1,
+  width: "99%",
+  color: theme.palette.primary.main,
+}));
+
+const StyledDatePicker = styled(DatePicker)(() => ({
+  marginBottom: 5,
+  width: "99%",
+}));
+
+const StyledDivider = styled(Divider)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledSearchButton = styled(Button)(({ theme }) => ({
+  marginTop: theme.spacing(1),
+  borderColor: theme.palette.primary.main,
+}));
+
+const SEARCH_ERROR_MESSAGE =
+  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER -NR.";
 
 class Journeys extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
     spatialToolsEnabled: true,
+    searchButtonEnabled: true,
     isPolygonActive: false,
     isRectangleActive: false,
     selectedFromDate: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -53,6 +69,16 @@ class Journeys extends React.PureComponent {
       )
     ),
     selectedFormType: "",
+    fromTimeInputErrorMessage: "",
+    fromDateInputErrorMessage: "",
+    endTimeInputErrorMessage: "",
+    endDateInputErrorMessage: "",
+    publicLineName: "",
+    internalLineNumber: "",
+    stopArea: "",
+    stopPoint: "",
+    searchErrorMessage: "",
+    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -63,7 +89,6 @@ class Journeys extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
-    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -75,7 +100,72 @@ class Journeys extends React.PureComponent {
     this.model = this.props.model;
     this.localObserver = this.props.localObserver;
     this.globalObserver = this.props.app.globalObserver;
+    this.bindSubscriptions();
   }
+
+  bindSubscriptions() {
+    const { localObserver } = this.props;
+    localObserver.subscribe("vt-result-done", () => {
+      this.clearSearchInputAndButtons();
+    });
+  }
+
+  clearSearchInputAndButtons = () => {
+    this.setState({
+      selectedFromDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedFromTime: new Date(
+        new Date().setHours(
+          new Date().getHours(),
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
+      selectedEndDate: new Date(new Date().setHours(0, 0, 0, 0)),
+      selectedEndTime: new Date(
+        new Date().setHours(
+          new Date().getHours() + 1,
+          new Date().getMinutes(),
+          0,
+          0
+        )
+      ),
+      publicLineName: "",
+      internalLineNumber: "",
+      stopArea: "",
+      stopPoint: "",
+      searchErrorMessage: "",
+      fromTimeInputErrorMessage: "",
+      fromDateInputErrorMessage: "",
+      endTimeInputErrorMessage: "",
+      endDateInputErrorMessage: "",
+    });
+  };
+
+  doSearch = () => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
+    const { formatFromDate, formatEndDate } = this.getFormattedDate();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+      });
+      return;
+    }
+
+    this.localObserver.publish("vt-journeys-search", {
+      selectedFromDate: formatFromDate,
+      selectedEndDate: formatEndDate,
+      publicLine: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
+      selectedFormType: "",
+      searchCallback: this.clearSearchInputAndButtons,
+    });
+  };
 
   handleFromTimeChange = (fromTime) => {
     this.updateStateForTimeOrDateChange(fromTime);
@@ -90,15 +180,16 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedFromTime: fromTime,
+        fromTimeInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
     this.addOneHourTime(fromTime);
@@ -133,15 +224,16 @@ class Journeys extends React.PureComponent {
         selectedFromTime: fromTime,
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        fromDateInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
   };
@@ -159,15 +251,16 @@ class Journeys extends React.PureComponent {
     this.setState(
       {
         selectedEndTime: endTime,
+        endTimeInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
   };
@@ -185,17 +278,91 @@ class Journeys extends React.PureComponent {
       {
         selectedEndDate: endDate,
         selectedEndTime: endTime,
+        endDateInputErrorMessage: "",
       },
       () => {
-        this.validateDateAndTime(
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.disablePolygonAndRectangleSearch,
-          this.enablePolygonAndRectangleSearch
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
         );
-        this.reactiveSelectSpatialTool();
       }
     );
+  };
+
+  handleStopAreaChange = (event) => {
+    const { stopPoint, isPolygonActive, isRectangleActive } = this.state;
+
+    this.setState({
+      stopArea: event.target.value,
+      searchErrorMessage: "",
+    });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      stopPoint &&
+      !event.target.value
+    ) {
+      this.localObserver.publish("vt-activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
+  };
+
+  handleStopPointChange = (event) => {
+    const { searchErrorMessage, stopArea, isPolygonActive, isRectangleActive } =
+      this.state;
+
+    this.setState({
+      stopPoint: event.target.value,
+      searchErrorMessage: event.target.value ? searchErrorMessage : "",
+    });
+
+    if (
+      (isPolygonActive || isRectangleActive) &&
+      event.target.value &&
+      !stopArea
+    ) {
+      this.localObserver.publish("vt-activate-search", () => {});
+      this.setState({
+        searchErrorMessage: SEARCH_ERROR_MESSAGE,
+        isPolygonActive: false,
+        isRectangleActive: false,
+      });
+    }
+  };
+
+  handleInternalLineNrChange = (event) => {
+    let validationMessage = validateInternalLineNumber(event.target.value)
+      ? ""
+      : "Fel värde på tekniskt nr";
+
+    this.setState(
+      {
+        internalLineNumber: event.target.value,
+        internalLineErrorMessage: validationMessage,
+      },
+      () => {
+        this.#validateParameters(
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#disableSearch,
+          this.#enableSearch
+        );
+      }
+    );
+  };
+
+  handlePublicLineNameChange = (event) => {
+    this.setState({
+      publicLineName: event.target.value,
+    });
   };
 
   reactiveSelectSpatialTool = () => {
@@ -207,10 +374,10 @@ class Journeys extends React.PureComponent {
 
   updateStateForTimeOrDateChange(timeOrDate) {
     if (!this.isTimeOrDateValid(timeOrDate)) {
-      this.disablePolygonAndRectangleSearch();
+      this.#disableSearch();
       return;
     }
-    if (!this.state.spatialToolsEnabled) this.enablePolygonAndRectangleSearch();
+    if (!this.state.spatialToolsEnabled) this.#enableSearch();
   }
 
   isTimeOrDateValid = (timeOrDate) => {
@@ -233,18 +400,22 @@ class Journeys extends React.PureComponent {
     );
   };
 
-  disablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: false }, this.deactivateSearch);
+  #disableSearch = () => {
+    this.setState(
+      { spatialToolsEnabled: false, searchButtonEnabled: false },
+      this.deactivateSearch
+    );
   };
 
-  enablePolygonAndRectangleSearch = () => {
-    this.setState({ spatialToolsEnabled: true });
+  #enableSearch = () => {
+    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
   };
 
-  validateDateAndTime = (
+  #validateParameters = (
     callbackInvalidDate,
     callbackInvalidTime,
     callbackWrongDateAndTime,
+    callbackInvalidInernalLineNumber,
     callbackAllIsOK
   ) => {
     const {
@@ -252,6 +423,7 @@ class Journeys extends React.PureComponent {
       selectedEndDate,
       selectedEndTime,
       selectedFromTime,
+      internalLineErrorMessage,
     } = this.state;
 
     if (
@@ -269,6 +441,8 @@ class Journeys extends React.PureComponent {
     const dateAndTimeValues = this.getFormattedDate();
     if (dateAndTimeValues.formatFromDate > dateAndTimeValues.formatEndDate)
       return callbackWrongDateAndTime();
+
+    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
 
     if (callbackAllIsOK) return callbackAllIsOK();
   };
@@ -326,15 +500,26 @@ class Journeys extends React.PureComponent {
 
   handlePolygonClick = () => {
     if (!this.state.spatialToolsEnabled) return;
-
     this.deactivateSearch();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+        isPolygonActive: false,
+      });
+      return;
+    }
+
     this.setState(
       {
         isPolygonActive: !this.state.isPolygonActive,
         isRectangleActive: false,
       },
       () => {
-        if (this.state.isPolygonActive) this.activateSearch("Polygon");
+        if (this.state.isPolygonActive) {
+          this.activateSearch("Polygon");
+        }
       }
     );
     if (this.state.isPolygonActive) {
@@ -346,13 +531,25 @@ class Journeys extends React.PureComponent {
     if (!this.state.spatialToolsEnabled) return;
 
     this.deactivateSearch();
+
+    let validationErrorMessage = this.validateSearchForm();
+    if (validationErrorMessage) {
+      this.setState({
+        searchErrorMessage: validationErrorMessage,
+        isRectangleActive: false,
+      });
+      return;
+    }
+
     this.setState(
       {
         isRectangleActive: !this.state.isRectangleActive,
         isPolygonActive: false,
       },
       () => {
-        if (this.state.isRectangleActive) this.activateSearch("Box");
+        if (this.state.isRectangleActive) {
+          this.activateSearch("Box");
+        }
       }
     );
     if (this.state.isRectangleActive) {
@@ -360,14 +557,26 @@ class Journeys extends React.PureComponent {
     }
   };
 
+  handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      this.doSearch();
+    }
+  };
+
   deactivateSearch = () => {
-    this.localObserver.publish("vt-deactivate-search");
+    this.localObserver.publish("vt-activate-search", () => {});
   };
 
   activateSearch = (spatialType) => {
+    const { publicLineName, internalLineNumber, stopArea, stopPoint } =
+      this.state;
     const { formatFromDate, formatEndDate } = this.getFormattedDate();
 
     this.localObserver.publish("vt-journeys-search", {
+      publicLine: publicLineName,
+      internalLineNumber: internalLineNumber,
+      stopArea: stopArea,
+      stopPoint: stopPoint,
       selectedFromDate: formatFromDate,
       selectedEndDate: formatEndDate,
       selectedFormType: spatialType,
@@ -376,132 +585,220 @@ class Journeys extends React.PureComponent {
   };
 
   disableDrag = () => {
-    this.localObserver.publish("vt-dragging-enabled", false);
+    this.localObserver.publish("vtsearch-dragging-enabled", false);
   };
 
   enableDrag = () => {
-    this.localObserver.publish("vt-dragging-enabled", true);
+    this.localObserver.publish("vtsearch-dragging-enabled", true);
+  };
+
+  setFromTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndTimeInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endTimeInputErrorMessage: "FEL VÄRDE PÅ TID",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setFromDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        fromDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
+  };
+
+  setEndDateInputErrorMessage = (error) => {
+    if (error === "invalidDate") {
+      this.setState({
+        endDateInputErrorMessage: "FEL VÄRDE PÅ DATUM",
+      });
+      return;
+    }
+
+    this.setState({
+      inputErrorMessage: "",
+    });
   };
 
   renderFromDateSection = () => {
-    const { classes } = this.props;
     return (
       <>
         <Grid item xs={12}>
           <Typography variant="caption">FRÅN OCH MED</Typography>
-          <KeyboardTimePicker
+          <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             id="time-picker"
             ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedFromTime}
             onChange={this.handleFromTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setFromTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromTimeInputErrorMessage,
+              },
+            }}
           />
         </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
-          format="yyyy-MM-dd"
-          margin="normal"
-          keyboardIcon={<EventIcon></EventIcon>}
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
-          value={this.state.selectedFromDate}
-          onChange={this.handleFromDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-        />
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedFromDate}
+            onChange={this.handleFromDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setFromDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.fromDateInputErrorMessage,
+              },
+            }}
+          />
+        </Grid>
       </>
     );
   };
 
   renderEndDateSection = () => {
-    const { classes } = this.props;
     return (
       <>
         <Grid item xs={12}>
           <Typography variant="caption">TILL OCH MED</Typography>
-          <KeyboardTimePicker
+          <StyledTimePicker
             format="HH:mm"
-            margin="normal"
             ampm={false}
-            className={classes.dateForm}
-            invalidDateMessage="FEL VÄRDE PÅ TID"
-            keyboardIcon={<AccessTimeIcon></AccessTimeIcon>}
             value={this.state.selectedEndTime}
             onChange={this.handleEndTimeChange}
-            KeyboardButtonProps={{
-              "aria-label": "change time",
-            }}
             onOpen={this.disableDrag}
             onClose={this.enableDrag}
+            onError={(newError) => this.setEndTimeInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endTimeInputErrorMessage,
+              },
+            }}
           />
         </Grid>
-        <KeyboardDatePicker
-          className={classes.spaceToFromDate}
-          format="yyyy-MM-dd"
-          margin="normal"
-          invalidDateMessage="FEL VÄRDE PÅ DATUM"
-          value={this.state.selectedEndDate}
-          onChange={this.handleEndDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
-          onOpen={this.disableDrag}
-          onClose={this.enableDrag}
-        />
-        {this.showErrorMessage()}
+        <Grid item xs={12}>
+          <StyledDatePicker
+            format="yyyy-MM-dd"
+            value={this.state.selectedEndDate}
+            onChange={this.handleEndDateChange}
+            onOpen={this.disableDrag}
+            onClose={this.enableDrag}
+            onError={(newError) => this.setEndDateInputErrorMessage(newError)}
+            slotProps={{
+              textField: {
+                variant: "standard",
+                helperText: this.state.endDateInputErrorMessage,
+              },
+            }}
+          />
+        </Grid>
       </>
     );
   };
 
-  showErrorMessage = () => {
-    return this.validateDateAndTime(
+  validateSearchForm = () => {
+    const { stopArea, stopPoint } = this.state;
+    if (stopPoint && !stopArea) return SEARCH_ERROR_MESSAGE;
+
+    return "";
+  };
+
+  showSearchErrorMessage = () => {
+    const { searchErrorMessage } = this.state;
+
+    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
+
+    return this.renderNoErrorMessage();
+  };
+
+  #showValidateParametersErrorMessage = () => {
+    return this.#validateParameters(
       this.renderErrorMessageInvalidDate,
       this.renderErrorMessageInvalidTime,
       this.renderErrorMessageStartTimeBiggerThanEndTime,
+      this.#renderErrorMessageInvalidInternalLine,
       this.renderNoErrorMessage
     );
   };
 
-  renderErrorMessageInvalidDate = () => {
-    const { classes } = this.props;
+  renderErrorMessage = (errorMessage) => {
     return (
       <Grid item xs={12}>
-        <Typography variant="body2" className={classes.errorMessage}>
+        <StyledErrorMessageTypography variant="body2">
+          {errorMessage}
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
+  };
+
+  #renderErrorMessageInvalidInternalLine = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
+          TEKNISKT NR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE MED
+          KOMMATECKEN
+        </StyledErrorMessageTypography>
+      </Grid>
+    );
+  };
+
+  renderErrorMessageInvalidDate = () => {
+    return (
+      <Grid item xs={12}>
+        <StyledErrorMessageTypography variant="body2">
           DATUM MÅSTE ANGES
-        </Typography>
+        </StyledErrorMessageTypography>
       </Grid>
     );
   };
 
   renderErrorMessageInvalidTime = () => {
-    const { classes } = this.props;
     return (
       <Grid item xs={12}>
-        <Typography variant="body2" className={classes.errorMessage}>
+        <StyledErrorMessageTypography variant="body2">
           KLOCKSLAG MÅSTE ANGES
-        </Typography>
+        </StyledErrorMessageTypography>
       </Grid>
     );
   };
 
   renderErrorMessageStartTimeBiggerThanEndTime = () => {
-    const { classes } = this.props;
     return (
       <Grid item xs={12}>
-        <Typography variant="body2" className={classes.errorMessage}>
+        <StyledErrorMessageTypography variant="body2">
           TILL OCH MED FÅR INTE VARA MINDRE ÄN FRÅN OCH MED
-        </Typography>
+        </StyledErrorMessageTypography>
       </Grid>
     );
   };
@@ -510,17 +807,91 @@ class Journeys extends React.PureComponent {
     return <Typography></Typography>;
   };
 
-  renderSpatialSearchSection = () => {
-    const { classes } = this.props;
+  renderStopAreaStopPointSection = () => {
     return (
       <>
         <Grid item xs={12}>
-          <Divider className={classes.divider} />
+          <Typography variant="caption">HÅLLPLATSNAMN ELLER -NR</Typography>
+          <TextField
+            fullWidth
+            id="standard-helperText"
+            value={this.state.stopArea}
+            onChange={this.handleStopAreaChange}
+            error={!(this.state.searchErrorMessage === "")}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
+          <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
+            <TextField
+              fullWidth
+              id="standard-helperText"
+              value={this.state.stopPoint}
+              onChange={this.handleStopPointChange}
+              variant="standard"
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderPublicAndTechnicalNrSection = () => {
+    return (
+      <>
+        <Grid item xs={6}>
+          <Typography variant="caption">PUBLIKT NR</Typography>
+          <TextField
+            id="standard-helperText"
+            onChange={this.handlePublicLineNameChange}
+            value={this.state.publicLineName}
+            variant="standard"
+          />
+        </Grid>
+        <Grid item xs={6}>
+          <Typography variant="caption">TEKNISKT NR</Typography>
+          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
+            <TextField
+              id="standard-helperText"
+              onChange={this.handleInternalLineNrChange}
+              value={this.state.internalLineNumber}
+              variant="standard"
+              error={!(this.state.internalLineErrorMessage === "")}
+              helperText={this.state.internalLineErrorMessage}
+            />
+          </Tooltip>
+        </Grid>
+      </>
+    );
+  };
+
+  renderSearchButtonSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <StyledSearchButton
+            onClick={this.doSearch}
+            variant="outlined"
+            disabled={!this.state.searchButtonEnabled}
+          >
+            <Typography>SÖK</Typography>
+          </StyledSearchButton>
+        </Grid>
+      </>
+    );
+  };
+
+  renderSpatialSearchSection = () => {
+    return (
+      <>
+        <Grid item xs={12}>
+          <StyledDivider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
         </Grid>
-        <Grid justify="center" container>
+        <Grid justifyContent="center" container>
           <Grid item xs={4}>
             <div>
               <img
@@ -559,18 +930,25 @@ class Journeys extends React.PureComponent {
   };
 
   render() {
-    const { classes } = this.props;
-
     return (
       <div>
-        <MuiPickersUtilsProvider
-          className={classes.journeysForm}
-          utils={DateFnsUtils}
+        <Grid
+          container
+          justifyContent="center"
+          spacing={2}
+          onKeyPress={this.handleKeyPress}
         >
-          {this.renderFromDateSection()}
-          {this.renderEndDateSection()}
-        </MuiPickersUtilsProvider>
-        {this.renderSpatialSearchSection()}
+          <StyledLocalizationProvider dateAdapter={AdapterDateFns}>
+            {this.renderFromDateSection()}
+            {this.renderEndDateSection()}
+          </StyledLocalizationProvider>
+          {this.renderStopAreaStopPointSection()}
+          {this.renderPublicAndTechnicalNrSection()}
+          {this.renderSearchButtonSection()}
+          {this.#showValidateParametersErrorMessage()}
+          {this.showSearchErrorMessage()}
+          {this.renderSpatialSearchSection()}
+        </Grid>
       </div>
     );
   }
@@ -580,4 +958,4 @@ class Journeys extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-export default withStyles(styles)(Journeys);
+export default Journeys;

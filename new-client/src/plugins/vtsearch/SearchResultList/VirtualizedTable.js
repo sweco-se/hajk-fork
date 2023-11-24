@@ -1,79 +1,59 @@
 import React from "react";
-import clsx from "clsx";
-import { withStyles } from "@material-ui/core/styles";
-import TableCell from "@material-ui/core/TableCell";
+import { useTheme } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import TableCell from "@mui/material/TableCell";
 import { AutoSizer, Column, Table } from "react-virtualized";
 import { SortIndicator } from "react-virtualized";
-
 import "react-virtualized/styles.css";
-import { Typography, Tooltip } from "@material-ui/core";
+import { Typography, Tooltip } from "@mui/material";
 
-const styles = (theme) => ({
-  flexContainer: {
-    display: "flex",
-    alignItems: "center",
-    boxSizing: "border-box",
+const StyledTable = styled(Table)(({ theme }) => ({
+  "& .ReactVirtualized__Table__headerRow": {
+    flip: false,
+    overflow: "auto",
+    borderBottom: `1px solid ${theme.palette.common.black}`,
+    textTransform: "none",
+    padding: theme.spacing(0),
+    paddingRight: theme.direction === "rtl" ? "0px !important" : undefined,
   },
-
-  table: {
-    // temporary right-to-left patch, waiting for
-    // https://github.com/bvaughn/react-virtualized/issues/454
-    "& .ReactVirtualized__Table__headerRow": {
-      flip: false,
-      overflow: "auto",
-      borderBottom: `1px solid ${theme.palette.common.black}`,
-      textTransform: "none",
-      padding: theme.spacing(0),
-      paddingRight: theme.direction === "rtl" ? "0px !important" : undefined,
-    },
-  },
-
-  tableRowHover: {
+  "& .ReactVirtualized__Table__row": {
+    cursor: "pointer",
+    borderBottom: `2px solid ${theme.palette.grey[200]}`,
     "&:hover": {
-      backgroundColor: theme.palette.grey[200],
+      backgroundColor: theme.palette.grey[500],
     },
   },
+}));
 
-  tableRow: {
-    cursor: "pointer",
-    border: `1px solid ${theme.palette.grey[200]}`,
-    whiteSpace: "wrap",
-    outline: "none",
-  },
-  tableRowSelected: {
-    background: theme.palette.primary.main,
-  },
-  headerColumn: {
-    whiteSpace: "pre-wrap",
-    alignItems: "center",
-    boxSizing: "border-box",
-    justifyContent: "flex-start",
-    cursor: "pointer",
-    display: "flex",
-    paddingTop: theme.spacing(0),
-    paddingRight: theme.spacing(0),
-    paddingBottom: theme.spacing(0),
-    minWidth: theme.spacing(0),
-    lineHeight: 1,
-    borderBottom: theme.spacing(0),
-  },
-  columnStyle: {
-    whiteSpace: "pre-wrap",
-    alignItems: "center",
-    boxSizing: "border-box",
-    justifyContent: "center",
-    cursor: "pointer",
-    wordBreak: "break-all",
-    borderBottom: theme.spacing(0),
-  },
-  rowCell: {
-    marginRight: 0,
-    border: "none",
-    borderBottom: 0,
-    textAlign: "center",
-    flex: 1,
-  },
-});
+const StyledTableRow = () => {
+  const theme = useTheme();
+  return {
+    backgroundColor: theme.palette.primary.light,
+  };
+};
+
+const StyledTableCellForCell = styled(TableCell)(({ theme }) => ({
+  marginRight: 0,
+  border: "none",
+  borderBottom: 0,
+  textAlign: "center",
+  flex: 1,
+}));
+
+const StyledTableCellForHeader = styled(TableCell)(({ theme }) => ({
+  whiteSpace: "pre-wrap",
+  alignItems: "center",
+  boxSizing: "border-box",
+  justifyContent: "flex-start",
+  cursor: "pointer",
+  display: "flex",
+  paddingTop: theme.spacing(0),
+  paddingRight: theme.spacing(0),
+  paddingBottom: theme.spacing(0),
+  minWidth: theme.spacing(0),
+  lineHeight: 1,
+  borderBottom: theme.spacing(0),
+}));
 
 const headerRowIndex = -1;
 
@@ -92,38 +72,69 @@ class VirtualizedTable extends React.PureComponent {
     selectedRow: headerRowIndex,
   };
 
-  getRowClassName = ({ index }) => {
-    const { classes } = this.props;
-    if (index !== headerRowIndex && this.props.selectedRow.index === index) {
-      return clsx(
-        classes.tableRow,
-        classes.tableRowSelected,
-        classes.flexContainer
-      );
-    }
+  /**
+   * Handles the click on a table row.
+   * @param {event} event
+   */
+  #handleRowSelect = (event) => {
+    const { rowClicked } = this.props;
+    rowClicked(event);
+  };
+
+  /**
+   * Handles double click on a table row.
+   * @param {event} event
+   */
+  #handleRowDoubleClick = (event) => {
+    const { rowDoubleClicked } = this.props;
+    rowDoubleClicked(event);
+  };
+
+  /**
+   * Handles the styling of the table row. A selected row has a specific color.
+   * @param {object} row
+   * @returns Returns a styling for the row.
+   */
+  #rowStyleClickedRow = (row) => {
+    const { selectedRow } = this.props;
+
+    if (row.index < 0) return;
+    if (selectedRow.index === row.index)
+      return {
+        backgroundColor: "#0096ed", // Only accepts rgb codes, not from theme
+      };
+
+    return StyledTableRow;
+  };
+
+  #getColumn = (dataKey, index, other) => {
     return (
-      index !== headerRowIndex &&
-      clsx(classes.tableRow, classes.tableRowHover, classes.flexContainer)
+      dataKey !== "id" && (
+        <Column
+          key={dataKey}
+          headerRenderer={(headerProps) =>
+            this.#headerRenderer({
+              ...headerProps,
+              columnIndex: index,
+            })
+          }
+          cellRenderer={this.#cellRenderer}
+          dataKey={dataKey}
+          {...other}
+        />
+      )
     );
   };
 
-  getCellClassName = () => {
-    const { classes } = this.props;
-    return classes.rowCell;
-  };
-
-  cellRenderer = ({ cellData, columnIndex, rowData }) => {
+  #cellRenderer = ({ cellData, columnIndex, rowData }) => {
     const { columns } = this.props;
-    if (cellData == null) {
-      return "";
-    }
 
+    if (cellData == null) return "";
     return (
       <>
-        <Tooltip title={cellData}>
-          <TableCell
+        <Tooltip disableInteractive title={cellData}>
+          <StyledTableCellForCell
             component="div"
-            className={this.getCellClassName()}
             variant="body"
             align={
               (columnIndex != null && columns[columnIndex].numeric) || false
@@ -132,75 +143,61 @@ class VirtualizedTable extends React.PureComponent {
             }
           >
             {cellData}
-          </TableCell>
+          </StyledTableCellForCell>
         </Tooltip>
       </>
     );
   };
 
-  headerRenderer = ({ label, columnIndex, sortDirection }) => {
-    const { columns, classes, sortable } = this.props;
+  #headerRenderer = ({ label, columnIndex, sortDirection }) => {
+    const { columns, sortable } = this.props;
 
     return (
-      <TableCell
+      <StyledTableCellForHeader
         component="div"
-        className={classes.headerColumn}
         variant="head"
         align={columns[columnIndex].numeric || false ? "right" : "left"}
       >
         <Typography variant="caption">{label}</Typography>
 
         {sortable && <SortIndicator sortDirection={sortDirection} />}
-      </TableCell>
+      </StyledTableCellForHeader>
     );
   };
 
   render() {
     const {
-      classes,
       columns,
       rowHeight,
       rowClicked,
+      rowDoubleClicked,
       headerHeight,
       ...tableProps
     } = this.props;
     return (
       <AutoSizer>
         {({ height, width }) => (
-          <Table
+          <StyledTable
             height={height}
             width={width}
             rowHeight={rowHeight}
             headerHeight={headerHeight}
-            onRowClick={rowClicked}
-            className={classes.table}
-            rowClassName={this.getRowClassName}
+            onRowClick={this.#handleRowSelect.bind(this)}
+            onRowDoubleClick={this.#handleRowDoubleClick.bind(this)}
+            rowStyle={this.#rowStyleClickedRow.bind(this)}
             {...tableProps}
           >
             {columns.map(({ dataKey, ...other }, index) => {
               return (
-                dataKey !== "id" && (
-                  <Column
-                    key={dataKey}
-                    headerRenderer={(headerProps) =>
-                      this.headerRenderer({
-                        ...headerProps,
-                        columnIndex: index,
-                      })
-                    }
-                    className={classes.columnStyle}
-                    cellRenderer={this.cellRenderer}
-                    dataKey={dataKey}
-                    {...other}
-                  />
-                )
+                index !== headerRowIndex &&
+                this.#getColumn(dataKey, index, other)
               );
             })}
-          </Table>
+          </StyledTable>
         )}
       </AutoSizer>
     );
   }
 }
 
-export default withStyles(styles)(VirtualizedTable);
+export default VirtualizedTable;
