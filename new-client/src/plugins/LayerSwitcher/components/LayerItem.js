@@ -32,14 +32,11 @@ const LayerItemWrapper = styled("div")(({ theme }) => ({
 
 const LayerTogglerButtonWrapper = styled("div")(() => ({
   display: "flex",
-  alignItems: "center",
   cursor: "pointer",
-  float: "left",
-  marginRight: "5px",
 }));
 
 const InfoTextContainer = styled("div")(({ theme }) => ({
-  margin: "10px 45px",
+  margin: "0",
 }));
 
 const Caption = styled(Typography)(({ theme }) => ({
@@ -50,19 +47,16 @@ const Caption = styled(Typography)(({ theme }) => ({
 const LegendIcon = styled("img")(({ theme }) => ({
   width: theme.typography.pxToRem(18),
   height: theme.typography.pxToRem(18),
-  marginRight: "5px",
 }));
 
 const LayerButtonsContainer = styled("div")(() => ({
   display: "flex",
-  alignItems: "center",
 }));
 
 const LayerButtonWrapper = styled("div")(() => ({
   display: "flex",
-  alignItems: "center",
-  width: 35,
-  height: 35,
+  width: 34,
+  height: 34,
   cursor: "pointer",
 }));
 

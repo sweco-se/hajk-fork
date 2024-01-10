@@ -327,7 +327,7 @@
         "scale": "",
         "markerImg": "",
         "delayBeforeAutoSearch": 300,
-        "searchBarPlaceholder": "Sök...",
+        "searchBarPlaceholder": "Sök",
         "enablePolygonSearch": true,
         "enableRadiusSearch": true,
         "enableSelectSearch": true,

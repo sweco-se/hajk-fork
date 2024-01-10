@@ -819,7 +819,7 @@
           "a": 0.1
         },
         "radiusSearch": true,
-        "tooltip": "Sök...",
+        "tooltip": "Sök",
         "searchWithinButtonText": "Markera i kartan",
         "maxFeatures": 100,
         "selectedSources": [],

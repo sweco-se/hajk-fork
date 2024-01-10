@@ -47,8 +47,6 @@ const SummaryButtonsContainer = styled("div")(() => ({
 const SummaryButtonWrapper = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
-  width: 35,
-  height: 35,
   cursor: "pointer",
 }));
 
@@ -61,8 +59,6 @@ const CheckBoxWrapper = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
   cursor: "pointer",
-  float: "left",
-  marginRight: "5px",
 }));
 
 const LegendImage = styled("img")(({ theme }) => ({
@@ -73,11 +69,10 @@ const LegendImage = styled("img")(({ theme }) => ({
 const LegendIcon = styled("img")(({ theme }) => ({
   width: theme.typography.pxToRem(18),
   height: theme.typography.pxToRem(18),
-  marginRight: "5px",
 }));
 
 const InfoTextContainer = styled("div")(() => ({
-  margin: "10px 45px",
+  margin: "0",
 }));
 
 const StyledList = styled("ul")(() => ({

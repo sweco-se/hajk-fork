@@ -31,7 +31,7 @@ const defaultState = {
   delayBeforeAutoSearch: 500,
   disableAutocomplete: false,
   disableSearchCombinations: false,
-  searchBarPlaceholder: "Sök...",
+  searchBarPlaceholder: "Sök",
   autocompleteWildcardAtStart: false,
   autofocusOnStart: false,
   enablePolygonSearch: true,

@@ -1269,7 +1269,7 @@
           "a": 0.2
         },
         "radiusSearch": true,
-        "tooltip": "Sök...",
+        "tooltip": "Sök",
         "searchWithinButtonText": "Markera i kartan",
         "maxFeatures": 100,
         "delayBeforeAutoSearch": 500,

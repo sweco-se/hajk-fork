@@ -1,1 +1,207 @@
-{}
+{
+    "palette": {
+        "mode": "light",
+        "primary": {
+          "main": "#3c5a44"
+        },
+        "secondary": {
+          "main": "#959a4b",
+          "contrastText": "#000"
+        },
+        "background": {
+          "default": "#f3f3f3"
+        },
+        "error": {
+          "main": "#b46232"
+        },
+        "warning": {
+          "main": "#b46232"
+        },
+        "success": {
+          "main": "#959a4b"
+        },
+        "info": {
+          "main": "#89acaa",
+          "contrastText": "#000"
+        },
+        "divider": "#d2d3b4"
+    },
+    "typography": {
+        "fontFamily": "Poppins-Regular",
+        "fontWeight": "400",
+        "paragraph": {
+            "fontFamily": "Poppins-Regular",
+            "fontWeight": "400",
+            "fontSize": "0.875rem",
+            "marginTop": "0",
+            "marginBottom": "1rem"
+        },
+        "button": {
+            "fontFamily": "Poppins-Medium",
+            "fontWeight": "500",
+            "fontSize": "0.875rem",
+            "textTransform": "none"
+        }
+    },
+    "components": {
+        "MuiButtonBase": {
+            "defaultProps": {
+                "disableRipple": "false"
+            },
+            "styleOverrides": {
+                "root": {
+                    "&:hover": {
+                        "backgroundColor": "transparent"
+                    }
+                }
+            }
+        },
+        "MuiIconButton": {
+            "styleOverrides": {
+                "root": {
+                    "&:hover": {
+                        "backgroundColor": "#959a4b"
+                    }
+                }
+            }
+        },
+        "MuiInputBase": {
+            "styleOverrides": {
+                "root": {
+                    "fontFamily": "Poppins-Regular",
+                    "fontWeight": "400",
+                    "fontSize": "0.875rem",
+                    "color": "#000"
+                }
+            }
+        },
+        "MuiFormControl": {
+            "styleOverrides": {
+                "root": {
+                    "fontFamily": "Poppins-Regular",
+                    "fontWeight": "400",
+                    "fontSize": "0.875rem",
+                    "color": "#000"
+                }
+            }
+        },
+        "MuiFormLabel": {
+            "styleOverrides": {
+                "root": {
+                    "fontFamily": "Poppins-Regular",
+                    "fontWeight": "400",
+                    "fontSize": "0.875rem",
+                    "color": "#000"
+                }
+            }
+        },
+        "MuiSelect": {
+            "styleOverrides": {
+                "root": {
+                    "fontFamily": "Poppins-Regular",
+                    "fontWeight": "400",
+                    "fontSize": "0.875rem",
+                    "color": "#000"
+                }
+            }
+        },
+        "MuiAppBar": {
+            "styleOverrides": {
+                "root": {
+                    "backgroundColor": "#fff",
+                    "borderBottom": "1px solid #e6e6e6",
+                    "boxShadow": "none"
+                }
+            }
+        },
+        "MuiTab": {
+            "styleOverrides": {
+                "root": {
+                    "padding": "8px 16px",
+                    "borderRadius": 0,
+                    "color": "#3c5a44",
+                    "boxShadow": "none",
+                    "opacity": "1",
+                    "&:hover": {
+                        "color": "#3c5a44",
+                        "opacity": "1",
+                        "backgroundColor": "#fff",
+                        "textDecoration": "underline"
+                    },
+                    "&.Mui-selected": {
+                        "color": "#fff",
+                        "fill": "#fff",
+                        "backgroundColor": "#3c5a44"
+                    },
+                    "& .MuiSvgIcon": {
+                        "styleOverrides": {
+                            "root": {
+                                "fill": "#3c5a44",
+                                ".Mui-selected &": {
+                                    "fill": "#fff"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "MuiTable": {
+            "styleOverrides": {
+                "root": {
+                    "borderRadius": 0,
+                    "boxShadow": "none",
+                    "borderTop": "1px solid #e6e6e6"
+                }
+            }
+        },
+        "MuiTableCell": {
+            "styleOverrides": {
+                "root": {
+                    "borderColor": "#e6e6e6"
+                }
+            }
+        },
+        "MuiSwitch": {
+            "styleOverrides": {
+                "root": {
+                    "width": "46px",
+                    "height": "27px",
+                    "padding": "0px",
+                    "margin": "8px 16px",
+                    "opacity": "1"
+                },
+                "switchBase": {
+                    "padding": "1px",
+                    "opacity": "1",
+                    "&$checked, &$colorPrimary$checked, &$colorSecondary$checked": {
+                        "transform": "translateX(16px)",
+                        "color": "#fff",
+                        "& + $track": {
+                            "opacity": "1",
+                            "border": "none"
+                        }
+                    }
+                },
+                "thumb": {
+                    "width": "24px",
+                    "height": "24px",
+                    "padding": "0px",
+                    "color": "#fff",
+                    "opacity": "1",
+                    "boxShadow": "rgba(0, 0, 0, 0.2) 0px 2px 1px -1px, rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px"
+                },
+                "track": {
+                    "borderRadius": 9999,
+                    "border": "1px solid #959a4b",
+                    "backgroundColor": "#f3f3f3",
+                    "opacity": "1",
+                    "transition": "background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
+                }
+            }
+        }
+    },
+    "shape": {
+        "borderRadius": 2
+    }
+}
