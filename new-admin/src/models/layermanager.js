@@ -5,6 +5,18 @@ import $ from "jquery";
 import { prepareProxyUrl } from "../utils/ProxyHelper";
 import { hfetch } from "utils/FetchWrapper";
 
+const WMS_VERSION_1_3_0 = "1.3.0";
+const WMS_VERSION_1_1_1 = "1.1.1";
+const WMS_VERSION_1_1_0 = "1.1.0";
+const WMS_VERSION_1_0_0 = "1.0.0";
+
+const defaultVersions = [
+  WMS_VERSION_1_3_0,
+  WMS_VERSION_1_1_1,
+  WMS_VERSION_1_1_0,
+  WMS_VERSION_1_0_0
+];
+
 var manager = Model.extend({
   defaults: {
     layers: [],
@@ -380,7 +392,7 @@ var manager = Model.extend({
     });
   },
 
-  getAllWMSCapabilities: function (url) {
+  getAllWMSCapabilities: function (url, versions = defaultVersions) {
     var promises = [];
 
     var xmlParser = new X2JS({
@@ -392,8 +404,6 @@ var manager = Model.extend({
         "WMT_MS_Capabilities.Capability.Layer.Layer.Style",
       ],
     });
-
-    var versions = ["1.3.0", "1.1.1", "1.1.0", "1.0.0"];
 
     versions.forEach((version) => {
       promises.push(
@@ -458,4 +468,4 @@ var manager = Model.extend({
   },
 });
 
-export default manager;
+export { manager as default, WMS_VERSION_1_0_0, WMS_VERSION_1_1_0, WMS_VERSION_1_1_1, WMS_VERSION_1_3_0 };
