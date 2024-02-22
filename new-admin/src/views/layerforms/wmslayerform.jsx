@@ -1182,11 +1182,11 @@ class WMSLayerForm extends Component {
       }
     }
     
-    if (projections) {
+    if (projections && Array.isArray(projections)) {
       projections = projections.map(projection => projection.toUpperCase());
     }
 
-    return projections ? projections.map((proj, i) => {
+    return (projections && Array.isArray(projections)) ? projections.map((proj, i) => {
         if (supportedProjections.includes(proj)) {
           return <option key={i}>{proj}</option>;
         } else {

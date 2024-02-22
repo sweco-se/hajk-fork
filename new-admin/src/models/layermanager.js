@@ -101,23 +101,30 @@ var manager = Model.extend({
     $.ajax(prepareProxyUrl(url, this.get("config").url_proxy), {
       success: (data) => {
         var layers = [];
-        data.wmslayers.forEach((l) => {
-          l.type = "WMS";
-        });
-        data.wmtslayers.forEach((l) => {
-          l.type = "WMTS";
-        });
-        data.arcgislayers.forEach((l) => {
-          l.type = "ArcGIS";
-        });
-        data.vectorlayers.forEach((l) => {
-          l.type = "Vector";
-        });
-
-        layers = data.wmslayers
-          .concat(data.wmtslayers)
-          .concat(data.arcgislayers)
-          .concat(data.vectorlayers);
+        if (data && Array.isArray(data.wmslayers)) {
+          data.wmslayers.forEach((l) => {
+            l.type = "WMS";
+          });
+          layers = layers.concat(data.wmslayers);
+        }
+        if (data && Array.isArray(data.wmtslayers)) {
+          data.wmtslayers.forEach((l) => {
+            l.type = "WMTS";
+          });
+          layers = layers.concat(data.wmtslayers);
+        }
+        if (data && Array.isArray(data.arcgislayers)) {
+          data.arcgislayers.forEach((l) => {
+            l.type = "ArcGIS";
+          });
+          layers = layers.concat(data.arcgislayers);
+        }
+        if (data && Array.isArray(data.vectorlayers)) {
+          data.vectorlayers.forEach((l) => {
+            l.type = "Vector";
+          });
+          layers = layers.concat(data.vectorlayers);
+        }
 
         layers.sort((a, b) => {
           var d1 = parseInt(a.date, 10),
