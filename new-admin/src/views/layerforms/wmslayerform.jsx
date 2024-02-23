@@ -2,8 +2,21 @@ import React from "react";
 import { Component } from "react";
 import $ from "jquery";
 import { hfetch } from "utils/FetchWrapper";
+import { WMS_VERSION_1_1_0, WMS_VERSION_1_1_1, WMS_VERSION_1_3_0 } from "models/layermanager";
 
 var solpop;
+
+// Suported Hajk WMS Server types, in the client is this re-mapped to support OpenLayers server types:
+//  GeoServer
+const SERVERTYPE_GEOSERVER = "geoserver";
+//  GeoWebCache, #1469: Stand-Alone, without GeoServer's REST API, i.e. no automatic workspace listing. (client --> GeoServer)
+const SERVERTYPE_GWC_STANDALONE = "geowebcache-standalone";
+//  QGIS Server
+const SERVERTYPE_QGIS = "qgis";
+//  MapServer
+const SERVERTYPE_MAPSERVER = "mapserver";
+//  ESRI ArcGIS Server (client --> MapServer)
+const SERVERTYPE_ARCGIS = "arcgis";
 
 const defaultState = {
   load: false,
@@ -39,7 +52,8 @@ const defaultState = {
   ],
   customRatio: 0,
   imageFormat: "",
-  serverType: "geoserver",
+  serverType: "", // #1469: Don't use a default, to trigger state change in componentDidMount (optional workspace selector)
+  workspaceSelectorVisible: false,
   drawOrder: 1,
   layerType: "WMS",
   attribution: "",
@@ -54,7 +68,7 @@ const defaultState = {
   timeSliderEnd: "",
   solpopup: solpop,
   capabilitiesList: [],
-  version: "1.1.0",
+  version: WMS_VERSION_1_1_0,
   projection: "",
   infoFormat: "",
   infoClickSortProperty: "",
@@ -110,6 +124,7 @@ class WMSLayerForm extends Component {
   componentDidMount() {
     let _state = { ...defaultState };
     _state.url = this.props.url;
+    _state.serverType = this.props.serverType || SERVERTYPE_GEOSERVER;
     this.setState(_state);
 
     this.props.model.on("change:select-image", () => {
@@ -129,6 +144,16 @@ class WMSLayerForm extends Component {
   componentWillUnmount() {
     this.props.model.off("change:legend");
     this.props.model.off("change:select-legend-icon");
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.serverType !== this.state.serverType) {
+      let newState = {
+        workspaceSelectorVisible: this.state.serverType === SERVERTYPE_GEOSERVER
+      };
+      newState.tiled = this.state.serverType === SERVERTYPE_GWC_STANDALONE ? true : defaultState.tiled;
+      this.setState(newState);
+    }
   }
 
   constructor() {
@@ -934,7 +959,7 @@ class WMSLayerForm extends Component {
       // previous implementation of WMS in Hajk2 assumed it was "1.1.1"
       // and did not add "version" property.
 
-      layer.version = layer.version || "1.1.1";
+      layer.version = layer.version || WMS_VERSION_1_1_1;
 
       var addedLayersInfo = {};
       var capabilities = this.state.capabilitiesList.find(
@@ -969,7 +994,7 @@ class WMSLayerForm extends Component {
           addedLayersInfo: addedLayersInfo,
           capabilities,
           projection: layer.projection,
-          version: capabilities.version,
+          version: capabilities?.version,
           infoFormat: layer.infoFormat,
           infoClickSortProperty: layer.infoClickSortProperty ?? "",
           infoClickSortType: layer.infoClickSortType ?? "string",
@@ -1000,6 +1025,9 @@ class WMSLayerForm extends Component {
     // Previously this was done while rendering.
 
     let layerOpts = {};
+    if (!capabilities || !capabilities.Capability) {
+      return;
+    }
     capabilities.Capability.Layer.Layer.forEach((_layer) => {
       let trueTitle = _layer.hasOwnProperty("Title") ? _layer.Title : "";
       let abstract = _layer.hasOwnProperty("Abstract") ? _layer.Abstract : "";
@@ -1040,8 +1068,11 @@ class WMSLayerForm extends Component {
         });
     }
 
+    // #1469: Stand-Alone GeoWebCache only support v1.1.1 but will (confusingly) answer when called with e.g. ?VERSION=1.3.0,
+    // avoiding parsing such version-inconsistent replies by narrowing down WMS versions used for querying server to specifically v1.1.1
+    var versions = this.state.serverType === SERVERTYPE_GWC_STANDALONE ? [ WMS_VERSION_1_1_1 ] : undefined;
     var capabilitiesPromise = this.props.model.getAllWMSCapabilities(
-      this.state.url
+      this.state.url, versions
     );
 
     capabilitiesPromise
@@ -1071,8 +1102,12 @@ class WMSLayerForm extends Component {
         );
       })
       .catch((err) => {
-        if (this.props.parentView) {
-          this.props.parentView.setState({
+        this.setState({
+          load: false,
+          capabilitiesList: []
+        });
+        if (this.props.parent) {
+          this.props.parent.setState({
             alert: true,
             alertMessage: "Servern svarar inte. Försök med en annan URL.",
           });
@@ -1133,38 +1168,45 @@ class WMSLayerForm extends Component {
         this.state.capabilities.Capability.Request.GetFeatureInfo.Format;
     }
     if (formats && formats.indexOf("application/geojson") > -1) {
-      this.setState({ serverType: "arcgis" });
+      this.setState({ serverType: SERVERTYPE_ARCGIS });
     }
   }
 
   setProjections() {
     let projections;
-    if (
-      this.state.capabilities &&
-      this.state.capabilities.Capability &&
-      this.state.capabilities.Capability.Layer
-    ) {
-      var RS = this.state.version === "1.3.0" ? "CRS" : "SRS";
-      projections = this.state.capabilities.Capability.Layer[RS];
-    }
-
-    if (projections) {
-      projections = projections.map((projection) => {
-        return projection.toUpperCase();
-      });
-    }
-
-    let projEles = projections
-      ? supportedProjections.map((proj, i) => {
-          if (projections.indexOf(proj) > -1) {
-            return <option key={i}>{proj}</option>;
-          } else {
-            return "";
+    const RS = this.state.version === WMS_VERSION_1_3_0 ? "CRS" : "SRS";
+    const capabilities = this.state.capabilities;
+    if (capabilities && capabilities.Capability && capabilities.Capability.Layer) {
+      // #1469: Projection metadata can be present on the parent or child Layer element of GetCapabilities
+      // both are valid for e.g. OGC WMS v1.1.1 DTD.
+      const layers = capabilities.Capability.Layer.Layer;
+      if (capabilities.Capability.Layer[RS]) {
+        projections = [].concat(capabilities.Capability.Layer[RS]);
+      } else if (layers) {
+        // Child Layer reference system items can be either a string or an array of strings
+        projections = [...new Set(layers.flatMap((layer) => {
+          if (layer[RS]) {
+            return [].concat(layer[RS]);
           }
-        })
-      : "";
+        }))].filter(Boolean); // Filter out undefined elements, e.g. no CRS/SRS due to incorrectly configured WMS version
+        if (!projections.length) {
+          projections = null;
+        }
+      }
+    }
+    
+    if (projections) {
+      projections = projections.map(projection => projection ? projection.toUpperCase() : null);
+    }
 
-    return projEles;
+    return projections ? projections.map((proj, i) => {
+        if (supportedProjections.includes(proj)) {
+          return <option key={i}>{proj}</option>;
+        } else {
+          console.log("Unsupported spatial reference system found in WMS capabilities document, ignoring:", proj);
+          return null;
+        }
+      }) : null;
   }
 
   setInfoFormats() {
@@ -1441,28 +1483,41 @@ class WMSLayerForm extends Component {
   }
 
   getWorkspaces = async (url) => {
-    //
-    url = url.substring(0, url.lastIndexOf("/")) + "/rest/workspaces";
-    //
-    const res = await hfetch(url);
-    //
-    const json = await res.json();
-    //
-    //this.setState({ workspaceList: json.workspaces.workspace });
-    //
-    var sortedWorksapes = json.workspaces.workspace.sort(GetSortOrder("name")); //Pass the attribute to be sorted on
+    try {
+      if (url.endsWith("/")) {
+        url = url.slice(0, -1);
+      }
+      url = url.substring(0, url.lastIndexOf("/")) + "/rest/workspaces";
+      const res = await hfetch(url);
+      if (!res.ok) {
+        // Handle non-successful responses, e.g. HTTP/404 when REST API is not exposed
+        throw new Error('Failed to fetch workspaces: ' + res.status);
+      }
+      const json = await res.json();
+      var sortedWorkspaces = json.workspaces.workspace.sort(GetSortOrder("name")); //Pass the attribute to be sorted on
 
-    function GetSortOrder(prop) {
-      return function (a, b) {
-        if (a[prop] > b[prop]) {
-          return 1;
-        } else if (a[prop] < b[prop]) {
-          return -1;
-        }
-        return 0;
-      };
+      function GetSortOrder(prop) {
+        return function (a, b) {
+          if (a[prop] > b[prop]) {
+            return 1;
+          } else if (a[prop] < b[prop]) {
+            return -1;
+          }
+          return 0;
+        };
+      }
+      this.setState({ workspaceList: sortedWorkspaces });
+    } catch (error) {
+      if (this.props.parent) {
+        this.props.parent.setState({
+          alert: true,
+          alertMessage: "Workspace-listan kan inte hämtas från denna server, välj \"Alla\".",
+        });
+      } else {
+        console.warn("Workspace fetch from REST API failed.");
+      }
+      this.setState({ workspaceList: [] });
     }
-    this.setState({ workspaceList: sortedWorksapes });
   };
 
   updateDpiList(e, kv, key) {
@@ -1508,7 +1563,7 @@ class WMSLayerForm extends Component {
       ? "tooltip-timeSlider"
       : "hidden";
 
-    const version = this.state.version || "1.1.1";
+    const version = this.state.version || WMS_VERSION_1_1_1;
     const infoFormat = this.state.infoFormat || "";
 
     return (
@@ -1523,21 +1578,13 @@ class WMSLayerForm extends Component {
             value={this.state.serverType}
             onChange={(e) => {
               this.setState({ serverType: e.target.value });
-              if (
-                e.target.value === "geoserver"
-                  ? (document.getElementById(
-                      "availableWorkspaces"
-                    ).style.display = "unset")
-                  : (document.getElementById(
-                      "availableWorkspaces"
-                    ).style.display = "none")
-              );
             }}
           >
-            <option>geoserver</option>
-            <option>mapserver</option>
-            <option>qgis</option>
-            <option>arcgis</option>
+            <option>{SERVERTYPE_GEOSERVER}</option>
+            <option>{SERVERTYPE_MAPSERVER}</option>
+            <option>{SERVERTYPE_QGIS}</option>
+            <option>{SERVERTYPE_GWC_STANDALONE}</option>
+            <option>{SERVERTYPE_ARCGIS}</option>
           </select>
         </div>
         <div>
@@ -1552,7 +1599,7 @@ class WMSLayerForm extends Component {
             }}
             className={this.getValidationClass("url")}
           />
-          {this.state.serverType === "geoserver" ? (
+          {this.state.workspaceSelectorVisible ? (
             <span
               onClick={(e) => {
                 this.getWorkspaces(this.state.url);
@@ -1573,46 +1620,48 @@ class WMSLayerForm extends Component {
           )}
         </div>
 
-        <div id="availableWorkspaces">
-          <label>Välj workspace</label>
-          <select
-            className="control-fixed-width"
-            ref="input_workspaceName"
-            value={this.state.workspaceName}
-            onChange={(e) =>
-              this.setState({
-                url:
-                  this.state.url.substring(
-                    0,
-                    this.state.url.lastIndexOf("geoserver/") + 10
-                  ) + e.target.value,
-              })
-            }
-          >
-            <option key="wms" value="wms">
-              Alla
-            </option>
-            {this.state.workspaceList.map((workspace) => {
-              return (
-                <option
-                  key={workspace.name + "/wms"}
-                  value={workspace.name + "/wms"}
-                >
-                  {workspace.name}
-                </option>
-              );
-            })}
-          </select>
-          &nbsp;
-          <span
-            onClick={(e) => {
-              this.loadWMSCapabilities(e);
-            }}
-            className="btn btn-default"
-          >
-            Hämta lager {loader}
-          </span>
-        </div>
+        {this.state.workspaceSelectorVisible && (
+          <div id="availableWorkspaces">
+            <label>Välj workspace</label>
+            <select
+              className="control-fixed-width"
+              ref="input_workspaceName"
+              value={this.state.workspaceName}
+              onChange={(e) =>
+                this.setState({
+                  url:
+                    this.state.url.substring(
+                      0,
+                      this.state.url.lastIndexOf("geoserver/") + 10
+                    ) + e.target.value,
+                })
+              }
+            >
+              <option key="wms" value="wms">
+                Alla
+              </option>
+              {this.state.workspaceList.map((workspace) => {
+                return (
+                  <option
+                    key={workspace.name + "/wms"}
+                    value={workspace.name + "/wms"}
+                  >
+                    {workspace.name}
+                  </option>
+                );
+              })}
+            </select>
+            &nbsp;
+            <span
+              onClick={(e) => {
+                this.loadWMSCapabilities(e);
+              }}
+              className="btn btn-default"
+            >
+              Hämta lager {loader}
+            </span>
+          </div>
+        )}  
 
         <div className="separator">Inställningar för request</div>
         <div>

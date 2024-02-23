@@ -10,7 +10,8 @@
     "url_wmtslayer_settings": "/api/v1/settings/wmtslayer",
     "url_arcgislayer_settings": "/api/v1/settings/arcgislayer",
     "url_vectorlayer_settings": "/api/v1/settings/vectorlayer",
-    "url_default_server": "https://geoservertest.halmstad.se/geoserver/wms",
+    "default_server_type": "geoserver",
+    "url_default_server": "/geoserver/wms",
     "owner_options": [
       {
         "value": "SBK",
@@ -26,13 +27,13 @@
     "url_proxy": "",
     "url_layers": "/api/v1/config/layers",
     "url_layer_settings": "/api/v1/settings/wfslayer",
-    "url_default_server": "https://giscloud.se/geoserver/wfs"
+    "url_default_server": "/geoserver/wfs"
   },
   "edit": {
     "url_proxy": "",
     "url_layers": "/api/v1/config/layers",
     "url_layer_settings": "/api/v1/settings/wfstlayer",
-    "url_default_server": "https://giscloud.se/geoserver/wfs",
+    "url_default_server": "/geoserver/wfs",
     "projections": [
       "EPSG:3006",
       "EPSG:3007",
@@ -52,7 +53,7 @@
     "url_map_settings": "/api/v1/settings/mapsettings",
     "url_tool_settings": "/api/v1/settings/toolsettings",
     "url_document_list": "/api/v1/informative/list",
-    "url_client_ui": "https://dev-webbkarta-nacka.hajkdemo.sweco.se/",
+    "url_client_ui": "/",
     "authentication_active": false
   },
   "informative": {
@@ -69,7 +70,7 @@
       320564,
       6471766
     ],
-    "wms_url": "http://giscloud.se/mapservice/lmproxy/wms/topowebb",
+    "wms_url": "http://karta.nacka.se/mapservice/lmproxy/wms/topowebb",
     "wms_layers": "topowebbkartan"
   },
   "menueditor": {
@@ -94,7 +95,7 @@
       320564,
       6471766
     ],
-    "wms_url": "http://giscloud.se/mapservice/lmproxy/wms/topowebb",
+    "wms_url": "http://karta.nacka.se/mapservice/lmproxy/wms/topowebb",
     "wms_layers": "topowebbkartan",
     "list_images": "/api/v1/config/listimage",
     "list_videos": "/api/v1/config/listvideo",

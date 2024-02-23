@@ -708,12 +708,6 @@
                         "infobox": ""
                       },
                       {
-                        "id": "wjvy3h",
-                        "drawOrder": 0,
-                        "visibleAtStart": false,
-                        "infobox": ""
-                      },
-                      {
                         "id": "ko9ior",
                         "drawOrder": 0,
                         "visibleAtStart": false,
@@ -741,6 +735,12 @@
             "parent": "-1",
             "layers": [
               {
+                "id": "5ymuv7",
+                "drawOrder": 1000,
+                "visibleAtStart": false,
+                "infobox": ""
+              },
+              {
                 "id": "xuvlv4",
                 "drawOrder": 1,
                 "visibleAtStart": false,
@@ -761,6 +761,12 @@
               {
                 "id": "6gkexq",
                 "drawOrder": 1,
+                "visibleAtStart": false,
+                "infobox": ""
+              },
+              {
+                "id": "f8dchg",
+                "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
               }
@@ -912,8 +918,8 @@
                         "infobox": ""
                       },
                       {
-                        "id": "fofl1x",
-                        "drawOrder": 1,
+                        "id": "9oldwa",
+                        "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
@@ -951,13 +957,13 @@
                 "infobox": ""
               },
               {
-                "id": "hv4rrq",
+                "id": "m7cspv",
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
               },
               {
-                "id": "m7cspv",
+                "id": "qmxio6",
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
@@ -980,6 +986,12 @@
                 "infobox": ""
               },
               {
+                "id": "grcl02",
+                "drawOrder": 1000,
+                "visibleAtStart": false,
+                "infobox": ""
+              },
+              {
                 "id": "bnwa3e",
                 "drawOrder": 1,
                 "visibleAtStart": false,
@@ -996,13 +1008,25 @@
                 "parent": "08406840-e615-9996-88df-006a6f6761dc",
                 "layers": [
                   {
-                    "id": "2ivcnz",
-                    "drawOrder": 1,
+                    "id": "g2p1se",
+                    "drawOrder": 1000,
+                    "visibleAtStart": false,
+                    "infobox": ""
+                  },
+                  {
+                    "id": "n2tbna",
+                    "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   },
                   {
                     "id": "5ms742",
+                    "drawOrder": 1,
+                    "visibleAtStart": false,
+                    "infobox": ""
+                  },
+                  {
+                    "id": "2ivcnz",
                     "drawOrder": 1,
                     "visibleAtStart": false,
                     "infobox": ""
@@ -1016,6 +1040,12 @@
                   {
                     "id": "bt8vb3",
                     "drawOrder": 1,
+                    "visibleAtStart": false,
+                    "infobox": ""
+                  },
+                  {
+                    "id": "pinbnr",
+                    "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   }
@@ -1052,6 +1082,12 @@
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
+                      },
+                      {
+                        "id": "js6d2v",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
                       }
                     ],
                     "groups": []
@@ -1071,12 +1107,6 @@
                         "infobox": ""
                       },
                       {
-                        "id": "j0a09q",
-                        "drawOrder": 1,
-                        "visibleAtStart": false,
-                        "infobox": ""
-                      },
-                      {
                         "id": "7m8n46",
                         "drawOrder": 1,
                         "visibleAtStart": false,
@@ -1085,6 +1115,18 @@
                       {
                         "id": "ilsyw9",
                         "drawOrder": 1,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "j0a09q",
+                        "drawOrder": 1,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "pj0qq9",
+                        "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
@@ -1128,6 +1170,12 @@
                   {
                     "id": "z84tj1",
                     "drawOrder": 1,
+                    "visibleAtStart": false,
+                    "infobox": ""
+                  },
+                  {
+                    "id": "3l2l2s",
+                    "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   },
@@ -1263,36 +1311,90 @@
                     "groups": []
                   },
                   {
-                    "id": "f0727d61-591f-016f-e962-18fe7b0a68fb",
+                    "id": "8a2b05c2-eb47-a616-0ddb-62f022cfe4f4",
                     "type": "group",
-                    "name": "Kulturpromenader",
+                    "name": "Motion & vandring",
                     "toggled": true,
                     "expanded": false,
                     "parent": "d6bb00b9-3efc-34a0-6ed9-d4b026ab7243",
                     "layers": [
                       {
-                        "id": "if2tzp",
+                        "id": "s0gppt",
                         "drawOrder": 1,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "6zvxuv",
-                        "drawOrder": 1,
+                        "id": "k68vnw",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "wdtyic",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "enitan",
+                        "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       }
                     ],
-                    "groups": []
+                    "groups": [
+                      {
+                        "id": "f0727d61-591f-016f-e962-18fe7b0a68fb",
+                        "type": "group",
+                        "name": "Kulturpromenader",
+                        "toggled": true,
+                        "expanded": false,
+                        "parent": "8a2b05c2-eb47-a616-0ddb-62f022cfe4f4",
+                        "layers": [
+                          {
+                            "id": "if2tzp",
+                            "drawOrder": 1,
+                            "visibleAtStart": false,
+                            "infobox": ""
+                          },
+                          {
+                            "id": "6zvxuv",
+                            "drawOrder": 1,
+                            "visibleAtStart": false,
+                            "infobox": ""
+                          }
+                        ],
+                        "groups": []
+                      }
+                    ]
                   },
                   {
                     "id": "724b164d-64d7-4a57-6920-069629c9c281",
                     "type": "group",
-                    "name": "Naturområden & naturvärden",
+                    "name": "Natur- & friluftsområden",
                     "toggled": true,
                     "expanded": false,
                     "parent": "d6bb00b9-3efc-34a0-6ed9-d4b026ab7243",
                     "layers": [
+                      {
+                        "id": "uq0vb9",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "f2mxba",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
+                      {
+                        "id": "hrqtgq",
+                        "drawOrder": 1000,
+                        "visibleAtStart": false,
+                        "infobox": ""
+                      },
                       {
                         "id": "7oug0u",
                         "drawOrder": 1,
@@ -1304,21 +1406,10 @@
                         "drawOrder": 1,
                         "visibleAtStart": false,
                         "infobox": ""
-                      }
-                    ],
-                    "groups": []
-                  },
-                  {
-                    "id": "8a2b05c2-eb47-a616-0ddb-62f022cfe4f4",
-                    "type": "group",
-                    "name": "Motion & vandring",
-                    "toggled": true,
-                    "expanded": false,
-                    "parent": "d6bb00b9-3efc-34a0-6ed9-d4b026ab7243",
-                    "layers": [
+                      },
                       {
-                        "id": "s0gppt",
-                        "drawOrder": 1,
+                        "id": "mpc6oj",
+                        "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       }

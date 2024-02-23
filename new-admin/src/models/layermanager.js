@@ -5,6 +5,18 @@ import $ from "jquery";
 import { prepareProxyUrl } from "../utils/ProxyHelper";
 import { hfetch } from "utils/FetchWrapper";
 
+const WMS_VERSION_1_3_0 = "1.3.0";
+const WMS_VERSION_1_1_1 = "1.1.1";
+const WMS_VERSION_1_1_0 = "1.1.0";
+const WMS_VERSION_1_0_0 = "1.0.0";
+
+const defaultVersions = [
+  WMS_VERSION_1_3_0,
+  WMS_VERSION_1_1_1,
+  WMS_VERSION_1_1_0,
+  WMS_VERSION_1_0_0
+];
+
 var manager = Model.extend({
   defaults: {
     layers: [],
@@ -89,23 +101,30 @@ var manager = Model.extend({
     $.ajax(prepareProxyUrl(url, this.get("config").url_proxy), {
       success: (data) => {
         var layers = [];
-        data.wmslayers.forEach((l) => {
-          l.type = "WMS";
-        });
-        data.wmtslayers.forEach((l) => {
-          l.type = "WMTS";
-        });
-        data.arcgislayers.forEach((l) => {
-          l.type = "ArcGIS";
-        });
-        data.vectorlayers.forEach((l) => {
-          l.type = "Vector";
-        });
-
-        layers = data.wmslayers
-          .concat(data.wmtslayers)
-          .concat(data.arcgislayers)
-          .concat(data.vectorlayers);
+        if (data && Array.isArray(data.wmslayers)) {
+          data.wmslayers.forEach((l) => {
+            l.type = "WMS";
+          });
+          layers = layers.concat(data.wmslayers);
+        }
+        if (data && Array.isArray(data.wmtslayers)) {
+          data.wmtslayers.forEach((l) => {
+            l.type = "WMTS";
+          });
+          layers = layers.concat(data.wmtslayers);
+        }
+        if (data && Array.isArray(data.arcgislayers)) {
+          data.arcgislayers.forEach((l) => {
+            l.type = "ArcGIS";
+          });
+          layers = layers.concat(data.arcgislayers);
+        }
+        if (data && Array.isArray(data.vectorlayers)) {
+          data.vectorlayers.forEach((l) => {
+            l.type = "Vector";
+          });
+          layers = layers.concat(data.vectorlayers);
+        }
 
         layers.sort((a, b) => {
           var d1 = parseInt(a.date, 10),
@@ -380,7 +399,7 @@ var manager = Model.extend({
     });
   },
 
-  getAllWMSCapabilities: function (url) {
+  getAllWMSCapabilities: function (url, versions = defaultVersions) {
     var promises = [];
 
     var xmlParser = new X2JS({
@@ -392,8 +411,6 @@ var manager = Model.extend({
         "WMT_MS_Capabilities.Capability.Layer.Layer.Style",
       ],
     });
-
-    var versions = ["1.3.0", "1.1.1", "1.1.0", "1.0.0"];
 
     versions.forEach((version) => {
       promises.push(
@@ -426,6 +443,10 @@ var manager = Model.extend({
           // WMS_Capabilities or WMT_MS_Capabilities
           // First key in JSON
           var capabilitiesKey = Object.keys(json)[0];
+          // A HTML document returned is an error but e.g. dev servers can return this on server found, erroneously with HTTP/200 OK
+          if (capabilitiesKey === "html") {
+            throw new Error("Server returns HTML instead of WMS GetCapabilities response");
+          }
 
           return json[capabilitiesKey];
         })
@@ -458,4 +479,4 @@ var manager = Model.extend({
   },
 });
 
-export default manager;
+export { manager as default, WMS_VERSION_1_0_0, WMS_VERSION_1_1_0, WMS_VERSION_1_1_1, WMS_VERSION_1_3_0 };
