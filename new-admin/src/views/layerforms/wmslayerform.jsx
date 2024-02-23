@@ -148,9 +148,11 @@ class WMSLayerForm extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.serverType !== this.state.serverType) {
-      this.setState({
+      let newState = {
         workspaceSelectorVisible: this.state.serverType === SERVERTYPE_GEOSERVER
-      });
+      };
+      newState.tiled = this.state.serverType === SERVERTYPE_GWC_STANDALONE ? true : defaultState.tiled;
+      this.setState(newState);
     }
   }
 
