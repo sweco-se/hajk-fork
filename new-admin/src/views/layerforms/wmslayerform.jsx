@@ -1100,8 +1100,12 @@ class WMSLayerForm extends Component {
         );
       })
       .catch((err) => {
-        if (this.props.parentView) {
-          this.props.parentView.setState({
+        this.setState({
+          load: false,
+          capabilitiesList: []
+        });
+        if (this.props.parent) {
+          this.props.parent.setState({
             alert: true,
             alertMessage: "Servern svarar inte. Försök med en annan URL.",
           });
@@ -1167,26 +1171,33 @@ class WMSLayerForm extends Component {
   }
 
   setProjections() {
-    let projections = null;
+    let projections;
+    const RS = this.state.version === WMS_VERSION_1_3_0 ? "CRS" : "SRS";
     const capabilities = this.state.capabilities;
     if (capabilities && capabilities.Capability && capabilities.Capability.Layer) {
-      const RS = this.state.version === WMS_VERSION_1_3_0 ? "CRS" : "SRS";
       // #1469: Projection metadata can be present on the parent or child Layer element of GetCapabilities
       // both are valid for e.g. OGC WMS v1.1.1 DTD.
       const layers = capabilities.Capability.Layer.Layer;
-      if (layers) {
-        // Child Layer reference system items can be either a string or an array of strings
-        projections = [...new Set(layers.flatMap(layer => [].concat(layer[RS])))];
-      } else {
+      if (capabilities.Capability.Layer[RS]) {
         projections = [].concat(capabilities.Capability.Layer[RS]);
+      } else if (layers) {
+        // Child Layer reference system items can be either a string or an array of strings
+        projections = [...new Set(layers.flatMap((layer) => {
+          if (layer[RS]) {
+            return [].concat(layer[RS]);
+          }
+        }))].filter(Boolean); // Filter out undefined elements, e.g. no CRS/SRS due to incorrectly configured WMS version
+        if (!projections.length) {
+          projections = null;
+        }
       }
     }
     
-    if (projections && Array.isArray(projections)) {
-      projections = projections.map(projection => projection.toUpperCase());
+    if (projections) {
+      projections = projections.map(projection => projection ? projection.toUpperCase() : null);
     }
 
-    return (projections && Array.isArray(projections)) ? projections.map((proj, i) => {
+    return projections ? projections.map((proj, i) => {
         if (supportedProjections.includes(proj)) {
           return <option key={i}>{proj}</option>;
         } else {
@@ -1470,28 +1481,41 @@ class WMSLayerForm extends Component {
   }
 
   getWorkspaces = async (url) => {
-    //
-    url = url.substring(0, url.lastIndexOf("/")) + "/rest/workspaces";
-    //
-    const res = await hfetch(url);
-    //
-    const json = await res.json();
-    //
-    //this.setState({ workspaceList: json.workspaces.workspace });
-    //
-    var sortedWorksapes = json.workspaces.workspace.sort(GetSortOrder("name")); //Pass the attribute to be sorted on
+    try {
+      if (url.endsWith("/")) {
+        url = url.slice(0, -1);
+      }
+      url = url.substring(0, url.lastIndexOf("/")) + "/rest/workspaces";
+      const res = await hfetch(url);
+      if (!res.ok) {
+        // Handle non-successful responses, e.g. HTTP/404 when REST API is not exposed
+        throw new Error('Failed to fetch workspaces: ' + res.status);
+      }
+      const json = await res.json();
+      var sortedWorkspaces = json.workspaces.workspace.sort(GetSortOrder("name")); //Pass the attribute to be sorted on
 
-    function GetSortOrder(prop) {
-      return function (a, b) {
-        if (a[prop] > b[prop]) {
-          return 1;
-        } else if (a[prop] < b[prop]) {
-          return -1;
-        }
-        return 0;
-      };
+      function GetSortOrder(prop) {
+        return function (a, b) {
+          if (a[prop] > b[prop]) {
+            return 1;
+          } else if (a[prop] < b[prop]) {
+            return -1;
+          }
+          return 0;
+        };
+      }
+      this.setState({ workspaceList: sortedWorkspaces });
+    } catch (error) {
+      if (this.props.parent) {
+        this.props.parent.setState({
+          alert: true,
+          alertMessage: "Workspace-listan kan inte hämtas från denna server, välj \"Alla\".",
+        });
+      } else {
+        console.warn("Workspace fetch from REST API failed.");
+      }
+      this.setState({ workspaceList: [] });
     }
-    this.setState({ workspaceList: sortedWorksapes });
   };
 
   updateDpiList(e, kv, key) {
