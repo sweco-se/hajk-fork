@@ -443,6 +443,10 @@ var manager = Model.extend({
           // WMS_Capabilities or WMT_MS_Capabilities
           // First key in JSON
           var capabilitiesKey = Object.keys(json)[0];
+          // A HTML document returned is an error but e.g. dev servers can return this on server found, erroneously with HTTP/200 OK
+          if (capabilitiesKey === "html") {
+            throw new Error("Server returns HTML instead of WMS GetCapabilities response");
+          }
 
           return json[capabilitiesKey];
         })
