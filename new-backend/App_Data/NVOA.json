@@ -1,0 +1,701 @@
+{
+  "version": "3.12.0-sweco",
+  "projections": [
+    {
+      "code": "EPSG:3006",
+      "definition": "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        181896.33,
+        6101648.07,
+        864416,
+        7689478.3
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3006",
+      "definition": "+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        181896.33,
+        6101648.07,
+        864416,
+        7689478.3
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3007",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        60436.5084,
+        6192389.565,
+        217643.4713,
+        6682784.4276
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3007",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=12 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        60436.5084,
+        6192389.565,
+        217643.4713,
+        6682784.4276
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3008",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=13.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        60857.4994,
+        6120098.8505,
+        223225.0217,
+        6906693.7888
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3008",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=13.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        60857.4994,
+        6120098.8505,
+        223225.0217,
+        6906693.7888
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3009",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        56294.0365,
+        6203542.5282,
+        218719.0581,
+        6835499.2391
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3009",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        56294.0365,
+        6203542.5282,
+        218719.0581,
+        6835499.2391
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3010",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=16.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        97213.6352,
+        6228930.1419,
+        225141.8681,
+        6916524.0785
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3010",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=16.5 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        97213.6352,
+        6228930.1419,
+        225141.8681,
+        6916524.0785
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3011",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        96664.5565,
+        6509617.2232,
+        220146.6914,
+        6727103.5879
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3011",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        96664.5565,
+        6509617.2232,
+        220146.6914,
+        6727103.5879
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3012",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=14.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        30462.5263,
+        6829647.9842,
+        216416.1584,
+        7154168.0208
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3012",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=14.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        30462.5263,
+        6829647.9842,
+        216416.1584,
+        7154168.0208
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3013",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        34056.6264,
+        6710433.2884,
+        218692.0214,
+        7224144.732
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3013",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ",
+      "extent": [
+        34056.6264,
+        6710433.2884,
+        218692.0214,
+        7224144.732
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3014",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=17.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -1420.28,
+        6888655.5779,
+        212669.1333,
+        7459585.3378
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3014",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=17.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -1420.28,
+        6888655.5779,
+        212669.1333,
+        7459585.3378
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3015",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        58479.4774,
+        6304213.2147,
+        241520.5226,
+        7276832.4419
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3015",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=18.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        58479.4774,
+        6304213.2147,
+        241520.5226,
+        7276832.4419
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3016",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=20.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -93218.3385,
+        7034909.8738,
+        261434.6246,
+        7676279.8691
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3016",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=20.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        -93218.3385,
+        7034909.8738,
+        261434.6246,
+        7676279.8691
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3017",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=21.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        67451.0699,
+        7211342.8483,
+        145349.5699,
+        7254837.254
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3017",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=21.75 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        67451.0699,
+        7211342.8483,
+        145349.5699,
+        7254837.254
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3018",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=23.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        38920.7048,
+        7267405.2323,
+        193050.246,
+        7597992.2419
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3018",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=23.25 +k=1 +x_0=150000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+      "extent": [
+        38920.7048,
+        7267405.2323,
+        193050.246,
+        7597992.2419
+      ],
+      "units": null
+    },
+    {
+      "code": "EPSG:3021",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0 +ellps=bessel +units=m +no_defs",
+      "extent": [
+        1392811.0743,
+        6208496.7665,
+        1570600.8906,
+        7546077.6984
+      ],
+      "units": null
+    },
+    {
+      "code": "http://www.opengis.net/gml/srs/epsg.xml#3021",
+      "definition": "+proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0 +ellps=bessel +units=m +no_defs",
+      "extent": [
+        1392811.0743,
+        6208496.7665,
+        1570600.8906,
+        7546077.6984
+      ],
+      "units": null
+    }
+  ],
+  "tools": [
+    {
+      "type": "layerswitcher",
+      "options": {
+        "groups": [
+          {
+            "id": "72208d83-26ed-0b71-ae54-5df440e86193",
+            "type": "group",
+            "name": "Avfallshantering",
+            "toggled": false,
+            "expanded": false,
+            "parent": "-1",
+            "layers": [
+              {
+                "id": "m13qrm",
+                "drawOrder": 0,
+                "visibleAtStart": false,
+                "infobox": ""
+              },
+              {
+                "id": "36ml5e",
+                "drawOrder": 0,
+                "visibleAtStart": false,
+                "infobox": ""
+              }
+            ],
+            "groups": []
+          }
+        ],
+        "baselayers": [
+          {
+            "id": "bkx8hq",
+            "visibleAtStart": false,
+            "drawOrder": 0,
+            "infobox": ""
+          },
+          {
+            "id": "n2sa92",
+            "visibleAtStart": false,
+            "drawOrder": 0,
+            "infobox": ""
+          },
+          {
+            "id": "l6kqjh",
+            "visibleAtStart": true,
+            "drawOrder": 0,
+            "infobox": ""
+          }
+        ],
+        "active": true,
+        "visibleAtStart": true,
+        "visibleAtStartMobile": false,
+        "backgroundSwitcherBlack": false,
+        "backgroundSwitcherWhite": false,
+        "enableOSM": false,
+        "showBreadcrumbs": false,
+        "showActiveLayersView": false,
+        "enableTransparencySlider": true,
+        "instruction": "",
+        "dropdownThemeMaps": true,
+        "themeMapHeaderCaption": "Nackakartan",
+        "visibleForGroups": [],
+        "target": "toolbar",
+        "position": "left",
+        "width": 320,
+        "height": "",
+        "title": "Kartinnehåll",
+        "description": "Välj vad du vill visa i kartan."
+      },
+      "index": 1
+    },
+    {
+      "type": "infoclick",
+      "index": 0,
+      "options": {
+        "title": "Information",
+        "position": "right",
+        "linksColor": "primary",
+        "linksUnderline": "always",
+        "width": 400,
+        "height": "dynamic",
+        "anchor": [
+          0.5,
+          1
+        ],
+        "scale": 0.15,
+        "src": "marker.png",
+        "strokeColor": {
+          "r": 200,
+          "b": 0,
+          "g": 0,
+          "a": 0.7
+        },
+        "strokeWidth": 4,
+        "fillColor": {
+          "r": 255,
+          "b": 0,
+          "g": 0,
+          "a": 0.1
+        },
+        "allowDangerousHtml": true,
+        "useNewInfoclick": false,
+        "visibleForGroups": []
+      }
+    },
+    {
+      "type": "search",
+      "index": 0,
+      "options": {
+        "layers": [
+          {
+            "id": "ef66690e-15b3-fcd0-e944-6fd1df4cc606",
+            "visibleForGroups": []
+          },
+          {
+            "id": "1f699526-c5fd-e5c6-d81d-799b97ff9a04",
+            "visibleForGroups": []
+          },
+          {
+            "id": "2731de46-bf36-cdae-e294-1ac3650e3ebb",
+            "visibleForGroups": []
+          },
+          {
+            "id": "6f81c393-c48a-601b-33fe-0f46b6830a5e",
+            "visibleForGroups": []
+          },
+          {
+            "id": "09aff48f-517c-3849-cd9f-79b0ac0d5dae",
+            "visibleForGroups": []
+          },
+          {
+            "id": "dd462375-677e-8bc1-577c-51fb1b67d661",
+            "visibleForGroups": []
+          },
+          {
+            "id": "2e0a62fa-03e8-866b-3cb6-4cf71fb33c21",
+            "visibleForGroups": []
+          }
+        ],
+        "selectedSources": [],
+        "visibleForGroups": [],
+        "maxResultsPerDataset": 100,
+        "anchor": [
+          "",
+          ""
+        ],
+        "scale": 0.35,
+        "markerImg": "/marker.png",
+        "delayBeforeAutoSearch": 300,
+        "disableAutocomplete": false,
+        "disableSearchCombinations": false,
+        "searchBarPlaceholder": "Adress, fastighet, platser, skola/förskola",
+        "autocompleteWildcardAtStart": false,
+        "enablePolygonSearch": true,
+        "showCorrespondingWMSLayers": false,
+        "enableRadiusSearch": true,
+        "enableSelectSearch": true,
+        "enableExtentSearch": true,
+        "enableResultsFiltering": true,
+        "enableResultsSorting": true,
+        "enableResultsSelectionClearing": true,
+        "enableResultsDownloading": true,
+        "enableFeaturePreview": true,
+        "enableLabelOnHighlight": true,
+        "enableSelectedFeaturesCollection": true,
+        "showResultFeaturesInMap": true,
+        "searchInVisibleLayers": false,
+        "wildcardAtStart": false,
+        "wildcardAtEnd": true,
+        "matchCase": false,
+        "activeSpatialFilter": "intersects",
+        "showResultsLimitReachedWarning": true,
+        "enableFeatureToggler": true,
+        "fitToResultMaxZoom": -1,
+        "drawFillColor": "rgba(255,255,255,0.07)",
+        "drawStrokeColor": "rgba(74,74,74,0.5)",
+        "displayFillColor": "rgba(74,144,226,0.15)",
+        "displayStrokeColor": "rgba(74,144,226,0.4)",
+        "selectionTextStroke": "rgba(255,255,255,1)",
+        "selectionTextFill": "rgba(63,122,190,1)",
+        "selectionFillColor": "rgba(74,144,226,0.7)",
+        "selectionStrokeColor": "rgba(74,144,226,0.8)",
+        "highlightTextStroke": "rgba(255,255,255,1)",
+        "highlightTextFill": "rgba(214,143,28,1)",
+        "highlightFillColor": "rgba(245,166,35,0.7)",
+        "highlightStrokeColor": "rgba(245,166,35,0.8)"
+      }
+    },
+    {
+      "type": "location",
+      "index": 3,
+      "options": {
+        "target": "control",
+        "position": "right",
+        "visibleAtStart": false,
+        "visibleForGroups": []
+      }
+    },
+    {
+      "type": "print",
+      "index": 5,
+      "options": {
+        "target": "toolbar",
+        "copyright": "",
+        "disclaimer": "",
+        "date": "Utskriftsdatum: {date}",
+        "scales": "200, 400, 1000, 2000, 5000, 10000, 25000, 50000, 100000, 200000",
+        "scaleMeters": "10, 10, 20, 40, 60, 100, 100, 300, 600, 2000, 4000, 8000, 10000, 160000",
+        "logo": "/nacka.svg",
+        "logoMaxWidth": 40,
+        "northArrowMaxWidth": 10,
+        "dpis": "72, 150, 300",
+        "paperFormats": "A2, A3, A4",
+        "northArrow": "/north_arrow.png",
+        "useMargin": false,
+        "useTextIconsInMargin": false,
+        "mapTextColor": "#000000",
+        "instruction": "",
+        "visibleAtStart": false,
+        "visibleForGroups": [],
+        "includeLogo": true,
+        "logoPlacement": "topRight",
+        "includeScaleBar": true,
+        "scaleBarPlacement": "bottomLeft",
+        "includeNorthArrow": true,
+        "northArrowPlacement": "topRight",
+        "includeImageBorder": false,
+        "useCustomTileLoaders": true,
+        "maxTileSize": 4096
+      }
+    },
+    {
+      "type": "measure",
+      "index": 7,
+      "options": {
+        "target": "toolbar",
+        "visibleAtStart": false,
+        "instruction": "",
+        "icons": ""
+      }
+    },
+    {
+      "type": "anchor",
+      "index": 8,
+      "options": {
+        "target": "toolbar",
+        "instruction": "",
+        "visibleAtStart": false,
+        "allowCreatingCleanUrls": true,
+        "visibleForGroups": []
+      }
+    },
+    {
+      "type": "coordinates",
+      "index": 9,
+      "options": {
+        "target": 0,
+        "position": "right",
+        "instruction": "",
+        "transformations": [
+          {
+            "code": "EPSG:3011",
+            "precision": "",
+            "default": false,
+            "hint": "Sweref 99 18 00",
+            "title": "Sweref 99 18 00",
+            "xtitle": "E",
+            "ytitle": "N",
+            "inverseAxis": false
+          },
+          {
+            "code": "EPSG:3006",
+            "precision": "",
+            "default": false,
+            "hint": "Sweref 99 TM",
+            "title": "Sweref 99 TM",
+            "xtitle": "E",
+            "ytitle": "N",
+            "inverseAxis": false
+          },
+          {
+            "code": "EPSG:4326",
+            "precision": "",
+            "default": false,
+            "hint": "WGS 84",
+            "title": "WGS 84",
+            "xtitle": "E",
+            "ytitle": "N",
+            "inverseAxis": false
+          }
+        ],
+        "visibleAtStart": false,
+        "thousandSeparator": false,
+        "showFieldsOnStart": false,
+        "visibleForGroups": []
+      }
+    },
+    {
+      "type": "sketch",
+      "index": 6,
+      "options": {
+        "target": "toolbar",
+        "position": "left",
+        "instruction": "",
+        "visibleAtStart": false,
+        "visibleForGroups": []
+      }
+    }
+  ],
+  "map": {
+    "target": "map",
+    "center": [
+      162498,
+      6576604
+    ],
+    "title": "Nacka Vatten och Avfall - Karta",
+    "projection": "EPSG:3011",
+    "zoom": 0,
+    "maxZoom": 10,
+    "minZoom": 0,
+    "resolutions": [
+      32,
+      16,
+      8,
+      4,
+      2,
+      1,
+      0.5,
+      0.25,
+      0.125,
+      0.0625,
+      0.03125
+    ],
+    "origin": [
+      0,
+      0
+    ],
+    "extent": [
+      135005.5,
+      6556474.2,
+      192274.6,
+      6596836.4
+    ],
+    "constrainOnlyCenter": true,
+    "constrainResolution": true,
+    "geoserverLegendOptions": "",
+    "mapselector": false,
+    "mapcleaner": false,
+    "showUserAvatar": false,
+    "drawerVisible": false,
+    "drawerPermanent": false,
+    "drawerVisibleMobile": false,
+    "activeDrawerOnStart": "plugins",
+    "showThemeToggler": false,
+    "defaultCookieNoticeMessage": "På Nacka.se använder vi kakor för att webbplatsen ska fungera på ett bra sätt för dig. Genom att fortsätta ditt besök godkänner du att vi använder kakor. Du kan blockera kakor i webbläsaren, men då visas detta meddelande igen.",
+    "defaultCookieNoticeUrl": "https://www.nacka.se/om-webbplatsen/cookies/",
+    "crossOrigin": "anonymous",
+    "showRecentlyUsedPlugins": false,
+    "extraPrintResolutions": [],
+    "constrainResolutionMobile": false,
+    "enableDownloadLink": false,
+    "enableAppStateInHash": false,
+    "altShiftDragRotate": true,
+    "onFocusOnly": false,
+    "doubleClickZoom": true,
+    "keyboard": false,
+    "mouseWheelZoom": true,
+    "shiftDragZoom": true,
+    "dragPan": true,
+    "pinchRotate": false,
+    "pinchZoom": true,
+    "zoomDelta": 1,
+    "zoomDuration": null,
+    "mapresetter": true,
+    "introductionEnabled": false,
+    "introductionShowControlButton": false,
+    "introductionSteps": [],
+    "showCookieNotice": true,
+    "cookieUse3dPart": false,
+    "colors": {
+      "primaryColor": "#0077b7",
+      "secondaryColor": "#c65300",
+      "preferredColorScheme": "light"
+    },
+    "logo": "/nacka.svg",
+    "logoLight": "nacka.svg",
+    "logoDark": "nacka.svg"
+  }
+}

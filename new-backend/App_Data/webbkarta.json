@@ -341,89 +341,6 @@
       "index": 1
     },
     {
-      "type": "search",
-      "options": {
-        "layers": [
-          {
-            "id": "1f699526-c5fd-e5c6-d81d-799b97ff9a04",
-            "visibleForGroups": []
-          },
-          {
-            "id": "ef66690e-15b3-fcd0-e944-6fd1df4cc606",
-            "visibleForGroups": []
-          },
-          {
-            "id": "2731de46-bf36-cdae-e294-1ac3650e3ebb",
-            "visibleForGroups": []
-          },
-          {
-            "id": "6f81c393-c48a-601b-33fe-0f46b6830a5e",
-            "visibleForGroups": []
-          },
-          {
-            "id": "09aff48f-517c-3849-cd9f-79b0ac0d5dae",
-            "visibleForGroups": []
-          },
-          {
-            "id": "2e0a62fa-03e8-866b-3cb6-4cf71fb33c21",
-            "visibleForGroups": []
-          },
-          {
-            "id": "dd462375-677e-8bc1-577c-51fb1b67d661",
-            "visibleForGroups": []
-          }
-        ],
-        "selectedSources": [],
-        "visibleForGroups": [],
-        "maxResultsPerDataset": 10,
-        "anchor": [
-          "",
-          ""
-        ],
-        "scale": 0.35,
-        "markerImg": "/marker.png",
-        "delayBeforeAutoSearch": 300,
-        "disableAutocomplete": false,
-        "disableSearchCombinations": false,
-        "searchBarPlaceholder": "Adress, fastighet, platser, skola/förskola",
-        "autocompleteWildcardAtStart": false,
-        "enablePolygonSearch": true,
-        "showCorrespondingWMSLayers": false,
-        "enableRadiusSearch": true,
-        "enableSelectSearch": true,
-        "enableExtentSearch": true,
-        "enableResultsFiltering": true,
-        "enableResultsSorting": true,
-        "enableResultsSelectionClearing": true,
-        "enableResultsDownloading": false,
-        "enableFeaturePreview": true,
-        "enableLabelOnHighlight": true,
-        "enableSelectedFeaturesCollection": true,
-        "showResultFeaturesInMap": true,
-        "searchInVisibleLayers": false,
-        "wildcardAtStart": false,
-        "wildcardAtEnd": true,
-        "matchCase": false,
-        "activeSpatialFilter": "intersects",
-        "showResultsLimitReachedWarning": true,
-        "enableFeatureToggler": true,
-        "fitToResultMaxZoom": -1,
-        "drawFillColor": "rgba(246,140,6,0.07)",
-        "drawStrokeColor": "rgba(249,131,2,0.5)",
-        "displayFillColor": "rgba(230,114,3,0.15)",
-        "displayStrokeColor": "rgba(247,123,4,0.4)",
-        "selectionTextStroke": "rgba(197,130,16,1)",
-        "selectionTextFill": "rgba(253,116,3,1)",
-        "selectionFillColor": "rgba(253,143,4,1)",
-        "selectionStrokeColor": "rgba(253,116,3,0.8)",
-        "highlightTextStroke": "rgba(255,255,255,1)",
-        "highlightTextFill": "rgba(198,83,0,1)",
-        "highlightFillColor": "rgba(198,83,0,0.7)",
-        "highlightStrokeColor": "rgba(198,83,0,0.8)"
-      },
-      "index": 2
-    },
-    {
       "type": "location",
       "options": {
         "target": "control",
@@ -708,12 +625,6 @@
                         "infobox": ""
                       },
                       {
-                        "id": "ko9ior",
-                        "drawOrder": 0,
-                        "visibleAtStart": false,
-                        "infobox": ""
-                      },
-                      {
                         "id": "8ju287",
                         "drawOrder": 0,
                         "visibleAtStart": false,
@@ -735,7 +646,7 @@
             "parent": "-1",
             "layers": [
               {
-                "id": "5ymuv7",
+                "id": "msrn6n",
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
@@ -765,7 +676,7 @@
                 "infobox": ""
               },
               {
-                "id": "f8dchg",
+                "id": "g9qj31",
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
@@ -918,8 +829,8 @@
                         "infobox": ""
                       },
                       {
-                        "id": "9oldwa",
-                        "drawOrder": 1000,
+                        "id": "fofl1x",
+                        "drawOrder": 1,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
@@ -961,12 +872,6 @@
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
-              },
-              {
-                "id": "qmxio6",
-                "drawOrder": 1000,
-                "visibleAtStart": false,
-                "infobox": ""
               }
             ],
             "groups": []
@@ -986,14 +891,14 @@
                 "infobox": ""
               },
               {
-                "id": "grcl02",
+                "id": "eeaut9",
                 "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
               },
               {
-                "id": "bnwa3e",
-                "drawOrder": 1,
+                "id": "dvoety",
+                "drawOrder": 1000,
                 "visibleAtStart": false,
                 "infobox": ""
               }
@@ -1008,25 +913,31 @@
                 "parent": "08406840-e615-9996-88df-006a6f6761dc",
                 "layers": [
                   {
-                    "id": "g2p1se",
+                    "id": "pwr0p9",
                     "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   },
                   {
-                    "id": "n2tbna",
+                    "id": "bjvq63",
                     "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   },
                   {
-                    "id": "5ms742",
-                    "drawOrder": 1,
+                    "id": "2joxrc",
+                    "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
                   },
                   {
                     "id": "2ivcnz",
+                    "drawOrder": 1,
+                    "visibleAtStart": false,
+                    "infobox": ""
+                  },
+                  {
+                    "id": "5ms742",
                     "drawOrder": 1,
                     "visibleAtStart": false,
                     "infobox": ""
@@ -1044,7 +955,7 @@
                     "infobox": ""
                   },
                   {
-                    "id": "pinbnr",
+                    "id": "ujtc0o",
                     "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
@@ -1084,7 +995,7 @@
                         "infobox": ""
                       },
                       {
-                        "id": "js6d2v",
+                        "id": "2wef2k",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1101,13 +1012,13 @@
                     "parent": "209e0c04-79ab-0d75-45b2-7825a92f9669",
                     "layers": [
                       {
-                        "id": "ophrmc",
+                        "id": "7m8n46",
                         "drawOrder": 1,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "7m8n46",
+                        "id": "ophrmc",
                         "drawOrder": 1,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1125,7 +1036,7 @@
                         "infobox": ""
                       },
                       {
-                        "id": "pj0qq9",
+                        "id": "mcb79o",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1174,7 +1085,7 @@
                     "infobox": ""
                   },
                   {
-                    "id": "3l2l2s",
+                    "id": "wenq1d",
                     "drawOrder": 1000,
                     "visibleAtStart": false,
                     "infobox": ""
@@ -1325,19 +1236,19 @@
                         "infobox": ""
                       },
                       {
-                        "id": "k68vnw",
+                        "id": "cqy0iw",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "wdtyic",
+                        "id": "39sqnq",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "enitan",
+                        "id": "8xa94c",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1378,19 +1289,19 @@
                     "parent": "d6bb00b9-3efc-34a0-6ed9-d4b026ab7243",
                     "layers": [
                       {
-                        "id": "uq0vb9",
+                        "id": "sw9e43",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "f2mxba",
+                        "id": "z54wyz",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
                       },
                       {
-                        "id": "hrqtgq",
+                        "id": "dn0r0t",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1408,7 +1319,7 @@
                         "infobox": ""
                       },
                       {
-                        "id": "mpc6oj",
+                        "id": "wbc95y",
                         "drawOrder": 1000,
                         "visibleAtStart": false,
                         "infobox": ""
@@ -1590,6 +1501,93 @@
         "visibleForGroups": []
       },
       "index": 9
+    },
+    {
+      "type": "search",
+      "index": 0,
+      "options": {
+        "layers": [
+          {
+            "id": "ef66690e-15b3-fcd0-e944-6fd1df4cc606",
+            "visibleForGroups": []
+          },
+          {
+            "id": "1f699526-c5fd-e5c6-d81d-799b97ff9a04",
+            "visibleForGroups": []
+          },
+          {
+            "id": "2731de46-bf36-cdae-e294-1ac3650e3ebb",
+            "visibleForGroups": []
+          },
+          {
+            "id": "6f81c393-c48a-601b-33fe-0f46b6830a5e",
+            "visibleForGroups": []
+          },
+          {
+            "id": "09aff48f-517c-3849-cd9f-79b0ac0d5dae",
+            "visibleForGroups": []
+          },
+          {
+            "id": "dd462375-677e-8bc1-577c-51fb1b67d661",
+            "visibleForGroups": []
+          },
+          {
+            "id": "2e0a62fa-03e8-866b-3cb6-4cf71fb33c21",
+            "visibleForGroups": []
+          },
+          {
+            "id": "d9e81eaa-e56a-b65e-de24-a870d69aa518",
+            "visibleForGroups": []
+          }
+        ],
+        "selectedSources": [],
+        "visibleForGroups": [],
+        "maxResultsPerDataset": 100,
+        "anchor": [
+          "",
+          ""
+        ],
+        "scale": 0.35,
+        "markerImg": "/marker.png",
+        "delayBeforeAutoSearch": 300,
+        "disableAutocomplete": false,
+        "disableSearchCombinations": false,
+        "searchBarPlaceholder": "Adress, fastighet, platser, skola/förskola",
+        "autocompleteWildcardAtStart": false,
+        "enablePolygonSearch": true,
+        "showCorrespondingWMSLayers": false,
+        "enableRadiusSearch": true,
+        "enableSelectSearch": true,
+        "enableExtentSearch": true,
+        "enableResultsFiltering": true,
+        "enableResultsSorting": true,
+        "enableResultsSelectionClearing": true,
+        "enableResultsDownloading": true,
+        "enableFeaturePreview": true,
+        "enableLabelOnHighlight": true,
+        "enableSelectedFeaturesCollection": true,
+        "showResultFeaturesInMap": true,
+        "searchInVisibleLayers": false,
+        "wildcardAtStart": false,
+        "wildcardAtEnd": true,
+        "matchCase": false,
+        "activeSpatialFilter": "intersects",
+        "showResultsLimitReachedWarning": true,
+        "enableFeatureToggler": true,
+        "fitToResultMaxZoom": -1,
+        "drawFillColor": "rgba(255,255,255,0.07)",
+        "drawStrokeColor": "rgba(74,74,74,0.5)",
+        "displayFillColor": "rgba(74,144,226,0.15)",
+        "displayStrokeColor": "rgba(74,144,226,0.4)",
+        "selectionTextStroke": "rgba(255,255,255,1)",
+        "selectionTextFill": "rgba(63,122,190,1)",
+        "selectionFillColor": "rgba(74,144,226,0.7)",
+        "selectionStrokeColor": "rgba(74,144,226,0.8)",
+        "highlightTextStroke": "rgba(255,255,255,1)",
+        "highlightTextFill": "rgba(214,143,28,1)",
+        "highlightFillColor": "rgba(245,166,35,0.7)",
+        "highlightStrokeColor": "rgba(245,166,35,0.8)"
+      }
     }
   ],
   "map": {
