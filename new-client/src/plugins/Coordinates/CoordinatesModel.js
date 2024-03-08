@@ -100,7 +100,7 @@ class CoordinatesModel {
     const styleMarker = new Style({
       image: new Icon({
         anchor: [0.5, 1],
-        scale: 0.15,
+        scale: 0.75,
         src: "marker.png",
       }),
     });
