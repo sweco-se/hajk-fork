@@ -1,13 +1,13 @@
 {
-  "mapserviceBase": "http://localhost:3002/api/v1",
-  "experimentalNewApi": false,
+  "mapserviceBase": "http://localhost:3002/api/v2",
+  "experimentalNewApi": true,
   "proxy": "",
   "searchProxy": "",
   "defaultMap": "skred_v1",
   "showExperimentalLanguageSwitcher": false,
-  "lang": "en",
-  "noLayerSwitcherMessage": "This map has no layer switcher, which indicates that you are not allowed to use this map!",
-  "networkErrorMessage": "Nätverksfel. Försök att ladda om sidan genom att trycka på F5.",
-  "parseErrorMessage": "Konfigurationsfel. Försök att ladda om sidan genom att trycka på F5.",
+  "lang": "sv",
+  "noLayerSwitcherMessage": "Du är inte behörig att använda denna karta. Sök mer information via vår hemsida: https://www.sgi.se/",
+  "networkErrorMessage": "Kartan kan inte öppnas. Nätverksfel - kontrollera ditt nätverk, vänta någon minut och försök sedan ladda om sidan. Kontakta oss på geodata@sgi.se om problemet kvarstår.",
+  "parseErrorMessage": "Kartan kan inte öppnas. Konfigurationsfel - vänta någon minut och försök sedan ladda om sidan. Kontakta oss på geodata@sgi.se om problemet kvarstår.",
   "announcements": []
 }
