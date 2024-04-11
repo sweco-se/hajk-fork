@@ -1,20 +1,8 @@
 {
-  "mapserviceBase": "",
+  "mapserviceBase": "http://localhost:3002/api/v2",
   "defaultMap": "map_1",
-  "loadErrorTitle": "Ett fel har inträffat",
-  "loadErrorMessage": "Fel när applikationen skulle läsas in. Du kan försöka att återställa applikationen genom att trycka på knappen nedan. Om felet kvarstår kan du kontakta systemansvarig.",
+  "loadErrorTitle": "Kartan kan inte öppnas",
+  "loadErrorMessage": "Fel när kartan skulle läsas in. Kontrollera ditt nätverk och försök igen via knappen nedan. Om felet kvarstår, kontakta geodata@sgi.se",
   "loadErrorReloadButtonText": "Återställ applikationen",
-  "announcements": [
-    {
-      "id": 1,
-      "active": true,
-      "text": "Hi, this is **Hajk**! 😃 \n\nWe hope you enjoy it. 🚀💯",
-      "showOnlyOnce": false,
-      "maps": ["map_1", "simpleMapConfig"],
-      "timeout": 5000,
-      "startTime": "2020-06-29",
-      "stopTime": "2099-12-31",
-      "type": "info"
-    }
-  ]
+  "announcements": []
 }

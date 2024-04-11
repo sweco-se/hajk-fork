@@ -11,15 +11,11 @@
     "url_arcgislayer_settings": "http://localhost:3002/api/v2/settings/arcgislayer",
     "url_vectorlayer_settings": "http://localhost:3002/api/v2/settings/vectorlayer",
     "default_server_type": "geoserver",
-    "url_default_server": "https://geoservertest.halmstad.se/geoserver/wms",
+    "url_default_server": "https://mapsext.sgi.se/geoserver/wms",
     "owner_options": [
       {
-        "value": "SBK",
-        "title": "SBK"
-      },
-      {
-        "value": "Lantmäterienheten",
-        "title": "Lantmäterienheten"
+        "value": "GIS",
+        "title": "GIS"
       }
     ]
   },
@@ -27,13 +23,13 @@
     "url_proxy": "",
     "url_layers": "http://localhost:3002/api/v2/mapconfig/layers",
     "url_layer_settings": "http://localhost:3002/api/v2/settings/wfslayer",
-    "url_default_server": "https://giscloud.se/geoserver/wfs"
+    "url_default_server": "https://mapsext.sgi.se/geoserver/wfs"
   },
   "edit": {
     "url_proxy": "",
     "url_layers": "http://localhost:3002/api/v2/mapconfig/layers",
     "url_layer_settings": "http://localhost:3002/api/v2/settings/wfstlayer",
-    "url_default_server": "https://giscloud.se/geoserver/wfs",
+    "url_default_server": "https://mapsext.sgi.se/geoserver/wfs",
     "projections": [
       "EPSG:3006",
       "EPSG:3007",
@@ -124,10 +120,6 @@
     {
       "name": "mapsettings",
       "title": "Kartor"
-    },
-    {
-      "name": "informative",
-      "title": "Dokumenthanterare"
     },
     {
       "name": "documenthandler",
