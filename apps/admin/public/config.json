@@ -42,7 +42,7 @@
     "url_tool_settings": "/hajk-api/v2/settings/toolsettings",
     "url_folder_list": "/hajk-api/v2/informative/folderlist",
     "url_document_list": "/hajk-api/v2/informative/list",
-    "url_client_ui": "/",
+    "url_client_ui": "/hajk",
     "authentication_active": false,
     "use_document_folders": true
   },
