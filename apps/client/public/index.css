@@ -1083,6 +1083,7 @@ legend.MuiFormLabel-root {
 div.hajk-layerswitcher-layer-toggle {
   width: 40px;
   height: 40px;
+  margin-right: 0;
   display: flex;
   justify-content: center;
 }
