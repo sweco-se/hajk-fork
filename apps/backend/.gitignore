@@ -4,3 +4,13 @@ logs
 .DS_Store
 .vscode
 .env
+# SGI config:
+App_Data/borrhal_gotaalv_v1.json
+App_Data/ksi_erosion_v1.json
+App_Data/kustdataportal_v1.json
+App_Data/kvicklera_v1.json
+App_Data/nks_v1.json
+App_Data/rse_v1.json
+App_Data/show_guomr_v1.json
+App_Data/skred_v1.json
+App_Data/skredriskkarteringar_v1.json
