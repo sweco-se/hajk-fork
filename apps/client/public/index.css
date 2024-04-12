@@ -87,7 +87,6 @@ body {
   position: absolute;
 }
 
-
 hr {
   border: 0;
   border-bottom: 1px solid #d2d3b4;
@@ -143,6 +142,25 @@ h6 {
 
 .introjs-tooltip {
   min-width: 280px !important;
+}
+
+/* Config error */
+div#root
+  > .MuiBox-root
+  > .MuiButtonBase-root.MuiButton-root.MuiButton-contained {
+  background-color: #3c5a44;
+}
+.MuiAlert-standardError {
+  background-color: #89acaa !important;
+}
+.MuiAlert-icon {
+  color: #000 !important;
+}
+.MuiAlert-message,
+.MuiAlert-message
+  > MuiTypography-root
+{
+  color: #000 !important;
 }
 
 /* SGI logotype */
