@@ -34,6 +34,7 @@
     "url_base": "/hajk-api/v2",
     "url_map": "/hajk-api/v2/mapconfig",
     "url_map_create": "/hajk-api/v2/mapconfig",
+    "url_map_duplicate": "/hajk-api/v2/mapconfig/duplicate",
     "url_map_delete": "/hajk-api/v2/mapconfig",
     "url_map_list": "/hajk-api/v2/mapconfig/list",
     "url_layers": "/hajk-api/v2/mapconfig/layers",
