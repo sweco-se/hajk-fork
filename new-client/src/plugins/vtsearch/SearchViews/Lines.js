@@ -162,17 +162,7 @@ class Lines extends React.PureComponent {
       transportCompany,
     } = this.state;
 
-    this.matomoTracker.push([
-      "Search Lines",
-      [
-        publicLineName,
-        internalLineNumber,
-        municipality,
-        trafficTransport,
-        throughStopArea,
-        transportCompany,
-      ],
-    ]);
+    this.trackSearchWithMatomo();
 
     let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
@@ -193,6 +183,10 @@ class Lines extends React.PureComponent {
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
+  };
+
+  trackSearchWithMatomo = () => {
+    window._paq.push(["trackEvent", "Västtrafik", "Kartsidan", "Search Lines"]);
   };
 
   handlePolygonClick = () => {
