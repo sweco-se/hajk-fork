@@ -1,5 +1,6 @@
 export default class MatomoScript {
-  static generateScript() {
+  static generateScript(trackerId) {
+    debugger;
     const matomoScriptTag = document.createElement("script");
     matomoScriptTag.text =
       "var _paq = window._paq = window._paq || []; " +
@@ -10,7 +11,9 @@ export default class MatomoScript {
       "(function() { " +
       ' var u="https://piwik.vgregion.se/"; ' +
       '_paq.push(["setTrackerUrl", u+"matomo.php"]); ' +
-      '_paq.push(["setSiteId", "262"]); ' +
+      '_paq.push(["setSiteId", "' +
+      trackerId +
+      ' "]); ' +
       'var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; ' +
       'g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s); ' +
       "})();";

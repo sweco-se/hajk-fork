@@ -112,12 +112,7 @@ class VTSearch extends React.PureComponent {
       model: this.searchModel,
     });
 
-    // Should be able to use this instead of a script tag if wanted/needed.
-    // this.matomoTracker = new MatomoTracker({
-    //   urlBase: "https://piwik.vgregion.se/", //trackerUrl,
-    //   siteId: 262, //siteId,
-    //   // .. more configuration settings
-    // });
+    this.matomoSettings = props.options.matomo;
 
     this.bindSubscriptions();
   }
@@ -203,7 +198,9 @@ class VTSearch extends React.PureComponent {
    * Add Matomo as a script tag instead of a MatomoTracker object.
    */
   addMatomo = () => {
-    this.matomoTracker = MatomoScript.generateScript();
+    this.matomoTracker = MatomoScript.generateScript(
+      this.matomoSettings.trackerId
+    );
   };
 
   renderSearchmodule = () => {
