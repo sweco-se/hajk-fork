@@ -21,6 +21,7 @@ import Select from "@mui/material/Select";
 import SearchResultListContainer from "./SearchResultList/SearchResultListContainer";
 import ReactDOM from "react-dom";
 import MapViewModel from "./MapViewModel";
+import MatomoScript from "./MatomoScript";
 
 import BaseWindowPlugin from "../BaseWindowPlugin";
 import SearchIcon from "@mui/icons-material/Search";
@@ -110,6 +111,9 @@ class VTSearch extends React.PureComponent {
       globalObserver: this.globalObserver,
       model: this.searchModel,
     });
+
+    this.matomoSettings = props.options.matomo;
+
     this.bindSubscriptions();
   }
 
@@ -186,6 +190,17 @@ class VTSearch extends React.PureComponent {
         appLoaded: true,
       });
     });
+
+    this.addMatomo();
+  };
+
+  /**
+   * Add Matomo as a script tag instead of a MatomoTracker object.
+   */
+  addMatomo = () => {
+    this.matomoTracker = MatomoScript.generateScript(
+      this.matomoSettings.trackerId
+    );
   };
 
   renderSearchmodule = () => {
@@ -216,6 +231,7 @@ class VTSearch extends React.PureComponent {
           <Lines
             model={this.searchModel}
             app={app}
+            matomoTracker={this.matomoTracker}
             localObserver={this.localObserver}
           ></Lines>
         );

@@ -77,6 +77,7 @@ class Lines extends React.PureComponent {
     // They are shown here for demonstration purposes only.
     super(props);
     this.model = this.props.model;
+    this.matomoTracker = this.props.matomoTracker;
     this.localObserver = this.props.localObserver;
     this.globalObserver = this.props.app.globalObserver;
     this.bindSubscriptions();
@@ -161,6 +162,8 @@ class Lines extends React.PureComponent {
       transportCompany,
     } = this.state;
 
+    this.trackSearchWithMatomo();
+
     let validationErrorMessage = this.#validateSearchForm();
     if (validationErrorMessage) {
       this.setState({
@@ -180,6 +183,10 @@ class Lines extends React.PureComponent {
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
+  };
+
+  trackSearchWithMatomo = () => {
+    window._paq.push(["trackEvent", "Västtrafik", "Kartsidan", "Search Lines"]);
   };
 
   handlePolygonClick = () => {
