@@ -51,6 +51,7 @@
     "Search",
     "Sketch",
     "StreetView",
-    "TimeSlider"
+    "TimeSlider",
+    "vtsearch"
   ]
 }
