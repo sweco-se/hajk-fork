@@ -1,12 +1,12 @@
 import React from "react";
 import PropTypes from "prop-types";
+
 import NormalIcon from "@mui/icons-material/FlipToFront";
+
 import CloseIcon from "@mui/icons-material/Close";
-import { styled } from "@mui/material/styles";
+import withStyles from "@mui/styles/withStyles";
 import IconButton from "@mui/material/IconButton";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import { Tooltip } from "@mui/material";
 
 /**
  * @summary Window size handling
@@ -16,15 +16,17 @@ import { Tooltip } from "@mui/material";
  * @extends {React.PureComponent}
  */
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
-  color: theme.palette.common.white,
-  padding: 0,
-}));
-
-const StyledExpandMoreIconTransformed = styled(ExpandMoreIcon)(({ theme }) => ({
-  transform: "rotate(180deg)",
-}));
-
+const styles = (theme) => {
+  return {
+    iconButtonRoot: {
+      color: theme.palette.common.white,
+      padding: 0,
+    },
+    expandOpen: {
+      transform: "rotate(180deg)",
+    },
+  };
+};
 class PanelToolbox extends React.PureComponent {
   state = {
     minimizeVisible: true,
@@ -47,7 +49,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: false,
       normalVisible: true,
     });
-    localObserver.publish("vt-search-result-list-minimized");
+    localObserver.publish("search-result-list-minimized");
   };
 
   maximize = () => {
@@ -57,7 +59,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: true,
       normalVisible: true,
     });
-    localObserver.publish("vt-search-result-list-maximized");
+    localObserver.publish("search-result-list-maximized");
   };
 
   normalize = () => {
@@ -67,7 +69,7 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: true,
       normalVisible: false,
     });
-    localObserver.publish("vt-search-result-list-normal");
+    localObserver.publish("search-result-list-normal");
   };
 
   close = () => {
@@ -77,48 +79,36 @@ class PanelToolbox extends React.PureComponent {
       minimizeVisible: false,
       normalVisible: true,
     });
-    localObserver.publish("vt-search-result-list-close");
-  };
-
-  #export = () => {
-    const { localObserver } = this.props;
-    localObserver.publish("vt-export-search-result-clicked");
+    localObserver.publish("search-result-list-close");
   };
 
   renderButton = (onClickCallback, iconElement) => {
+    const { classes } = this.props;
     return (
-      <StyledIconButton onClick={onClickCallback} size="large">
+      <IconButton
+        classes={{ root: classes.iconButtonRoot }}
+        onClick={onClickCallback}
+        size="large"
+      >
         {iconElement === "minimize" ? (
-          <Tooltip title="Minimera">
-            <ExpandMoreIcon />
-          </Tooltip>
+          <ExpandMoreIcon />
         ) : iconElement === "maximize" ? (
-          <Tooltip title="Maximera">
-            <StyledExpandMoreIconTransformed />
-          </Tooltip>
+          <ExpandMoreIcon className={classes.expandOpen} />
         ) : iconElement === "normalize" ? (
-          <Tooltip title="Återställ">
-            <NormalIcon />
-          </Tooltip>
+          <NormalIcon />
         ) : iconElement === "close" ? (
-          <Tooltip title="Stäng">
-            <CloseIcon />
-          </Tooltip>
-        ) : iconElement === "export" ? (
-          <Tooltip title="Exportera">
-            <SaveAltIcon />
-          </Tooltip>
+          <CloseIcon />
         ) : null}
-      </StyledIconButton>
+      </IconButton>
     );
   };
 
   render() {
     return (
       <div>
-        {this.renderButton(this.#export, "export")}
         {this.state.minimizeVisible &&
           this.renderButton(this.minimize, "minimize")}
+
         {this.state.maximizeVisible &&
           this.renderButton(this.maximize, "maximize")}
         {this.state.normalVisible &&
@@ -129,4 +119,4 @@ class PanelToolbox extends React.PureComponent {
   }
 }
 
-export default PanelToolbox;
+export default withStyles(styles)(PanelToolbox);

@@ -1,5 +1,3 @@
-import { MockdataSearchModel } from "./Mockdata/MockdataSearchModel";
-
 /**
  * @summary SearchModel used for VT specific searches.
  * @description NEED TO ADD A DESCRIPTION
@@ -64,38 +62,11 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   encodeWktForGeoServer = (wkt) => {
-    return this.encodeWktInCqlForGeoServer(wkt);
+    return this.encodeWktInCqlForGeoServer(wkt).replace(/,/g, "%5C,");
   };
 
   /**
-   * Private method that adjusts a commas in a string so that it's supported for a web browser and GeoServer.
-   * @param {string} stringValue The comma-separated list that needs to be adjusted.
-   * @returns {string} Returns a supported string for GeoServer.
-   *
-   * @memberof SearchModel
-   */
-  encodeCommasForGeoServer = (stringValue) => {
-    return stringValue.replace(/,/g, "%5C,");
-  };
-
-  /**
-   * Removes all commas (',') at the end of comma-separated string
-   * @param {string} commmaSeparatedString the comma-separated string to be fixed
-   * @returns {string} comma-separated string without any commas at the end of the string
-   * @memberof SearchModel
-   */
-  removeCommasFromEndOfCommaSeparatedString = (commmaSeparatedString) => {
-    let idx = commmaSeparatedString.lastIndexOf(",");
-    while (idx >= 0 && idx === commmaSeparatedString.length - 1) {
-      commmaSeparatedString = commmaSeparatedString.substring(0, idx);
-      idx = commmaSeparatedString.lastIndexOf(",");
-    }
-
-    return commmaSeparatedString;
-  };
-
-  /**
-   * Private method that encodes ',' and the swedish characters å, ä and ö.
+   * Private method that encodes the swedish characters å, ä and ö.
    * @param {string} url The url that needs to be encoded.
    * @returns {string} Returns an encoded url.
    *
@@ -106,30 +77,6 @@ export default class SearchModel {
       .replace(/å/g, "%C3%A5")
       .replace(/ä/g, "%C3%A4")
       .replace(/ö/g, "%C3%B6");
-  };
-
-  /**
-   * Private method that adjusts a comma-separated list of string so that it's supported for a web browser and GeoServer.
-   * @param {string} commaSeparatedListOfString The comma-separated list that needs to be adjusted to.
-   * @returns {string} Returns comma-separated list of single-quoted strings for GeoServer (, => ',').
-   *
-   * @memberof SearchModel
-   */
-  encodeCommaSeparatedListOfStringInCqlForGeoServer = (
-    commaSeparatedListOfString
-  ) => {
-    return commaSeparatedListOfString.replace(/,/g, "%27,%27");
-  };
-
-  /**
-   * Private method that remove eventually spaces from a comma-separated list of string.
-   * @param {string} listOfStrings The list with eventually spaces that needs to be adjusted to.
-   * @returns {string} Returns list of strings without spaces.
-   *
-   * @memberof SearchModel
-   */
-  removeSpacesInListOfStrings = (listOfStrings) => {
-    return listOfStrings.replaceAll(" ", "");
   };
 
   /**
@@ -373,11 +320,7 @@ export default class SearchModel {
    */
   filterColumnsDisplayFormat(featureCollection, columnsDisplayFormat) {
     let firstFeature = featureCollection.features[0];
-    let featurePropertyNames = Object.keys(
-      firstFeature.properties
-        ? firstFeature.properties
-        : firstFeature.getProperties()
-    );
+    let featurePropertyNames = Object.keys(firstFeature.properties);
     let formatChangeNames = columnsDisplayFormat.filter(
       (attributesToDisplayFormat) => {
         for (
@@ -838,9 +781,6 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleMunicipalityZoneNames(addEmptyMunicipality = true) {
-    if (!this?.geoServer?.municipalityZoneNames?.url)
-      return this.#returnMockDataMunicipalityZoneNames();
-
     const url = this.geoServer.municipalityZoneNames.url;
     return fetch(url)
       .then((res) => {
@@ -867,12 +807,6 @@ export default class SearchModel {
       });
   }
 
-  #returnMockDataMunicipalityZoneNames = () => {
-    return new Promise((resolve) => {
-      resolve(MockdataSearchModel().municipalities);
-    });
-  };
-
   /**
    * Function that fetch all transport mode type names and numbers.
    * @param {boolean} addEmptyMunicipality <option value="true">Adds an empty transport mode at the beginning of the array. </option>
@@ -881,10 +815,7 @@ export default class SearchModel {
    * @memberof SearchModel
    */
   fetchAllPossibleTransportModeTypeNames(addEmptyTransportMode = true) {
-    if (!this?.geoServer?.transportModeTypeNames?.url)
-      return this.#returnMockDataTransportModeTypeNames();
-
-    this.localObserver.publish("vt-transportModeTypeNames-result-begin", {
+    this.localObserver.publish("transportModeTypeNames-result-begin", {
       label: this.geoServer.transportModeTypeNames.searchLabel,
     });
 
@@ -902,40 +833,6 @@ export default class SearchModel {
     });
   }
 
-  #returnMockDataTransportModeTypeNames = () => {
-    return new Promise((resolve) => {
-      resolve(MockdataSearchModel().modeTypeNames);
-    });
-  };
-
-  /**
-   * Function that fetch all transport company names and numbers.
-   * @param {boolean} addEmptyMunicipality <option value="true">Adds an empty transport company at the beginning of the array. </option>
-   * @returns {array(string, int)} Returns all transport company names as an array of tuples.
-   *
-   * @memberof SearchModel
-   */
-  fetchAllPossibleTransportCompanyNames(addEmptyTransportCompany = true) {
-    this.localObserver.publish("transportCompanyName-result-begin", {
-      label: this.geoServer.transportCompanyNames.searchLabel,
-    });
-
-    const url = this.geoServer.transportCompanyNames.url;
-    return fetch(url).then((res) => {
-      return res.json().then((jsonResult) => {
-        let transportCompanies = jsonResult.features.map((feature) => {
-          return feature.properties.Name;
-        });
-
-        transportCompanies.sort();
-
-        if (addEmptyTransportCompany) transportCompanies.unshift("");
-
-        return transportCompanies;
-      });
-    });
-  }
-
   /**
    * Gets requested journeys. Sends an event when the function is called and another one when it's promise is done.
    * @param {string} fromTime Start time, pass null if no start time is given.
@@ -944,17 +841,8 @@ export default class SearchModel {
    *
    * @memberof SearchModel
    */
-  getJourneys(
-    filterOnFromDate,
-    filterOnToDate,
-    filterOnPublicLine,
-    filterOnInternalLine,
-    filterOnNameOrNumber,
-    filterOnDesignation,
-    selectedFormType,
-    filterOnWkt
-  ) {
-    this.localObserver.publish("vt-result-begin", {
+  getJourneys(filterOnFromDate, filterOnToDate, filterOnWkt) {
+    this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.journeys.searchLabel,
     });
 
@@ -968,37 +856,9 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnFromDate:${filterOnFromDate};`;
     if (filterOnToDate)
       viewParams = viewParams + `filterOnToDate:${filterOnToDate};`;
-    if (filterOnNameOrNumber) {
-      if (this.containsOnlyNumbers(filterOnNameOrNumber))
-        viewParams =
-          viewParams + `filterOnStopAreaNumber:${filterOnNameOrNumber};`;
-      else
-        viewParams =
-          viewParams + `filterOnStopAreaName:${filterOnNameOrNumber};`;
-    }
-    if (filterOnDesignation) {
-      filterOnDesignation =
-        this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
-      viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
-    }
-    if (filterOnPublicLine)
-      viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
-    if (filterOnInternalLine) {
-      filterOnInternalLine =
-        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
-    }
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
-    if (
-      filterOnFromDate ||
-      filterOnToDate ||
-      filterOnNameOrNumber ||
-      filterOnDesignation ||
-      filterOnPublicLine ||
-      filterOnInternalLine ||
-      filterOnWkt
-    )
-      url = url + this.encodeCommasForGeoServer(viewParams);
+    if (filterOnFromDate || filterOnToDate || filterOnWkt)
+      url = url + viewParams;
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url)
@@ -1019,29 +879,13 @@ export default class SearchModel {
           journeys.featureCollection = this.removeDuplicates(
             journeys.featureCollection
           );
-
-          journeys.searchParams = {
-            filterOnFromDate: filterOnFromDate,
-            filterOnToDate: filterOnToDate,
-            filterOnPublicLine: filterOnPublicLine,
-            filterOnInternalLine: filterOnInternalLine,
-            filterOnNameOrNumber: filterOnNameOrNumber,
-            filterOnDesignation: filterOnDesignation,
-            selectedFormType: selectedFormType,
-            filterOnWkt: filterOnWkt,
-          };
-
+          /*journeys.featureCollection = */
           this.updateDisplayFormat(
             journeys.featureCollection,
             this.geoServer.journeys.attributesToDisplay
           );
 
-          let zoomToSearchResult = true;
-          if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vt-result-done", {
-            result: journeys,
-            zoomToSearchResult: zoomToSearchResult,
-          });
+          this.localObserver.publish("vtsearch-result-done", journeys);
         });
       })
       .catch((err) => {
@@ -1055,9 +899,7 @@ export default class SearchModel {
    * @param {string} internalLineNumber The internal line number.
    * @param {string} isInMunicipalityZoneGid The Gid number of a municipality
    * @param {string} transportModeType The transport type of lines.
-   * @param {string} transportCompanyName
    * @param {string} stopAreaNameOrNumber The stop area name or stop area number.
-   * @param {string} designation
    * @param {string} polygonAsWkt A polygon, as a WKT, to intersects with.
    *
    * @memberof SearchModel
@@ -1067,12 +909,10 @@ export default class SearchModel {
     internalLineNumber,
     isInMunicipalityZoneGid,
     transportModeType,
-    transportCompanyName,
     stopAreaNameOrNumber,
-    designation,
     polygonAsWkt
   ) {
-    this.localObserver.publish("vt-result-begin", {
+    this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.routes.searchLabel,
     });
 
@@ -1088,19 +928,8 @@ export default class SearchModel {
       addAndInCql = true;
     }
     if (internalLineNumber) {
-      internalLineNumber =
-        this.removeCommasFromEndOfCommaSeparatedString(internalLineNumber);
       if (addAndInCql) cql = cql + " AND ";
-      cql = cql + `InternalLineNumber IN (${internalLineNumber})`;
-      addAndInCql = true;
-    }
-    if (designation) {
-      designation = this.removeCommasFromEndOfCommaSeparatedString(designation);
-      designation = this.removeSpacesInListOfStrings(designation);
-      designation =
-        this.encodeCommaSeparatedListOfStringInCqlForGeoServer(designation);
-      if (addAndInCql) cql = cql + " AND ";
-      cql = cql + `Designation IN ('${designation}')`;
+      cql = cql + `InternalLineNumber like '${internalLineNumber}'`;
       addAndInCql = true;
     }
     if (isInMunicipalityZoneGid) {
@@ -1111,11 +940,6 @@ export default class SearchModel {
     if (transportModeType) {
       if (addAndInCql) cql = cql + " AND ";
       cql = cql + `TransportModeType like '${transportModeType}'`;
-      addAndInCql = true;
-    }
-    if (transportCompanyName) {
-      if (addAndInCql) cql = cql + " AND ";
-      cql = cql + `TransportCompany like '${transportCompanyName}'`;
       addAndInCql = true;
     }
     if (stopAreaNameOrNumber) {
@@ -1142,13 +966,13 @@ export default class SearchModel {
       internalLineNumber ||
       isInMunicipalityZoneGid ||
       transportModeType ||
-      transportCompanyName ||
       stopAreaNameOrNumber ||
       polygonAsWkt
     ) {
       url = url + this.encodeCqlForGeoServer(cql);
     }
     url = this.encodeUrlForGeoServer(url);
+
     fetch(url)
       .then((res) => {
         res.json().then((jsonResult) => {
@@ -1168,21 +992,7 @@ export default class SearchModel {
             routes.featureCollection
           );
 
-          routes.searchParams = {
-            publicLineName: publicLineName,
-            internalLineNumber: internalLineNumber,
-            isInMunicipalityZoneGid: isInMunicipalityZoneGid,
-            transportModeType: transportModeType,
-            stopAreaNameOrNumber: stopAreaNameOrNumber,
-            polygonAsWkt: polygonAsWkt,
-          };
-
-          let zoomToSearchResult = true;
-          if (polygonAsWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vt-result-done", {
-            result: routes,
-            zoomToSearchResult: zoomToSearchResult,
-          });
+          this.localObserver.publish("vtsearch-result-done", routes);
         });
       })
       .catch((err) => {
@@ -1203,12 +1013,9 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnInternalLine,
-    filterOnTransportCompany,
-    filterOnWkt,
-    selectedFormType
+    filterOnWkt
   ) {
-    this.localObserver.publish("vt-result-begin", {
+    this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopAreas.searchLabel,
     });
 
@@ -1227,25 +1034,15 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
-    if (filterOnInternalLine) {
-      filterOnInternalLine =
-        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
-    }
-    if (filterOnTransportCompany)
-      viewParams =
-        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
-      filterOnInternalLine ||
-      filterOnTransportCompany ||
       filterOnWkt
     )
-      url = url + this.encodeCommasForGeoServer(viewParams);
+      url = url + viewParams;
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url).then((res) => {
@@ -1268,22 +1065,7 @@ export default class SearchModel {
             stopAreas.featureCollection
           );
 
-          stopAreas.searchParams = {
-            filterOnNameOrNumber: filterOnNameOrNumber,
-            filterOnPublicLine: filterOnPublicLine,
-            filterOnMunicipalGid: filterOnMunicipalGid,
-            filterOnInternalLine: filterOnInternalLine,
-            filterOnTransportCompany: filterOnTransportCompany,
-            selectedFormType: selectedFormType,
-            filterOnWkt: filterOnWkt,
-          };
-
-          let zoomToSearchResult = true;
-          if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vt-result-done", {
-            result: stopAreas,
-            zoomToSearchResult: zoomToSearchResult,
-          });
+          this.localObserver.publish("vtsearch-result-done", stopAreas);
         })
         .catch((err) => {
           console.log(err);
@@ -1304,13 +1086,9 @@ export default class SearchModel {
     filterOnNameOrNumber,
     filterOnPublicLine,
     filterOnMunicipalGid,
-    filterOnDesignation,
-    filterOnInternalLine,
-    filterOnTransportCompany,
-    filterOnWkt,
-    selectedFormType
+    filterOnWkt
   ) {
-    this.localObserver.publish("vt-result-begin", {
+    this.localObserver.publish("vtsearch-result-begin", {
       label: this.geoServer.stopPoints.searchLabel,
     });
 
@@ -1329,30 +1107,15 @@ export default class SearchModel {
       viewParams = viewParams + `filterOnPublicLine:${filterOnPublicLine};`;
     if (filterOnMunicipalGid)
       viewParams = viewParams + `filterOnMunicipalGid:${filterOnMunicipalGid};`;
-    if (filterOnDesignation) {
-      filterOnDesignation =
-        this.removeCommasFromEndOfCommaSeparatedString(filterOnDesignation);
-      viewParams = viewParams + `filterOnDesignation:${filterOnDesignation};`;
-    }
-    if (filterOnInternalLine) {
-      filterOnInternalLine =
-        this.removeCommasFromEndOfCommaSeparatedString(filterOnInternalLine);
-      viewParams = viewParams + `filterOnInternalLine:${filterOnInternalLine};`;
-    }
-    if (filterOnTransportCompany)
-      viewParams =
-        viewParams + `filterOnTransportCompany:${filterOnTransportCompany};`;
     if (filterOnWkt) viewParams = viewParams + `filterOnWkt:${filterOnWkt};`;
 
     if (
       filterOnNameOrNumber ||
       filterOnPublicLine ||
       filterOnMunicipalGid ||
-      filterOnInternalLine ||
-      filterOnTransportCompany ||
       filterOnWkt
     )
-      url = url + this.encodeCommasForGeoServer(viewParams);
+      url = url + viewParams;
     url = this.encodeUrlForGeoServer(url);
 
     fetch(url).then((res) => {
@@ -1375,66 +1138,7 @@ export default class SearchModel {
             stopPoints.featureCollection
           );
 
-          stopPoints.searchParams = {
-            filterOnNameOrNumber: filterOnNameOrNumber,
-            filterOnPublicLine: filterOnPublicLine,
-            filterOnMunicipalGid: filterOnMunicipalGid,
-            filterOnDesignation: filterOnDesignation,
-            filterOnInternalLine: filterOnInternalLine,
-            filterOnTransportCompany: filterOnTransportCompany,
-            selectedFormType: selectedFormType,
-            filterOnWkt: filterOnWkt,
-          };
-
-          let zoomToSearchResult = true;
-          if (filterOnWkt) zoomToSearchResult = false;
-          this.localObserver.publish("vt-result-done", {
-            result: stopPoints,
-            zoomToSearchResult: zoomToSearchResult,
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-  }
-
-  /**
-   * Get all stop points. Sends an event when the function is called and another one when it's promise is done.
-   * @param {int} filterOnInternalLineNumber The internal number of the stop point, pass null of no number is given.
-   * @param {int} filterOnDirection The direction of line, pass null of no direction is given.
-   *
-   * @memberof SearchModel
-   */
-  getStopPointsByLine(filterOnInternalLineNumber, filterOnDirection) {
-    // Build up the url with viewparams.
-    let url = this.geoServer.ShowStopPoints.url;
-    let viewParams = "&viewparams=";
-    if (filterOnInternalLineNumber) {
-      viewParams =
-        viewParams + `filterOnLineNumber:${filterOnInternalLineNumber};`;
-    }
-    if (filterOnDirection) {
-      viewParams = viewParams + `filterOnDirection:${filterOnDirection};`;
-    }
-
-    if (filterOnInternalLineNumber || filterOnDirection) url = url + viewParams;
-    url = this.encodeUrlForGeoServer(url);
-
-    fetch(url).then((res) => {
-      res
-        .json()
-        .then((jsonResult) => {
-          let stopPoints = {
-            featureCollection: jsonResult,
-          };
-
-          stopPoints.searchParams = {
-            filterOnInternalLineNumber: filterOnInternalLineNumber,
-            filterOnDirection: filterOnDirection,
-          };
-
-          this.localObserver.publish("vt-stop-point-showed", stopPoints);
+          this.localObserver.publish("vtsearch-result-done", stopPoints);
         })
         .catch((err) => {
           console.log(err);

@@ -36,9 +36,7 @@ class TabPanel extends React.PureComponent {
 
     return (
       <Grid
-        sx={{
-          display: activeTabId !== tabId ? "none" : "block",
-        }}
+        style={{ display: activeTabId !== tabId ? "none" : "block" }}
         container
         alignContent="stretch"
         alignItems="flex-start"

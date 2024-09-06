@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import withStyles from "@mui/styles/withStyles";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -12,52 +13,32 @@ import {
   Typography,
   Divider,
   Grid,
-  Tooltip,
+  ButtonGroup,
 } from "@mui/material";
-import styled from "@emotion/styled";
 import InactivePolygon from "../img/polygonmarkering.png";
 import InactiveRectangle from "../img/rektangelmarkering.png";
 import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
-import { validateInternalLineNumber } from "./Validator";
 
-const StyledSearchButton = styled(Button)(({ theme }) => ({
-  borderColor: theme.palette.primary.main,
-}));
-
-const StyledDivider = styled(Divider)(({ theme }) => ({
-  marginTop: theme.spacing(1),
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledFirstMenuItem = styled(MenuItem)(({ theme }) => ({
-  minHeight: 36,
-}));
-
-const StyledErrorMessageTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.error.main,
-}));
-
-const SEARCH_ERROR_MESSAGE =
-  "DET GÅR INTE ATT SÖKA PÅ HÅLLPLATSLÄGE UTAN ATT HA FYLLT I HÅLLPLATSNAMN ELLER -NR.";
+// Define JSS styles that will be used in this component.
+// Examle below utilizes the very powerful "theme" object
+// that gives access to some constants, see: https://material-ui.com/customization/default-theme/
+const styles = (theme) => ({
+  divider: { marginTop: theme.spacing(2), marginBottom: theme.spacing(2) },
+  firstMenuItem: { minHeight: 36 },
+  searchButtonColor: { borderColor: theme.palette.primary.main },
+  searchButtonText: { color: theme.palette.primary.main },
+});
 
 class Stops extends React.PureComponent {
   // Initialize state - this is the correct way of doing it nowadays.
   state = {
-    spatialToolsEnabled: true,
-    searchButtonEnabled: true,
     busStopValue: "stopAreas",
     stopNameOrNr: "",
-    publicLineName: "",
+    publicLine: "",
     municipalities: [],
     municipality: "",
     selectedFormType: "",
-    stopPoint: "",
-    internalLineNumber: "",
-    transportCompany: "",
-    transportCompanies: [],
-    searchErrorMessage: "",
-    internalLineErrorMessage: "",
   };
 
   // propTypes and defaultProps are static properties, declared
@@ -68,6 +49,7 @@ class Stops extends React.PureComponent {
     model: PropTypes.object.isRequired,
     app: PropTypes.object.isRequired,
     localObserver: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired,
   };
 
   static defaultProps = {};
@@ -84,154 +66,41 @@ class Stops extends React.PureComponent {
       this.setState({
         municipalities: result?.length > 0 ? result : [],
       });
-      this.model.fetchAllPossibleTransportCompanyNames().then((result) => {
-        this.setState(
-          {
-            transportCompanies: result.length > 0 ? result : [],
-          },
-          () => this.#setEmptyMunicipality()
-        );
-      });
     });
   }
 
-  /**
-   * Function that selects municipality manually because it's an object and not an empty string.
-   */
-  #setEmptyMunicipality = () => {
-    this.setState({ municipality: this.state.municipalities[0] });
-  };
-
   togglePolygonState = () => {
-    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isPolygonActive: !this.state.isPolygonActive }, () => {
       this.handlePolygonClick();
     });
   };
-
   toggleRectangleState = () => {
-    if (!this.state.spatialToolsEnabled) return;
     this.setState({ isRectangleActive: !this.state.isRectangleActive }, () => {
       this.handleRectangleClick();
     });
   };
 
   handleChange = (event) => {
-    const { stopPoint, stopNameOrNr, isPolygonActive, isRectangleActive } =
-      this.state;
-
     this.setState({
       busStopValue: event.target.value,
-      searchErrorMessage: "",
     });
-
-    if (
-      event.target.value === "stopPoints" &&
-      (isPolygonActive || isRectangleActive) &&
-      stopPoint &&
-      !stopNameOrNr
-    ) {
-      this.localObserver.publish("vt-activate-search", () => {});
-      this.setState({
-        searchErrorMessage: SEARCH_ERROR_MESSAGE,
-        isPolygonActive: false,
-        isRectangleActive: false,
-      });
-    }
   };
 
   handleStopNameOrNrChange = (event) => {
-    const { stopPoint, isPolygonActive, isRectangleActive, busStopValue } =
-      this.state;
-
     this.setState({
       stopNameOrNr: event.target.value,
-      searchErrorMessage: "",
     });
-
-    if (
-      busStopValue === "stopPoints" &&
-      (isPolygonActive || isRectangleActive) &&
-      stopPoint &&
-      !event.target.value
-    ) {
-      this.localObserver.publish("vt-activate-search", () => {});
-      this.setState({
-        searchErrorMessage: SEARCH_ERROR_MESSAGE,
-        isPolygonActive: false,
-        isRectangleActive: false,
-      });
-    }
   };
 
-  handleStopPointChange = (event) => {
-    const {
-      searchErrorMessage,
-      stopNameOrNr,
-      busStopValue,
-      isPolygonActive,
-      isRectangleActive,
-    } = this.state;
-
+  handlePublicLineChange = (event) => {
     this.setState({
-      stopPoint: event.target.value,
-      searchErrorMessage: event.target.value ? searchErrorMessage : "",
-    });
-
-    if (
-      busStopValue === "stopPoints" &&
-      (isPolygonActive || isRectangleActive) &&
-      event.target.value &&
-      !stopNameOrNr
-    ) {
-      this.localObserver.publish("vt-activate-search", () => {});
-      this.setState({
-        searchErrorMessage: SEARCH_ERROR_MESSAGE,
-        isPolygonActive: false,
-        isRectangleActive: false,
-      });
-    }
-  };
-
-  handleInternalLineNrChange = (event) => {
-    let validationMessage = validateInternalLineNumber(event.target.value)
-      ? ""
-      : "Fel värde på tekniskt linjenr";
-
-    this.setState(
-      {
-        internalLineNumber: event.target.value,
-        internalLineErrorMessage: validationMessage,
-      },
-      () => {
-        this.#validateParameters(this.#disableSearch, this.#enableSearch);
-      }
-    );
-  };
-
-  #disableSearch = () => {
-    this.setState({ spatialToolsEnabled: false, searchButtonEnabled: false });
-  };
-
-  #enableSearch = () => {
-    this.setState({ spatialToolsEnabled: true, searchButtonEnabled: true });
-  };
-
-  handlePublicLineNameChange = (event) => {
-    this.setState({
-      publicLineName: event.target.value,
+      publicLine: event.target.value,
     });
   };
 
   handleMunicipalChange = (event) => {
     this.setState({
       municipality: event.target.value,
-    });
-  };
-
-  handleTransportCompanyChange = (e) => {
-    this.setState({
-      transportCompany: e.target.value,
     });
   };
 
@@ -243,7 +112,7 @@ class Stops extends React.PureComponent {
 
   bindSubscriptions() {
     const { localObserver } = this.props;
-    localObserver.subscribe("vt-result-done", () => {
+    localObserver.subscribe("vtsearch-result-done", () => {
       this.clearSearchInputAndButtons();
     });
   }
@@ -256,136 +125,63 @@ class Stops extends React.PureComponent {
   clearSearchInputAndButtons = () => {
     this.setState({
       stopNameOrNr: "",
-      publicLineName: "",
+      publicLine: "",
       municipality: "",
       selectedFormType: "",
-      stopPoint: "",
-      internalLineNumber: "",
-      transportCompany: "",
-      searchErrorMessage: "",
     });
   };
-
   inactivateSpatialSearchButtons = () => {
     this.setState({ isPolygonActive: false, isRectangleActive: false });
   };
 
   doSearch = () => {
-    const {
-      busStopValue,
-      stopNameOrNr,
-      publicLineName,
-      municipality,
-      stopPoint,
-      internalLineNumber,
-      transportCompany,
-    } = this.state;
-
-    let validationErrorMessage = this.validateSearchForm();
-    if (validationErrorMessage) {
-      this.setState({
-        searchErrorMessage: validationErrorMessage,
-      });
-      return;
-    }
-
-    this.localObserver.publish("vt-stops-search", {
+    const { busStopValue, stopNameOrNr, publicLine, municipality } = this.state;
+    this.localObserver.publish("stops-search", {
       busStopValue: busStopValue,
       stopNameOrNr: stopNameOrNr,
-      publicLine: publicLineName,
+      publicLine: publicLine,
       municipality: municipality.gid,
-      stopPoint: stopPoint,
-      internalLineNumber: internalLineNumber,
-      transportCompany: transportCompany,
       selectedFormType: "",
       searchCallback: this.clearSearchInputAndButtons,
     });
   };
 
   handlePolygonClick = () => {
-    const {
-      busStopValue,
-      stopNameOrNr,
-      publicLineName,
-      municipality,
-      stopPoint,
-      internalLineNumber,
-      transportCompany,
-    } = this.state;
-    if (this.state.isRectangleActive) {
-      this.localObserver.publish("vt-activate-search", () => {});
-    }
+    const { busStopValue, stopNameOrNr, publicLine, municipality } = this.state;
     if (!this.state.isPolygonActive) {
-      this.localObserver.publish("vt-activate-search", () => {});
+      this.localObserver.publish("activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("vt-deactivate-search", () => {});
+      this.localObserver.publish("deactivate-search", () => {});
       this.setState({ isRectangleActive: false });
     }
     if (this.state.isPolygonActive) {
-      let validationErrorMessage = this.validateSearchForm();
-      if (validationErrorMessage) {
-        this.localObserver.publish("vt-activate-search", () => {});
-        this.setState({
-          searchErrorMessage: validationErrorMessage,
-          isPolygonActive: false,
-        });
-        return;
-      }
-
-      this.localObserver.publish("vt-stops-search", {
+      this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
-        publicLine: publicLineName,
-        municipality: municipality.gid,
-        stopPoint: stopPoint,
-        internalLineNumber: internalLineNumber,
-        transportCompany: transportCompany,
+        publicLine: publicLine,
+        municipality: municipality.name,
         selectedFormType: "Polygon",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
     }
   };
-
   handleRectangleClick = () => {
-    if (this.state.isPolygonActive) {
-      this.localObserver.publish("vt-activate-search", () => {});
-    }
     if (!this.state.isRectangleActive) {
-      this.localObserver.publish("vt-activate-search", () => {});
+      this.localObserver.publish("activate-search", () => {});
     }
     if (this.state.isPolygonActive || this.state.isRectangleActive) {
-      this.localObserver.publish("vt-deactivate-search", () => {});
+      this.localObserver.publish("deactivate-search", () => {});
       this.setState({ isPolygonActive: false });
     }
     if (this.state.isRectangleActive) {
-      const {
-        busStopValue,
-        stopNameOrNr,
-        publicLineName,
-        municipality,
-        stopPoint,
-        internalLineNumber,
-        transportCompany,
-      } = this.state;
-
-      let validationErrorMessage = this.validateSearchForm();
-      if (validationErrorMessage) {
-        this.localObserver.publish("vt-activate-search", () => {});
-        this.setState({
-          searchErrorMessage: validationErrorMessage,
-          isRectangleActive: false,
-        });
-        return;
-      }
-      this.localObserver.publish("vt-stops-search", {
+      const { busStopValue, stopNameOrNr, publicLine, municipality } =
+        this.state;
+      this.localObserver.publish("stops-search", {
         busStopValue: busStopValue,
         stopNameOrNr: stopNameOrNr,
-        publicLine: publicLineName,
-        municipality: municipality.gid,
-        stopPoint: stopPoint,
-        internalLineNumber: internalLineNumber,
-        transportCompany: transportCompany,
+        publicLine: publicLine,
+        municipality: municipality.name,
         selectedFormType: "Box",
         searchCallback: this.inactivateSpatialSearchButtons,
       });
@@ -427,92 +223,31 @@ class Stops extends React.PureComponent {
     );
   };
 
-  renderStopPointSection = () => {
-    if (this.state.busStopValue !== "stopPoints") return <></>;
-    return (
-      <Grid item xs={12}>
-        <Typography variant="caption">HÅLLPLATSLÄGE</Typography>
-        <Tooltip title="Sökning sker på ett eller flera lägen via kommaseparerad lista">
-          <TextField
-            fullWidth
-            id="standard-basic"
-            variant="standard"
-            value={this.state.stopPoint}
-            onChange={this.handleStopPointChange}
-          ></TextField>
-        </Tooltip>
-      </Grid>
-    );
-  };
-
   renderTextParameterSection = () => {
-    const { municipalities, transportCompanies } = this.state;
+    const { municipalities } = this.state;
+    const { classes } = this.props;
     return (
       <>
         <Grid item xs={12}>
-          <StyledDivider />
+          <Divider />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="caption">HÅLLPLATSNAMN ELLER -NR</Typography>
           <TextField
             fullWidth
             id="standard-basic"
-            variant="standard"
             value={this.state.stopNameOrNr}
             onChange={this.handleStopNameOrNrChange}
-            error={!(this.state.searchErrorMessage === "")}
           ></TextField>
         </Grid>
-        {this.renderStopPointSection()}
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <Typography variant="caption">LÄNGS PUBLIK LINJE</Typography>
           <TextField
             fullWidth
             id="standard-basic"
-            variant="standard"
-            value={this.state.publicLineName}
-            onChange={this.handlePublicLineNameChange}
+            value={this.state.publicLine}
+            onChange={this.handlePublicLineChange}
           />
-        </Grid>
-        <Grid item xs={6}>
-          <Typography variant="caption">LÄNGS TEKNISKT LINJENR</Typography>
-          <Tooltip title="Sökning sker på ett eller flera nummer via kommaseparerad lista">
-            <TextField
-              fullWidth
-              id="standard-basic"
-              variant="standard"
-              value={this.state.internalLineNumber}
-              onChange={this.handleInternalLineNrChange}
-              error={!(this.state.internalLineErrorMessage === "")}
-              helperText={this.state.internalLineErrorMessage}
-            ></TextField>
-          </Tooltip>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth>
-            <Typography variant="caption">TRAFIKFÖRETAG</Typography>
-            <Select
-              value={this.state.transportCompany}
-              onChange={this.handleTransportCompanyChange}
-              variant="standard"
-            >
-              {transportCompanies.map((name, index) => {
-                if (name === "") {
-                  return (
-                    <MenuItem key={index} value={name}>
-                      <Typography aria-label="None">&nbsp;</Typography>
-                    </MenuItem>
-                  );
-                } else {
-                  return (
-                    <MenuItem key={index} value={name}>
-                      <Typography>{name}</Typography>
-                    </MenuItem>
-                  );
-                }
-              })}
-            </Select>
-          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth>
@@ -520,14 +255,17 @@ class Stops extends React.PureComponent {
             <Select
               value={this.state.municipality}
               onChange={this.handleMunicipalChange}
-              variant="standard"
             >
               {municipalities.map((municipality, index) => {
                 if (municipality.name === "") {
                   return (
-                    <StyledFirstMenuItem key={index} value={municipality}>
-                      <Typography aria-label="None">&nbsp;</Typography>
-                    </StyledFirstMenuItem>
+                    <MenuItem
+                      className={classes.firstMenuItem}
+                      key={index}
+                      value={municipality}
+                    >
+                      <Typography>{municipality.name}</Typography>
+                    </MenuItem>
                   );
                 } else {
                   return (
@@ -545,24 +283,28 @@ class Stops extends React.PureComponent {
   };
 
   renderSearchButton = () => {
+    const { classes } = this.props;
     return (
       <Grid item xs={12}>
-        <StyledSearchButton
-          onClick={this.doSearch}
-          variant="outlined"
-          disabled={!this.state.searchButtonEnabled}
-        >
-          <Typography>SÖK</Typography>
-        </StyledSearchButton>
+        <ButtonGroup className={classes.searchButtonColor}>
+          <Button
+            className={classes.searchButtonColor}
+            onClick={this.doSearch}
+            variant="outlined"
+          >
+            <Typography className={classes.searchButtonText}>SÖK</Typography>
+          </Button>
+        </ButtonGroup>
       </Grid>
     );
   };
 
   renderSpatialSearchSection = () => {
+    const { classes } = this.props;
     return (
       <>
         <Grid item xs={12}>
-          <StyledDivider />
+          <Divider className={classes.divider} />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="body2">AVGRÄNSA SÖKOMRÅDE I KARTAN</Typography>
@@ -605,63 +347,6 @@ class Stops extends React.PureComponent {
     );
   };
 
-  renderErrorMessage = (errorMessage) => {
-    return (
-      <Grid item xs={12}>
-        <StyledErrorMessageTypography variant="body2">
-          {errorMessage}
-        </StyledErrorMessageTypography>
-      </Grid>
-    );
-  };
-
-  #renderNoErrorMessage = () => {
-    return <Typography></Typography>;
-  };
-
-  #renderErrorMessageInvalidInternalLine = () => {
-    return (
-      <Grid item xs={12}>
-        <StyledErrorMessageTypography variant="body2">
-          TEKNISKT LINJENR MÅSTE VARA ETT HELTAL ELLER FLERA HELTAL SEPARERADE
-          MED KOMMATECKEN
-        </StyledErrorMessageTypography>
-      </Grid>
-    );
-  };
-
-  validateSearchForm = () => {
-    const { stopNameOrNr, stopPoint, busStopValue } = this.state;
-
-    if (stopPoint && !stopNameOrNr && busStopValue === "stopPoints")
-      return SEARCH_ERROR_MESSAGE;
-
-    return "";
-  };
-
-  #showValidateParametersErrorMessage = () => {
-    return this.#validateParameters(
-      this.#renderErrorMessageInvalidInternalLine,
-      this.#renderNoErrorMessage
-    );
-  };
-
-  #showSearchErrorMessage = () => {
-    const { searchErrorMessage } = this.state;
-
-    if (searchErrorMessage) return this.renderErrorMessage(searchErrorMessage);
-
-    return this.#renderNoErrorMessage();
-  };
-
-  #validateParameters = (callbackInvalidInernalLineNumber, callbackAllIsOK) => {
-    const { internalLineErrorMessage } = this.state;
-
-    if (internalLineErrorMessage) return callbackInvalidInernalLineNumber();
-
-    if (callbackAllIsOK) return callbackAllIsOK();
-  };
-
   render() {
     return (
       <div>
@@ -674,8 +359,6 @@ class Stops extends React.PureComponent {
           {this.renderRadioButtonSection()}
           {this.renderTextParameterSection()}
           {this.renderSearchButton()}
-          {this.#showSearchErrorMessage()}
-          {this.#showValidateParametersErrorMessage()}
           {this.renderSpatialSearchSection()}
         </Grid>
       </div>
@@ -687,4 +370,4 @@ class Stops extends React.PureComponent {
 // withStyles will add a 'classes' prop, while withSnackbar
 // adds to functions (enqueueSnackbar() and closeSnackbar())
 // that can be used throughout the Component.
-export default Stops;
+export default withStyles(styles)(Stops);
