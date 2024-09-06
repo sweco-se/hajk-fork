@@ -120,7 +120,7 @@ class Search extends React.PureComponent {
     this.initExportHandlers();
     this.bindSubscriptions();
 
-    if (this.props.app.plugins.search.options?.renderElsewhere)
+    if (this.props.app.appModel.plugins.search.options?.renderElsewhere)
       this.coreLoaded();
   }
 
