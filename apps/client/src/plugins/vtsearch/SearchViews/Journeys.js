@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import { makeStyles, styled } from "@mui/material/styles";
 import { Typography, Divider } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import DateFnsUtils from "@date-io/date-fns";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EventIcon from "@mui/icons-material/Event";
 import InactivePolygon from "../img/polygonmarkering.png";
@@ -12,7 +11,7 @@ import ActivePolygon from "../img/polygonmarkering-blue.png";
 import ActiveRectangle from "../img/rektangelmarkering-blue.png";
 
 import {
-  MuiPickersUtilsProvider,
+  LocalizationProvider,
   DatePicker,
   TimePicker,
 } from "@mui/x-date-pickers";
@@ -563,13 +562,10 @@ class Journeys extends React.PureComponent {
 
     return (
       <div>
-        <MuiPickersUtilsProvider
-          className={classes.journeysForm}
-          utils={DateFnsUtils}
-        >
+        <LocalizationProvider className={classes.journeysForm}>
           {this.renderFromDateSection()}
           {this.renderEndDateSection()}
-        </MuiPickersUtilsProvider>
+        </LocalizationProvider>
         {this.renderSpatialSearchSection()}
       </div>
     );
