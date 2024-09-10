@@ -569,16 +569,16 @@ class SearchResultListContainer extends React.Component {
           height: this.state.maximized
             ? this.state.windowHeight
             : this.state.minimized
-            ? this.appbarHeight
-            : this.state.resultListHeight,
+              ? this.appbarHeight
+              : this.state.resultListHeight,
         }}
         position={{
           x: 0,
           y: this.state.maximized
             ? 0
             : this.state.minimized
-            ? this.state.windowHeight - this.appbarHeight
-            : this.state.windowHeight - this.state.resultListHeight,
+              ? this.state.windowHeight - this.appbarHeight
+              : this.state.windowHeight - this.state.resultListHeight,
         }}
         ref={(container) => {
           this.rnd = container;
