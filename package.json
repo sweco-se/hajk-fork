@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@mui/x-date-pickers": "^7.16.0",
+    "date-fns": "^3.6.0",
     "react-virtualized": "^9.22.5"
   }
 }
