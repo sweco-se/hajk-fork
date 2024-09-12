@@ -345,7 +345,7 @@ class Search extends React.PureComponent {
           searchTools: this.getSearchTools(searchImplementedPlugins),
         },
         () => {
-          this.handlePotentialUrlQuerySearch();
+          this.handlePotentialSearchFromParams();
         }
       );
     });
