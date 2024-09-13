@@ -3,6 +3,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using MapService.Utility;
 using System.Net;
 using MapService.Business.FbProxy;
+using Asp.Versioning;
 
 namespace MapService.Controllers
 {

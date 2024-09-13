@@ -1,12 +1,9 @@
 ﻿using MapService.Business.FmeProxy;
-using MapService.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Primitives;
 using Swashbuckle.AspNetCore.Annotations;
 using MapService.Utility;
-using System.Buffers;
-using System.IO.Pipelines;
 using System.Net;
+using Asp.Versioning;
 
 namespace MapService.Controllers
 {
