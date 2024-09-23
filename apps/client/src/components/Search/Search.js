@@ -119,6 +119,9 @@ class Search extends React.PureComponent {
     this.initMapViewModel();
     this.initExportHandlers();
     this.bindSubscriptions();
+
+    if (this.props.app.appModel.plugins.search.options?.renderElsewhere)
+      this.coreLoaded();
   }
 
   initMapViewModel = () => {
@@ -310,26 +313,30 @@ class Search extends React.PureComponent {
 
   componentDidMount = () => {
     this.globalObserver.subscribe("core.appLoaded", () => {
-      this.getSearchImplementedPlugins().then((searchImplementedPlugins) => {
-        this.setState(
-          {
-            searchImplementedPluginsLoaded: true,
-            searchImplementedPlugins: searchImplementedPlugins,
-            searchTools: this.getSearchTools(searchImplementedPlugins),
-          },
-          () => {
-            // After we've set up everything, let's handle the possibility
-            // of initial q and s parameter values. Here, we use the initialURLParams
-            // object that was prepared for us in AppModel. It parses relevant value
-            // on initial app load and is exactly what we're looking for at this point.
-            const { appModel } = this.props.app;
-            // Grab the (already decoded) URL param values
-            const q = appModel.config.initialURLParams.get("q")?.trim(); // Use of "?." will return either a String or undefined
-            const s = appModel.config.initialURLParams.get("s")?.trim(); // (As opposed to null which would be the return value of get() otherwise!).
-            this.handlePotentialSearchFromParams(q, s);
-          }
-        );
-      });
+      this.coreLoaded();
+    });
+  };
+
+  coreLoaded = () => {
+    this.getSearchImplementedPlugins().then((searchImplementedPlugins) => {
+      this.setState(
+        {
+          searchImplementedPluginsLoaded: true,
+          searchImplementedPlugins: searchImplementedPlugins,
+          searchTools: this.getSearchTools(searchImplementedPlugins),
+        },
+        () => {
+          // After we've set up everything, let's handle the possibility
+          // of initial q and s parameter values. Here, we use the initialURLParams
+          // object that was prepared for us in AppModel. It parses relevant value
+          // on initial app load and is exactly what we're looking for at this point.
+          const { appModel } = this.props.app;
+          // Grab the (already decoded) URL param values
+          const q = appModel.config.initialURLParams.get("q")?.trim(); // Use of "?." will return either a String or undefined
+          const s = appModel.config.initialURLParams.get("s")?.trim(); // (As opposed to null which would be the return value of get() otherwise!).
+          this.handlePotentialSearchFromParams(q, s);
+        }
+      );
     });
   };
 
