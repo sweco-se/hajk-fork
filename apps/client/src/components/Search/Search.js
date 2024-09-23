@@ -340,6 +340,21 @@ class Search extends React.PureComponent {
     });
   };
 
+  coreLoaded = () => {
+    this.getSearchImplementedPlugins().then((searchImplementedPlugins) => {
+      this.setState(
+        {
+          searchImplementedPluginsLoaded: true,
+          searchImplementedPlugins: searchImplementedPlugins,
+          searchTools: this.getSearchTools(searchImplementedPlugins),
+        },
+        () => {
+          this.handlePotentialSearchFromParams();
+        }
+      );
+    });
+  };
+
   getSourcesByIds = (sourceIds) => {
     return this.searchModel
       .getSources()

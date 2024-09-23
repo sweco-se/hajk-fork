@@ -8,6 +8,7 @@
     "DocumentHandler",
     "Edit",
     "FmeServer",
+    "GeosuiteExport",
     "InfoDialog",
     "Informative",
     "LayerComparer",
@@ -20,7 +21,8 @@
     "Search",
     "Sketch",
     "StreetView",
-    "TimeSlider"
+    "TimeSlider",
+    "vtsearch"
   ],
   "allTools": [
     "Anchor",
@@ -49,6 +51,7 @@
     "Search",
     "Sketch",
     "StreetView",
-    "TimeSlider"
+    "TimeSlider",
+    "vtsearch"
   ]
 }

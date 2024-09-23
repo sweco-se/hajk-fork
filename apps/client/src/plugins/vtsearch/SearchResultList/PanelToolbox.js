@@ -1,0 +1,132 @@
+import React from "react";
+import PropTypes from "prop-types";
+import NormalIcon from "@mui/icons-material/FlipToFront";
+import CloseIcon from "@mui/icons-material/Close";
+import { styled } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import { Tooltip } from "@mui/material";
+
+/**
+ * @summary Window size handling
+ * @description Module with three buttons to handle size of window.
+ * Possible to maximize, minimize and go to "normal" size.
+ * @class PanelToolbox
+ * @extends {React.PureComponent}
+ */
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  color: theme.palette.common.white,
+  padding: 0,
+}));
+
+const StyledExpandMoreIconTransformed = styled(ExpandMoreIcon)(({ theme }) => ({
+  transform: "rotate(180deg)",
+}));
+
+class PanelToolbox extends React.PureComponent {
+  state = {
+    minimizeVisible: true,
+    maximizeVisible: true,
+    normalVisible: false,
+  };
+
+  static propTypes = {
+    options: PropTypes.object.isRequired,
+  };
+
+  static defaultProps = {
+    options: {},
+  };
+
+  minimize = () => {
+    const { localObserver } = this.props;
+    this.setState({
+      maximizeVisible: true,
+      minimizeVisible: false,
+      normalVisible: true,
+    });
+    localObserver.publish("vt-search-result-list-minimized");
+  };
+
+  maximize = () => {
+    const { localObserver } = this.props;
+    this.setState({
+      maximizeVisible: false,
+      minimizeVisible: true,
+      normalVisible: true,
+    });
+    localObserver.publish("vt-search-result-list-maximized");
+  };
+
+  normalize = () => {
+    const { localObserver } = this.props;
+    this.setState({
+      maximizeVisible: true,
+      minimizeVisible: true,
+      normalVisible: false,
+    });
+    localObserver.publish("vt-search-result-list-normal");
+  };
+
+  close = () => {
+    const { localObserver } = this.props;
+    this.setState({
+      maximizeVisible: false,
+      minimizeVisible: false,
+      normalVisible: true,
+    });
+    localObserver.publish("vt-search-result-list-close");
+  };
+
+  #export = () => {
+    const { localObserver } = this.props;
+    localObserver.publish("vt-export-search-result-clicked");
+  };
+
+  renderButton = (onClickCallback, iconElement) => {
+    return (
+      <StyledIconButton onClick={onClickCallback} size="large">
+        {iconElement === "minimize" ? (
+          <Tooltip title="Minimera">
+            <ExpandMoreIcon />
+          </Tooltip>
+        ) : iconElement === "maximize" ? (
+          <Tooltip title="Maximera">
+            <StyledExpandMoreIconTransformed />
+          </Tooltip>
+        ) : iconElement === "normalize" ? (
+          <Tooltip title="Återställ">
+            <NormalIcon />
+          </Tooltip>
+        ) : iconElement === "close" ? (
+          <Tooltip title="Stäng">
+            <CloseIcon />
+          </Tooltip>
+        ) : iconElement === "export" ? (
+          <Tooltip title="Exportera">
+            <SaveAltIcon />
+          </Tooltip>
+        ) : null}
+      </StyledIconButton>
+    );
+  };
+
+  render() {
+    return (
+      <div>
+        {this.renderButton(this.#export, "export")}
+        {this.state.minimizeVisible &&
+          this.renderButton(this.minimize, "minimize")}
+        {this.state.maximizeVisible &&
+          this.renderButton(this.maximize, "maximize")}
+        {this.state.normalVisible &&
+          this.renderButton(this.normalize, "normalize")}
+        {this.renderButton(this.close, "close")}
+      </div>
+    );
+  }
+}
+
+export default PanelToolbox;
