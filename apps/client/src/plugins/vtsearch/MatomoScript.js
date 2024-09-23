@@ -1,6 +1,5 @@
 export default class MatomoScript {
   static generateScript(trackerId) {
-    debugger;
     const matomoScriptTag = document.createElement("script");
     matomoScriptTag.text =
       "var _paq = window._paq = window._paq || []; " +
