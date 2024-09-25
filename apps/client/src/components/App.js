@@ -969,8 +969,8 @@ class App extends React.PureComponent {
 
     const logoAltText =
       (this.props.theme.palette.mode === "light" // If light theme active…
-        ? config.mapConfig.map.logoLightAltText // …grab light logo,
-        : config.mapConfig.map.logoDarkAltText) || // …else grab dark logo.
+        ? config.mapConfig.map.logoLightAltText // …grab light logo alt text,
+        : config.mapConfig.map.logoDarkAltText) || // …else grab dark logo alt text.
       config.mapConfig.map.logoAltText || // If neither was set, try to see if we have the legacy admin parameter.
       "Default logotype"; // If we didn't have this either, fallback to hard-coded value.
 
