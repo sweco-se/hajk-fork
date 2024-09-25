@@ -967,6 +967,13 @@ class App extends React.PureComponent {
       config.mapConfig.map.logo || // If neither was set, try to see if we have the legacy admin parameter.
       "logo.png"; // If we didn't have this either, fallback to hard-coded value.
 
+    const logoAltText =
+      (this.props.theme.palette.mode === "light" // If light theme active…
+        ? config.mapConfig.map.logoLightAltText // …grab light logo,
+        : config.mapConfig.map.logoDarkAltText) || // …else grab dark logo.
+      config.mapConfig.map.logoAltText || // If neither was set, try to see if we have the legacy admin parameter.
+      "Default logotype"; // If we didn't have this either, fallback to hard-coded value.
+
     return (
       <>
         <Box
@@ -975,7 +982,7 @@ class App extends React.PureComponent {
             height: (theme) => theme.spacing(6),
           }}
         >
-          <LogoImage alt="" src={logoUrl} />
+          <LogoImage alt={logoAltText} src={logoUrl} />
         </Box>
         <Divider />
         <DrawerHeaderGrid
