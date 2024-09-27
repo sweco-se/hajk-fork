@@ -187,13 +187,13 @@ class LayersSwitcherView extends React.PureComponent {
             textColor="inherit"
           >
             {this.#renderRegularLayersView && (
-              <Tab label="Kartlager" value="regularLayers" />
+              <Tab label="Kartlager" value="regularLayers" tabIndex={0} />
             )}
             {this.#renderBackgroundLayersView && (
-              <Tab label="Bakgrund" value="backgroundLayers" />
+              <Tab label="Bakgrund" value="backgroundLayers" tabIndex={0} />
             )}
             {this.#renderActiveLayersView && (
-              <Tab label="Aktiva lager" value="activeLayers" />
+              <Tab label="Aktiva lager" value="activeLayers" tabIndex={0} />
             )}
           </Tabs>
         </StyledAppBar>

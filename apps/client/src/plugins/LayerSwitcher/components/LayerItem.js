@@ -27,6 +27,20 @@ const LayerItemWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   marginTop: "0",
+  '"&:focus"': {
+    backgroundColor: theme.palette.primary.light,
+    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
+  },
+}));
+
+const LayerItemContent = styled("grid")(({ theme }) => ({
+  display: "flex",
+  justifyContent: "space-between",
+  marginTop: "0",
+  '"&:focus"': {
+    backgroundColor: theme.palette.primary.light,
+    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
+  },
 }));
 
 const LayerTogglerButtonWrapper = styled("div")(() => ({
@@ -57,7 +71,7 @@ const LayerButtonsContainer = styled("div")(() => ({
   alignItems: "center",
 }));
 
-const LayerButtonWrapper = styled("div")(() => ({
+const LayerButtonWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   width: 35,
@@ -101,6 +115,7 @@ class LayerItem extends React.PureComponent {
       open: false,
       toggleSettings: false,
       infoVisible: false,
+      isFocused: false,
     };
 
     // Subscribe to events sent when another background layer is clicked and
@@ -118,6 +133,14 @@ class LayerItem extends React.PureComponent {
       });
     }
   }
+
+  handleFocus = () => {
+    this.setState({ isFocused: true });
+  };
+
+  handleBlur = () => {
+    this.setState({ isFocused: false });
+  };
 
   /**
    * Triggered when the component is successfully mounted into the DOM.
@@ -317,6 +340,7 @@ class LayerItem extends React.PureComponent {
    */
   toggleVisible = (e) => {
     const layer = this.props.layer;
+    this.setState({ isFocused: false });
     if (this.isBackgroundLayer) {
       document.getElementById("map").style.backgroundColor = "#FFF"; // sets the default background color to white
       if (layer.isFakeMapLayer) {
@@ -355,7 +379,7 @@ class LayerItem extends React.PureComponent {
       this.state.status === "loaderror" && (
         <HajkToolTip title="Lagret kunde inte laddas in. Kartservern svarar inte.">
           <LayerButtonWrapper>
-            <IconWarning />
+            <IconWarning tabIndex={0} />
           </LayerButtonWrapper>
         </HajkToolTip>
       )
@@ -365,21 +389,15 @@ class LayerItem extends React.PureComponent {
   renderInfoButton = () => {
     return this.isInfoEmpty() ? null : (
       <HajkToolTip title="Mer information om lagret">
-        <LayerButtonWrapper>
-          {this.state.infoVisible ? (
-            <RemoveCircleIcon onClick={this.toggleInfo} />
-          ) : (
-            <InfoIcon
-              onClick={this.toggleInfo}
-              sx={{
-                boxShadow: this.state.infoVisible
-                  ? "rgb(204, 204, 204) 2px 3px 1px"
-                  : "inherit",
-                borderRadius: "100%",
-              }}
-            />
-          )}
-        </LayerButtonWrapper>
+        {this.state.infoVisible ? (
+          <Button onClick={this.toggleInfo}>
+            <RemoveCircleIcon />
+          </Button>
+        ) : (
+          <Button onClick={this.toggleInfo}>
+            <InfoIcon />
+          </Button>
+        )}
       </HajkToolTip>
     );
   };
@@ -389,9 +407,9 @@ class LayerItem extends React.PureComponent {
       <HajkToolTip title="Fler inställningar">
         <LayerButtonWrapper>
           {this.state.toggleSettings ? (
-            <CloseIcon onClick={this.toggleSettings} />
+            <CloseIcon tabIndex={0} onClick={this.toggleSettings} />
           ) : (
-            <MoreHorizIcon onClick={this.toggleSettings} />
+            <MoreHorizIcon tabIndex={0} onClick={this.toggleSettings} />
           )}
         </LayerButtonWrapper>
       </HajkToolTip>
@@ -690,6 +708,17 @@ class LayerItem extends React.PureComponent {
             alignContent="center"
             container
             onClick={this.toggleVisible.bind(this)}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            tabIndex={0}
+            sx={{
+              "&:focus": {
+                backgroundColor: this.state.isFocused
+                  ? (theme) => theme.palette.primary.main
+                  : "initial",
+                outline: "none",
+              },
+            }}
           >
             <Grid item>{this.getLayerToggler()}</Grid>
             {this.legendIcon && this.renderLegendIcon()}
@@ -708,7 +737,7 @@ class LayerItem extends React.PureComponent {
                 }
               />
             )}
-            {this.renderStatusButton()}
+            <Grid>{this.renderStatusButton()}</Grid>
             {this.renderInfoButton()}
 
             {this.showAttributeTableButton && (
