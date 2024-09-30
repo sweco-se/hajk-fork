@@ -2,6 +2,7 @@ import React from "react";
 import { withSnackbar } from "notistack";
 import { styled } from "@mui/material/styles";
 import { Button, Typography, Grid, Link } from "@mui/material";
+import { IconButton, Paper } from "@mui/material";
 import IconWarning from "@mui/icons-material/Warning";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import InfoIcon from "@mui/icons-material/Info";
@@ -17,6 +18,14 @@ import LayerGroupItem from "./LayerGroupItem.js";
 import LayerSettings from "./LayerSettings.js";
 import DownloadLink from "./DownloadLink.js";
 import HajkToolTip from "components/HajkToolTip";
+
+const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  minWidth: "unset",
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  marginBottom: theme.spacing(1),
+}));
 
 const LayerItemContainer = styled("div")(({ theme }) => ({
   paddingLeft: "0",
@@ -340,7 +349,6 @@ class LayerItem extends React.PureComponent {
    */
   toggleVisible = (e) => {
     const layer = this.props.layer;
-    this.setState({ isFocused: false });
     if (this.isBackgroundLayer) {
       document.getElementById("map").style.backgroundColor = "#FFF"; // sets the default background color to white
       if (layer.isFakeMapLayer) {
@@ -367,6 +375,7 @@ class LayerItem extends React.PureComponent {
       this.props.layer.setVisible(visible);
       this.triggerZoomCheck(e, visible);
     }
+    this.setState({ isFocused: false });
   };
 
   /**
@@ -378,9 +387,9 @@ class LayerItem extends React.PureComponent {
     return (
       this.state.status === "loaderror" && (
         <HajkToolTip title="Lagret kunde inte laddas in. Kartservern svarar inte.">
-          <LayerButtonWrapper>
-            <IconWarning tabIndex={0} />
-          </LayerButtonWrapper>
+          <StyledIconButton>
+            <IconWarning />
+          </StyledIconButton>
         </HajkToolTip>
       )
     );
@@ -390,13 +399,13 @@ class LayerItem extends React.PureComponent {
     return this.isInfoEmpty() ? null : (
       <HajkToolTip title="Mer information om lagret">
         {this.state.infoVisible ? (
-          <Button onClick={this.toggleInfo}>
+          <StyledIconButton onClick={this.toggleInfo}>
             <RemoveCircleIcon />
-          </Button>
+          </StyledIconButton>
         ) : (
-          <Button onClick={this.toggleInfo}>
+          <StyledIconButton onClick={this.toggleInfo}>
             <InfoIcon />
-          </Button>
+          </StyledIconButton>
         )}
       </HajkToolTip>
     );
@@ -405,13 +414,9 @@ class LayerItem extends React.PureComponent {
   renderMoreButton = () => {
     return (
       <HajkToolTip title="Fler inställningar">
-        <LayerButtonWrapper>
-          {this.state.toggleSettings ? (
-            <CloseIcon tabIndex={0} onClick={this.toggleSettings} />
-          ) : (
-            <MoreHorizIcon tabIndex={0} onClick={this.toggleSettings} />
-          )}
-        </LayerButtonWrapper>
+        <StyledIconButton onClick={this.toggleSettings}>
+          {this.state.toggleSettings ? <CloseIcon /> : <MoreHorizIcon />}
+        </StyledIconButton>
       </HajkToolTip>
     );
   };
@@ -612,8 +617,26 @@ class LayerItem extends React.PureComponent {
     ) : (
       <CheckBoxOutlineBlankIcon />
     );
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        this.toggleVisible(event);
+      }
+    };
+
     return (
-      <LayerTogglerButtonWrapper className="hajk-layerswitcher-layer-toggle">
+      <LayerTogglerButtonWrapper
+        className="hajk-layerswitcher-layer-toggle"
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        sx={{
+          "&:focus": {
+            backgroundColor: (theme) => theme.palette.primary.light,
+            outline: "none",
+          },
+        }}
+      >
         {icon}
       </LayerTogglerButtonWrapper>
     );
@@ -710,7 +733,6 @@ class LayerItem extends React.PureComponent {
             onClick={this.toggleVisible.bind(this)}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
-            tabIndex={0}
             sx={{
               "&:focus": {
                 backgroundColor: this.state.isFocused
@@ -742,9 +764,9 @@ class LayerItem extends React.PureComponent {
 
             {this.showAttributeTableButton && (
               <HajkToolTip title="Visa lagrets attributtabell">
-                <LayerButtonWrapper>
-                  <TableViewIcon onClick={this.#showAttributeTable} />
-                </LayerButtonWrapper>
+                <StyledIconButton onClick={this.#showAttributeTable}>
+                  <TableViewIcon />
+                </StyledIconButton>
               </HajkToolTip>
             )}
             {this.renderMoreButton()}
