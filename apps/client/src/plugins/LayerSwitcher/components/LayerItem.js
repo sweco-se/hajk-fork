@@ -143,6 +143,13 @@ class LayerItem extends React.PureComponent {
     }
   }
 
+  handleKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      this.toggleVisible(event);
+    }
+  };
+
   handleFocus = () => {
     this.setState({ isFocused: true });
   };
@@ -618,25 +625,8 @@ class LayerItem extends React.PureComponent {
       <CheckBoxOutlineBlankIcon />
     );
 
-    const handleKeyDown = (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        this.toggleVisible(event);
-      }
-    };
-
     return (
-      <LayerTogglerButtonWrapper
-        className="hajk-layerswitcher-layer-toggle"
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        sx={{
-          "&:focus": {
-            backgroundColor: (theme) => theme.palette.primary.light,
-            outline: "none",
-          },
-        }}
-      >
+      <LayerTogglerButtonWrapper className="hajk-layerswitcher-layer-toggle">
         {icon}
       </LayerTogglerButtonWrapper>
     );
@@ -731,14 +721,12 @@ class LayerItem extends React.PureComponent {
             alignContent="center"
             container
             onClick={this.toggleVisible.bind(this)}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
+            tabIndex={0}
+            onKeyDown={this.handleKeyDown}
             sx={{
               "&:focus": {
-                backgroundColor: this.state.isFocused
-                  ? (theme) => theme.palette.primary.main
-                  : "initial",
                 outline: "none",
+                backgroundColor: (theme) => theme.palette.action.selected,
               },
             }}
           >
