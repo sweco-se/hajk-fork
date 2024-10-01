@@ -147,6 +147,7 @@ class LayerItem extends React.PureComponent {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       this.toggleVisible(event);
+      this.setState({ isFocused: true });
     }
   };
 
@@ -356,6 +357,7 @@ class LayerItem extends React.PureComponent {
    */
   toggleVisible = (e) => {
     const layer = this.props.layer;
+    this.setState({ isFocused: false });
     if (this.isBackgroundLayer) {
       document.getElementById("map").style.backgroundColor = "#FFF"; // sets the default background color to white
       if (layer.isFakeMapLayer) {
@@ -382,7 +384,6 @@ class LayerItem extends React.PureComponent {
       this.props.layer.setVisible(visible);
       this.triggerZoomCheck(e, visible);
     }
-    this.setState({ isFocused: false });
   };
 
   /**
@@ -723,12 +724,19 @@ class LayerItem extends React.PureComponent {
             onClick={this.toggleVisible.bind(this)}
             tabIndex={0}
             onKeyDown={this.handleKeyDown}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
             sx={{
               "&:focus": {
                 outline: "none",
                 backgroundColor: (theme) => theme.palette.action.selected,
               },
+              "&.fade-out": {
+                backgroundColor: "initial",
+                transition: "background-color 0.3s ease",
+              },
             }}
+            className={this.state.isFocused ? "" : "fade-out"}
           >
             <Grid item>{this.getLayerToggler()}</Grid>
             {this.legendIcon && this.renderLegendIcon()}
