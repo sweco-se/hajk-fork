@@ -2,7 +2,7 @@ import React from "react";
 import { withSnackbar } from "notistack";
 import { styled } from "@mui/material/styles";
 import { Button, Typography, Grid, Link } from "@mui/material";
-import { IconButton, Paper } from "@mui/material";
+import { IconButton } from "@mui/material";
 import IconWarning from "@mui/icons-material/Warning";
 import CallMadeIcon from "@mui/icons-material/CallMade";
 import InfoIcon from "@mui/icons-material/Info";
