@@ -19,12 +19,26 @@ import LayerSettings from "./LayerSettings.js";
 import DownloadLink from "./DownloadLink.js";
 import HajkToolTip from "components/HajkToolTip";
 
-const StyledIconButton = styled(IconButton)(({ theme }) => ({
+const StyledIconButton = styled(IconButton)(() => ({
   minWidth: "unset",
+  display: "flex",
+  alignItems: "center",
+  width: 35,
+  height: 35,
+  cursor: "pointer",
 }));
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
+const LayerItemContent = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  marginTop: "0",
+  "&:focus": {
+    outline: "none",
+    backgroundColor: theme.palette.action.focus,
+  },
+  "&.fade-out": {
+    backgroundColor: "initial",
+    transition: "background-color 0.4s ease",
+  },
 }));
 
 const LayerItemContainer = styled("div")(({ theme }) => ({
@@ -36,20 +50,6 @@ const LayerItemWrapper = styled("div")(({ theme }) => ({
   display: "flex",
   justifyContent: "space-between",
   marginTop: "0",
-  '"&:focus"': {
-    backgroundColor: theme.palette.primary.light,
-    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-  },
-}));
-
-const LayerItemContent = styled("grid")(({ theme }) => ({
-  display: "flex",
-  justifyContent: "space-between",
-  marginTop: "0",
-  '"&:focus"': {
-    backgroundColor: theme.palette.primary.light,
-    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-  },
 }));
 
 const LayerTogglerButtonWrapper = styled("div")(() => ({
@@ -78,14 +78,6 @@ const LegendIcon = styled("img")(({ theme }) => ({
 const LayerButtonsContainer = styled("div")(() => ({
   display: "flex",
   alignItems: "center",
-}));
-
-const LayerButtonWrapper = styled("div")(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  width: 35,
-  height: 35,
-  cursor: "pointer",
 }));
 
 const StyledList = styled("ul")(() => ({
@@ -124,7 +116,7 @@ class LayerItem extends React.PureComponent {
       open: false,
       toggleSettings: false,
       infoVisible: false,
-      isFocused: false,
+      layerItemIsFocused: false,
     };
 
     // Subscribe to events sent when another background layer is clicked and
@@ -142,22 +134,6 @@ class LayerItem extends React.PureComponent {
       });
     }
   }
-
-  handleKeyDown = (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      this.toggleVisible(event);
-      this.setState({ isFocused: true });
-    }
-  };
-
-  handleFocus = () => {
-    this.setState({ isFocused: true });
-  };
-
-  handleBlur = () => {
-    this.setState({ isFocused: false });
-  };
 
   /**
    * Triggered when the component is successfully mounted into the DOM.
@@ -357,7 +333,7 @@ class LayerItem extends React.PureComponent {
    */
   toggleVisible = (e) => {
     const layer = this.props.layer;
-    this.setState({ isFocused: false });
+    this.setState({ layerItemIsFocused: false });
     if (this.isBackgroundLayer) {
       document.getElementById("map").style.backgroundColor = "#FFF"; // sets the default background color to white
       if (layer.isFakeMapLayer) {
@@ -384,6 +360,22 @@ class LayerItem extends React.PureComponent {
       this.props.layer.setVisible(visible);
       this.triggerZoomCheck(e, visible);
     }
+  };
+
+  #handleLayerItemKeyDown = (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      this.toggleVisible(event);
+      this.setState({ layerItemIsFocused: true });
+    }
+  };
+
+  #handleLayerItemFocus = () => {
+    this.setState({ layerItemIsFocused: true });
+  };
+
+  #handleLayerItemBlur = () => {
+    this.setState({ layerItemIsFocused: false });
   };
 
   /**
@@ -716,27 +708,17 @@ class LayerItem extends React.PureComponent {
         sx={{ marginLeft: this.isBackgroundLayer ? "0px" : "45px" }}
       >
         <LayerItemWrapper>
-          <Grid
+          <LayerItemContent
             wrap="nowrap"
             alignItems="center"
             alignContent="center"
             container
             onClick={this.toggleVisible.bind(this)}
             tabIndex={0}
-            onKeyDown={this.handleKeyDown}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            sx={{
-              "&:focus": {
-                outline: "none",
-                backgroundColor: (theme) => theme.palette.action.selected,
-              },
-              "&.fade-out": {
-                backgroundColor: "initial",
-                transition: "background-color 0.3s ease",
-              },
-            }}
-            className={this.state.isFocused ? "" : "fade-out"}
+            onKeyDown={this.#handleLayerItemKeyDown}
+            onFocus={this.#handleLayerItemFocus}
+            onBlur={this.#handleLayerItemBlur}
+            className={this.state.layerItemIsFocused ? "" : "fade-out"}
           >
             <Grid item>{this.getLayerToggler()}</Grid>
             {this.legendIcon && this.renderLegendIcon()}
@@ -745,7 +727,7 @@ class LayerItem extends React.PureComponent {
             >
               {this.caption}
             </Caption>
-          </Grid>
+          </LayerItemContent>
           <LayerButtonsContainer className="hajk-layerswitcher-layer-buttons">
             {layer.isFakeMapLayer ? null : (
               <DownloadLink
