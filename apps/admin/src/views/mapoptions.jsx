@@ -43,6 +43,7 @@ class MapOptions extends Component {
         center: config.center,
         logoLight: config.logoLight || "logoLight.png",
         logoDark: config.logoDark || "logoDark.png",
+        logoAltText: config.logoAltText,
         resolutions: config.resolutions,
         extraPrintResolutions: config.extraPrintResolutions || "",
         extent: config.extent,
@@ -152,6 +153,7 @@ class MapOptions extends Component {
       center: mapConfig.center,
       logoLight: mapConfig.logoLight || "logoLight.png",
       logoDark: mapConfig.logoDark || "logoDark.png",
+      logoAltText: mapConfig.logoAltText,
       resolutions: mapConfig.resolutions,
       extraPrintResolutions: mapConfig.extraPrintResolutions || "",
       extent: mapConfig.extent,
@@ -269,6 +271,7 @@ class MapOptions extends Component {
         "zoomDuration",
         "center",
         "introductionSteps",
+        "logoAltText",
       ],
       validationErrors = [];
 
@@ -358,6 +361,11 @@ class MapOptions extends Component {
         break;
       case "zoomDelta":
       case "zoomDuration":
+      case "logoAltText":
+        if (empty(value)) {
+          valid = false;
+        }
+        break;
       case "projection":
         if (empty(value)) {
           valid = false;
@@ -430,6 +438,7 @@ class MapOptions extends Component {
         config.center = this.getValue("center");
         config.logoLight = this.getValue("logoLight");
         config.logoDark = this.getValue("logoDark");
+        config.logoAltText = this.getValue("logoAltText");
         config.resolutions = this.getValue("resolutions");
         config.extraPrintResolutions = this.getValue("extraPrintResolutions");
         config.extent = this.getValue("extent");
@@ -1128,6 +1137,20 @@ class MapOptions extends Component {
                 onChange={(e) => {
                   this.setState({ logoDark: e.target.value }, () =>
                     this.validateField("logoDark")
+                  );
+                }}
+              />
+            </div>
+            <div>
+              <label>Alternativtext för logotyp</label>
+              <input
+                type="text"
+                ref="input_logoAltText"
+                value={this.state.logoAltText}
+                className={this.getValidationClass("logoAltText")}
+                onChange={(e) => {
+                  this.setState({ logoAltText: e.target.value }, () =>
+                    this.validateField("logoAltText")
                   );
                 }}
               />
