@@ -1142,7 +1142,14 @@ class MapOptions extends Component {
               />
             </div>
             <div>
-              <label>Alternativtext för logotyp</label>
+              <label>
+                Alternativtext för logotyp{" "}
+                <i
+                  className="fa fa-question-circle"
+                  data-toggle="tooltip"
+                  title="En text beskrivning som ger bildinformation vid skärmläsare eller om bilden saknas."
+                />
+              </label>
               <input
                 type="text"
                 ref="input_logoAltText"
