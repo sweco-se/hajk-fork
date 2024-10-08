@@ -759,6 +759,7 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
       <Button
         startIcon={
           <OpenInNewIcon
+            titleAccess="Det är en länk som öppnas i annat fönster."
             sx={{
               verticalAlign: "middle",
             }}
