@@ -538,7 +538,6 @@ class Window extends React.PureComponent {
         }}
       >
         <PanelContent
-          tabIndex="0"
           ref={this.windowRef}
           sx={{
             display: this.props.height === "dynamic" ? "contents" : "flex",

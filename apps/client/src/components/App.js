@@ -1252,14 +1252,6 @@ class App extends React.PureComponent {
               <div id="breadcrumbs-container" />
             </StyledFooter>
           </AppBox>
-          <MapContainer
-            id="map"
-            tabIndex="0"
-            role="application"
-            sx={{
-              left: this.drawerIsLocked() ? DRAWER_WIDTH : 0,
-            }}
-          ></MapContainer>
           <WindowsContainer
             id="windows-container"
             sx={{
@@ -1282,6 +1274,14 @@ class App extends React.PureComponent {
             />
             <SimpleDialog globalObserver={this.globalObserver} />
           </WindowsContainer>
+          <MapContainer
+            id="map"
+            tabIndex="0"
+            role="application"
+            sx={{
+              left: this.drawerIsLocked() ? DRAWER_WIDTH : 0,
+            }}
+          ></MapContainer>
           {clean !== true && ( // NB: Special case here, important with !== true, because there is an edge-case where clean===undefined, and we don't want to match on that!
             <Drawer
               open={this.state.drawerVisible}
