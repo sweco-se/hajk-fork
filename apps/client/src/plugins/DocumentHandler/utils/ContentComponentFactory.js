@@ -800,6 +800,7 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
       <Button
         startIcon={
           <MapIcon
+            titleAccess="En länk som applicerar specifika kart lager"
             sx={{
               verticalAlign: "middle",
             }}
