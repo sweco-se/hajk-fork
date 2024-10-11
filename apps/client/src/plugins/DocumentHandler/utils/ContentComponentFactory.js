@@ -828,10 +828,15 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
   };
 
   const getDocumentLink = (headerIdentifier, documentLink, isPrintMode) => {
+    const titleAccess = headerIdentifier
+      ? "En länk till ett visst kapitel i ett dokument"
+      : "En länk till ett dokument";
+
     return (
       <Button
         startIcon={
           <DescriptionIcon
+            titleAccess={titleAccess}
             sx={{
               verticalAlign: "middle",
             }}
