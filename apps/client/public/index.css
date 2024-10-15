@@ -157,9 +157,7 @@ div#root
   color: #000 !important;
 }
 .MuiAlert-message,
-.MuiAlert-message
-  > MuiTypography-root
-{
+.MuiAlert-message > MuiTypography-root {
   color: #000 !important;
 }
 
@@ -583,8 +581,10 @@ section .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded {
   color: #fff !important;
   border-radius: 9999px !important;
   border: 0 !important;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
-    rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
+  box-shadow:
+    rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
+    rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
+    rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
 }
 
 .MuiDialogActions-root .MuiButton-containedPrimary {
@@ -713,8 +713,10 @@ section .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded {
     color: #fff !important;
     border-radius: 9999px !important;
     border: 0 !important;
-    box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
-      rgba(0, 0, 0, 0.14) 0px 1px 1px 0px, rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
+    box-shadow:
+      rgba(0, 0, 0, 0.2) 0px 2px 1px -1px,
+      rgba(0, 0, 0, 0.14) 0px 1px 1px 0px,
+      rgba(0, 0, 0, 0.12) 0px 1px 3px 0px;
     padding: 8px 12px !important;
     height: 48px !important;
   }
@@ -1029,12 +1031,6 @@ legend.MuiFormLabel-root {
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
   + div
   > div
-  .MuiBox-root {
-  margin: 0 8px !important;
-}
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
   .MuiBox-root:first-child {
   margin-top: 8px !important;
 }
@@ -1045,22 +1041,11 @@ legend.MuiFormLabel-root {
   margin: 0 8px !important;
   padding: 0 !important;
 }
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
-  > .MuiBox-root
-  + .MuiBox-root,
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
-  > .MuiBox-root:first-child {
-  border-top: 1px solid #d2d3b4 !important;
-}
+
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
   + div
   > div
   > .MuiBox-root:last-child {
-  border-bottom: 1px solid #d2d3b4 !important;
   margin-bottom: 8px !important;
 }
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1091,7 +1076,6 @@ legend.MuiFormLabel-root {
   > div
   > div {
   border: 0;
-  border-left: 4px solid transparent;
   margin: 0 !important;
   padding: 0 !important;
   min-height: 40px;
@@ -1130,9 +1114,8 @@ div.hajk-layerswitcher-layer-toggle {
   > .MuiGrid-root
   .MuiGrid-root.MuiGrid-item
   > div.MuiSvgIcon-root {
-  position: absolute;
-  top: 8px;
-  left: 8px;
+  width: 24px;
+  height: 24px;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1201,7 +1184,7 @@ div.hajk-layerswitcher-layer-toggle {
   > div
   > div
   > * {
-  padding: 0 0 8px 40px !important;
+  padding: 0 !important;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1212,7 +1195,7 @@ div.hajk-layerswitcher-layer-toggle {
   .MuiAccordionDetails-root
   > div
   > div {
-  border-left: 4px solid #3c5a44 !important;
+  padding-left: 32px !important;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1221,8 +1204,7 @@ div.hajk-layerswitcher-layer-toggle {
   > .MuiBox-root
   .MuiAccordionDetails-root
   .MuiBox-root {
-  border-top: 1px solid #d2d3b4 !important;
-  padding-left: 4px !important;
+  padding-left: 0 !important;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1262,7 +1244,6 @@ div.hajk-layerswitcher-layer-toggle {
   align-items: start;
   min-height: 40px;
   padding: 0 8px !important;
-  border-left: 4px solid transparent;
 }
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
   + div
@@ -1274,8 +1255,8 @@ div.hajk-layerswitcher-layer-toggle {
   margin: 8px 8px 0 0;
 }
 
-.hajk-layerswitcher-layer-buttons
-  > div {
+.hajk-layerswitcher-layer-buttons > div,
+.hajk-layerswitcher-summary-buttons > div {
   border-radius: 50%;
   width: 34px;
   height: 34px;
@@ -1285,36 +1266,9 @@ div.hajk-layerswitcher-layer-toggle {
   margin: 4px 2px 4px 0 !important;
 }
 
-.hajk-layerswitcher-layer-buttons
-  > div:hover {
+.hajk-layerswitcher-layer-buttons > div:hover,
+.hajk-layerswitcher-summary-buttons > div:hover {
   background: #f2f4f1;
-}
-
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
-  > .MuiBox-root
-  .Mui-expanded
-  .MuiButtonBase-root.MuiAccordionSummary-root
-  .MuiAccordionSummary-content,
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
-  > .MuiBox-root
-  .MuiBox-root
-  .Mui-expanded
-  .MuiButtonBase-root.MuiAccordionSummary-root
-  .MuiAccordionSummary-content {
-  border-left: 4px solid #3c5a44 !important;
-}
-.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
-  + div
-  > div
-  > .MuiBox-root
-  .MuiBox-root
-  .MuiButtonBase-root.MuiAccordionSummary-root
-  .MuiAccordionSummary-content {
-  border-left: 4px solid transparent !important;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1364,6 +1318,32 @@ div.hajk-layerswitcher-layer-toggle {
   .MuiGrid-root
   > div {
   border-bottom: 0 !important;
+  padding: 0 !important;
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
+  + div
+  > div
+  > .MuiBox-root
+  .MuiAccordionDetails-root
+  .MuiGrid-root
+  > div:first-child:not(.hajk-layerswitcher-layer-toggle)
+  > svg {
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
+  + div
+  > div
+  > .MuiBox-root
+  .MuiAccordionDetails-root
+  .MuiGrid-root
+  .MuiBox-root
+  div.hajk-layerswitcher-layer-toggle:first-child {
+  margin-left: -5px !important;
 }
 
 .MuiPaper-root.MuiPaper-elevation.MuiPaper-elevation4.MuiAppBar-root.MuiAppBar-colorDefault.MuiAppBar-positionSticky
@@ -1374,7 +1354,6 @@ div.hajk-layerswitcher-layer-toggle {
   min-height: 40px;
   padding: 9px 0 !important;
 }
-
 
 /* Infoklick */
 .hajk-window
