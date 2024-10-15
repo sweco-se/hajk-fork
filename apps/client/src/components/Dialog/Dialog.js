@@ -54,6 +54,7 @@ export default function ResponsiveDialog(props) {
   return (
     <Dialog
       aria-labelledby="responsive-dialog-title"
+      aria-describedby="responsive-dialog-content"
       fullScreen={fullScreen}
       onClose={handleClose}
       open={open}
@@ -65,7 +66,7 @@ export default function ResponsiveDialog(props) {
       {headerText && (
         <DialogTitle id="responsive-dialog-title">{headerText}</DialogTitle>
       )}
-      <DialogContent>
+      <DialogContent id="responsive-dialog-content">
         {children}
         {useLegacyNonMarkdownRenderer === true ? (
           <LegacyNonMarkdownRenderer text={text} />
@@ -102,7 +103,11 @@ export default function ResponsiveDialog(props) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} variant={primaryButtonVariant || "text"}>
+        <Button
+          onClick={handleClose}
+          variant={primaryButtonVariant || "text"}
+          sx={{ color: "text.primary" }}
+        >
           {buttonText}
         </Button>
         {abortText && (
