@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { List, ListItem, Link } from "@mui/material";
 
 /*
@@ -14,16 +14,25 @@ import { List, ListItem, Link } from "@mui/material";
  */
 const SrShortcuts = ({ globalObserver }) => {
   const [shortcuts, setShortcuts] = useState([]);
+  const listRef = useRef(null);
+
   useEffect(() => {
     globalObserver.subscribe("core.addSrShortcuts", addShortCuts);
   });
+
+  useEffect(() => {
+    // Focus the list when the component mounts
+    if (listRef.current) {
+      listRef.current.focus();
+    }
+  }, []);
 
   const addShortCuts = (shortcutsArray) => {
     setShortcuts([...shortcuts, ...shortcutsArray]);
   };
 
   return (
-    <List className="sr-only">
+    <List className="sr-only" ref={listRef} tabIndex="-1">
       {shortcuts.map((shortcut) => {
         return (
           <ListItem key={shortcut.link}>

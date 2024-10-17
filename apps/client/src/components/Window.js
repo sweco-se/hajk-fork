@@ -170,15 +170,15 @@ class Window extends React.PureComponent {
     });
   }
 
-  componentDidUpdate = (prevProps, prevState) => {
-    if (prevProps.open === false && this.props.open === true) {
-      //This is ugly but there is a timing problem further down somewhere (i suppose?).
-      //componentDidUpdate is run before the render is actually fully completed and the DOM is ready
-      setTimeout(() => {
-        this.windowRef.current.focus();
-      }, 200);
-    }
-  };
+  // componentDidUpdate = (prevProps, prevState) => {
+  //   if (prevProps.open === false && this.props.open === true) {
+  //     //This is ugly but there is a timing problem further down somewhere (i suppose?).
+  //     //componentDidUpdate is run before the render is actually fully completed and the DOM is ready
+  //     setTimeout(() => {
+  //       this.windowRef.current.focus();
+  //     }, 200);
+  //   }
+  // };
 
   componentDidMount() {
     const { globalObserver } = this.props;
@@ -538,6 +538,7 @@ class Window extends React.PureComponent {
         }}
       >
         <PanelContent
+          tabIndex="0"
           ref={this.windowRef}
           sx={{
             display: this.props.height === "dynamic" ? "contents" : "flex",
