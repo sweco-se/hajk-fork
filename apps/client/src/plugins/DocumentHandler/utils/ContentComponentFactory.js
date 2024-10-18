@@ -754,7 +754,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
     );
   };
 
-  const getExternalLink = (externalLink) => {
+  const GetExternalLink = (externalLink) => {
+    // Grab the theme to determine current light/dark mode
+    const theme = useTheme();
+
     return (
       <Button
         startIcon={
@@ -767,7 +770,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
         }
         sx={{
           padding: 0,
-          color: "info.main",
+          color:
+            theme.palette.mode === "dark"
+              ? theme.palette.info.dark
+              : theme.palette.info.main,
           ".MuiButton-startIcon": {
             marginLeft: 0,
           },
@@ -783,7 +789,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
     );
   };
 
-  const getMapLink = (aTag, mapLinkOrg) => {
+  const GetMapLink = (aTag, mapLinkOrg) => {
+    // Grab the theme to determine current light/dark mode
+    const theme = useTheme();
+
     // Attempt to safely URI Decode the supplied string. If
     // it fails, use it as-is.
     // The reason we want probably want to decode is that the
@@ -808,7 +817,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
         }
         sx={{
           padding: 0,
-          color: "info.main",
+          color:
+            theme.palette.mode === "dark"
+              ? theme.palette.info.dark
+              : theme.palette.info.main,
           ...(bottomMargin && { marginBottom: 1 }),
           ".MuiButton-startIcon": {
             marginLeft: 0,
@@ -827,7 +839,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
     );
   };
 
-  const getDocumentLink = (headerIdentifier, documentLink, isPrintMode) => {
+  const GetDocumentLink = (headerIdentifier, documentLink, isPrintMode) => {
+    // Grab the theme to determine current light/dark mode
+    const theme = useTheme();
+
     const titleAccess = headerIdentifier
       ? "En länk till ett visst kapitel i ett dokument"
       : "En länk till ett dokument";
@@ -844,7 +859,10 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
         }
         sx={{
           padding: 0,
-          color: "info.main",
+          color:
+            theme.palette.mode === "dark"
+              ? theme.palette.info.dark
+              : theme.palette.info.main,
           ".MuiButton-startIcon": {
             marginLeft: 0,
           },
@@ -870,15 +888,15 @@ export const CustomLink = ({ aTag, localObserver, bottomMargin }) => {
 
   if (documentLink) {
     const isPrintMode = Boolean(aTag.attributes.printMode);
-    return getDocumentLink(headerIdentifier, documentLink, isPrintMode);
+    return GetDocumentLink(headerIdentifier, documentLink, isPrintMode);
   }
 
   if (mapLink) {
-    return getMapLink(aTag, mapLink, localObserver);
+    return GetMapLink(aTag, mapLink, localObserver);
   }
 
   if (externalLink) {
-    return getExternalLink(externalLink);
+    return GetExternalLink(externalLink);
   }
 
   if (hoverLink) {
